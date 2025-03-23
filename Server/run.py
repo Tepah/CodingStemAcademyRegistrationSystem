@@ -122,4 +122,202 @@ if __name__ == '__main__':
 
 
 
-###semesters func
+###class func
+def add_class(class_id, teacher_id, class_name, subject, semester_id):
+    cursor = my_db.cursor()
+    sql = "INSERT INTO classes " \
+    "(class_id,teacher_id,class_name,subject,semester_id) VALUES (%s, %s, %s, %s, %s)"
+    vals = (class_id, teacher_id, class_name, subject, semester_id)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_class_id(class_id):
+    cursor = my_db.cursor()
+    sql = "UPDATE classes SET class_id = %s WHERE class_id = %s"
+    vals = (class_id, class_id)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_teacher_id(teacher_id):
+    cursor = my_db.cursor()
+    sql = "UPDATE classes SET teacher_id = %s WHERE teacher_id = %s"
+    vals = (teacher_id, teacher_id)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_class_name(class_name):  
+    cursor = my_db.cursor()
+    sql = "UPDATE classes SET class_name = %s WHERE class_name = %s"
+    vals = (class_name, class_name)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_subject(subject):
+    cursor = my_db.cursor()
+    sql = "UPDATE classes SET subject = %s WHERE subject = %s"
+    vals = (subject, subject)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_semester_id(semester_id):
+    cursor = my_db.cursor()
+    sql = "UPDATE classes SET semester_id = %s WHERE semester_id = %s"
+    vals = (semester_id, semester_id)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def delete_class(class_id): 
+    cursor = my_db.cursor()
+    sql = "DELETE FROM classes WHERE class_id = %s"
+    val = (class_id, )
+    cursor.execute(sql, val)
+    my_db.commit()
+def get_classes():
+    cursor = my_db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM classes")
+    return cursor.fetchall()
+def get_class_by_id(class_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_id = %s"
+    val = (class_id, )
+    cursor.execute(sql, val)
+    return cursor.fetchone()
+def get_class_by_teacher_id(teacher_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s"
+    val = (teacher_id, )
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_class_name(class_name):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_name = %s"
+    val = (class_name, )
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_subject(subject):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE subject = %s"
+    val = (subject, )
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_semester_id(semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE semester_id = %s"
+    val = (semester_id, )
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_semester_id(teacher_id, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND semester_id = %s"
+    val = (teacher_id, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_class_name_and_subject(class_name, subject):    
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_name = %s AND subject = %s"
+    val = (class_name, subject)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_class_name_and_semester_id(class_name, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_name = %s AND semester_id = %s"
+    val = (class_name, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_subject_and_semester_id(subject, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE subject = %s AND semester_id = %s"
+    val = (subject, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_class_name(teacher_id, class_name):     
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND class_name = %s"
+    val = (teacher_id, class_name)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_subject(teacher_id, subject):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND subject = %s"    
+    val = (teacher_id, subject)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_class_name_and_subject(teacher_id, class_name, subject):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND class_name = %s AND subject = %s"
+    val = (teacher_id, class_name, subject)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_class_name_and_semester_id(teacher_id, class_name, semester_id):    
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND class_name = %s AND semester_id = %s"
+    val = (teacher_id, class_name, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_subject_and_semester_id(teacher_id, subject, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND subject = %s AND semester_id = %s"
+    val = (teacher_id, subject, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_class_name_and_subject_and_semester_id(class_name, subject, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_name = %s AND subject = %s AND semester_id = %s"
+    val = (class_name, subject, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_teacher_id_and_class_name_and_subject_and_semester_id(teacher_id, class_name, subject, semester_id):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE teacher_id = %s AND class_name = %s AND subject = %s AND semester_id = %s"
+    val = (teacher_id, class_name, subject, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_id_and_teacher_id(class_id, teacher_id):    
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_id = %s AND teacher_id = %s"
+    val = (class_id, teacher_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_id_and_class_name(class_id, class_name):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_id = %s AND class_name = %s"
+    val = (class_id, class_name)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_id_and_subject(class_id, subject):
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_id = %s AND subject = %s"
+    val = (class_id, subject)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+def get_class_by_id_and_semester_id(class_id, semester_id):   
+    cursor = my_db.cursor(dictionary=True)
+    sql = "SELECT * FROM classes WHERE class_id = %s AND semester_id = %s"
+    val = (class_id, semester_id)
+    cursor.execute(sql, val)
+    return cursor.fetchall()
+
+###class_student func
+def add_user_class(user_id, class_id):
+    cursor = my_db.cursor()
+    sql = "INSERT INTO class_students " \
+    "(user_id,class_id) VALUES (%s, %s)"
+    vals = (user_id, class_id)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_user_id(new,old):
+    cursor = my_db.cursor()
+    sql = "UPDATE class_students SET user_id = %s WHERE user_id = %s"
+    vals = (new,old)
+    cursor.execute(sql, vals)
+    my_db.commit()
+def update_class_id(new,old):
+    cursor = my_db.cursor()
+    sql = "UPDATE class_students SET class_id = %s WHERE class_id = %s"
+    vals = (new,old)
+    cursor.execute(sql, vals) 
+    my_db.commit()
+def delete_user_class(user_id, class_id):
+    cursor = my_db.cursor()
+    sql = "DELETE FROM class_students WHERE user_id = %s AND class_id = %s"
+    val = (user_id, class_id)
+    cursor.execute(sql, val)
+    my_db.commit()
+def get_user_classes():   
+    cursor = my_db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM class_students")
+    return cursor.fetchall()
