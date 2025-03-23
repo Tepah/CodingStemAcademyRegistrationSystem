@@ -119,3 +119,7 @@ if __name__ == '__main__':
         print("Connected to MySQL Database")
     else:
         print("Failed to connect to MySQL Database")
+
+
+
+###semesters func
