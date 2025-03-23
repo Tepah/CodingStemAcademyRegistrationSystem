@@ -321,6 +321,7 @@ def get_user_classes():
     cursor = my_db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM class_students")
     return cursor.fetchall()
+
 # -------------------- FLASK ENDPOINTS -----------------------------
 
 app = Flask(__name__)
