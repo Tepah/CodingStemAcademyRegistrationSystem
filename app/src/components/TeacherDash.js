@@ -36,6 +36,7 @@ const TeacherDash = () => {
               <Link href="/assignments">View Assignments</Link>
               <Link href="/calendar">View Calendar</Link>
               <Link href="/grades">View Grades</Link>
+              <Link href="/addClasses">Your mom</Link>
             </ul>
           </CardContent>
         </Card>

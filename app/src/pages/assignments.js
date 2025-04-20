@@ -1,109 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import {useRouter} from "next/router";
-import axios from "axios";
-import {jwtDecode} from "jwt-decode";
-import config from "../config";
-import Link from "next/link";
-
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import config from '../config';
+import Link from 'next/link';
 
 export default function Assignments() {
   const [assignments, setAssignments] = useState([]);
   const [classes, setClasses] = useState([]);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
+  // Get user from JWT token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/');
-      return
+      return;
     }
-    const decoded = jwtDecode(token);
-    setUser(decoded['sub']);
-  }, [])
+    try {
+      const decoded = jwtDecode(token);
+      console.log("Decoded JWT:", decoded);
+      setUser(decoded.sub); // Make sure sub is a full user object
+    } catch (err) {
+      console.error("Error decoding token:", err);
+      router.push('/');
+    }
+  }, [router]);
 
+  // Fetch classes for student or teacher
   useEffect(() => {
+    if (!user?.id || !user?.role) return;
+
     const fetchClasses = async () => {
       try {
-        if (user['role'] === 'Teacher') {
-          fetchClassesForTeacher()
-            .then(() => {
-              console.log("Classes fetched successfully", assignments);
-            })
-            .catch(() => {
-              console.error("Error fetching classes");
-            })
-        } else if (user['role'] === 'Student') {
-          fetchClassesForStudent()
-            .then(() => {
-              console.log("Classes fetched successfully: ", assignments);
-            })
-            .catch((error) => {
-              console.error("Error fetching classes:", error);
-            });
+        let response;
+        if (user.role === 'Teacher') {
+          response = await axios.get(`${config.backendUrl}/classes/teacher/${user.id}`);
+        } else if (user.role === 'Student') {
+          response = await axios.get(`${config.backendUrl}/classes/${user.id}`);
+        } else {
+          throw new Error("Unknown role");
         }
-      } catch (error) {
-        console.error("Error fetching assignments:", error);
+
+        const classList = response.data.classes || [];
+        setClasses(classList.map(c => c.id));
+        setAssignments(classList.map(c => ({ classId: c.id, assignments: [] })));
+      } catch (err) {
+        console.error("Error fetching classes:", err);
       }
     };
 
-    const fetchClassesForStudent = async () => {
-      console.log("Fetching classes for student", user['id'])
-      const response = await axios.get(`${config.backendUrl}/classes/${user['id']}`)
-      for (let i = 0; i < response.data['classes'].length; i++) {
-        const classId = response.data['classes'][i]['id'];
-        console.log("Class ID:", classId);
-        await setAssignments((prevAssignments => [...prevAssignments, {classId: classId, assignments: []}]));
-        await setClasses((prevClasses => [...prevClasses, classId]));
-      }
-    }
+    fetchClasses();
+  }, [user]);
 
-    const fetchClassesForTeacher = async () => {
-      console.log("Fetching classes for teacher", user['id'])
-      const response =
-        await axios.get(`${config.backendUrl}/classes/teacher/${user['id']}`)
-      console.log("Classes fetched successfully:", response.data);
-      for (let i = 0; i < response.data['classes'].length; i++) {
-        const classId = response.data['classes'][i]['id'];
-        console.log("Class ID:", classId);
-        await setAssignments((prevAssignments => [...prevAssignments, {classId: classId, assignments: []}]));
-        await setClasses((prevClasses => [...prevClasses, classId]));
-      }
-
-    }
-
-    fetchClasses().then(() => {
-      console.log("Classes fetched successfully");
-    })
-      .catch(() => {
-        console.error("Error fetching classes");
-      });
-  }, [user])
-
+  // Fetch assignments for each class
   useEffect(() => {
     const fetchAssignments = async () => {
-      for (let i = 0; i < assignments.length; i++) {
-        const classId = assignments[i]['classId'];
-        const assignmentsResponse = await axios.get(`${config.backendUrl}/assignments`, {
-          params: {
-            'class_id': classId
-          }
-        });
-        setAssignments((prevAssignments => {
-          const updatedAssignments = [...prevAssignments];
-          updatedAssignments[i]['assignments'] = assignmentsResponse.data['assignments'];
-          return updatedAssignments;
+      try {
+        const updatedAssignments = await Promise.all(classes.map(async (classId) => {
+          const res = await axios.get(`${config.backendUrl}/assignments`, {
+            params: { class_id: classId }
+          });
+          return { classId, assignments: res.data.assignments || [] };
         }));
+        setAssignments(updatedAssignments);
+      } catch (err) {
+        console.error("Error fetching assignments:", err);
       }
-    }
+    };
 
-    fetchAssignments()
-      .then(() => {
-        console.log("Assignments fetched successfully");
-      })
-      .catch(() => {
-        console.error("Error fetching assignments");
-      });
+    if (classes.length > 0) {
+      fetchAssignments();
+    }
   }, [classes]);
 
   return (
@@ -116,14 +85,14 @@ export default function Assignments() {
           <ul>
             {assignment.assignments.map((item, i) => (
               <li key={i}>
-                <strong>Description:</strong> {item.description} |
-                <strong>Due Date:</strong> {item.due_date}
+                <strong>Description:</strong> {item.description} | <strong>Due Date:</strong> {item.due_date}
               </li>
             ))}
           </ul>
         </div>
       ))}
-      {user['role'] === "Teacher" && (
+
+      {user?.role === 'Teacher' && (
         <div>
           <h2>Quick Links</h2>
           <Link href="/create-assignment">Create Assignment</Link>
