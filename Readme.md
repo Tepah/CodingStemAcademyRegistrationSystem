@@ -1,11 +1,15 @@
 # How to set up
 ## Run both Server and App
 - in the server folder:
+
 ```pip install -r requirements.txt```
+
 ```python run.py```
 
 - in the app folder:
+
 ```npm install --legacy-peer-deps```
+
 ```npm run dev```
 
 ## AI-Powered Course Assignment Project
