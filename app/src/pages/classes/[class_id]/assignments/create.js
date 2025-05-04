@@ -18,10 +18,11 @@ import { useForm } from "react-hook-form";
 export default function CreateAssignment() {
   const router = useRouter();
   const { class_id } = router.query;
-
+  
   const [user, setUser] = useState({});
   const [classInfo, setClassInfo] = useState({});
   const [assignments, setAssignments] = useState([]);
+
 
   const form = useForm({
     defaultValues: {
@@ -77,8 +78,10 @@ export default function CreateAssignment() {
       console.error("Error creating assignment:", error);
     }
   };
-
+  console.log("SYnau")
+  console.log(classInfo.class_name)
   return (
+    
     <div className="max-w-2xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Create Assignment</h1>
       <div className="mb-8">

@@ -45,7 +45,7 @@ const ClassPage = () => {
         console.error("Failed to fetch assignments:", error);
       });
   }, [class_id]);
-
+ 
   return (
     <Layout title="Assignments">
       <div className="flex justify-between items-center mb-4">

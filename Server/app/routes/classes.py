@@ -112,7 +112,7 @@ def get_class(id):
 # POST functions
 
 
-@classes_bp.route('/add-class', methods=['POST'])
+@classes_bp.route('/add_class', methods=['POST'])
 def add_class():
     my_db = get_db_connection()
     data = request.get_json()
