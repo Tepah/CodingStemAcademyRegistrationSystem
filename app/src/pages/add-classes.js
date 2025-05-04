@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
 
-
 export default function AddClasses() {
     const [formData, setFormData] = useState({
         teacher_id: '',
         subject: '',
         semester_id: '',
         class_name: '',
+        day: '', // added
     });
 
     const handleChange = (e) => {
@@ -22,13 +22,14 @@ export default function AddClasses() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post(`${config.backendUrl}/add_class`, formData).then(response => {
-          console.log("Successfully added class: " + response.data['message']);
-        }).catch( error => {
-          console.log(error);
-        });
+        axios.post(`${config.backendUrl}/add_class`, formData)
+            .then(response => {
+                console.log("Successfully added class: " + response.data['message']);
+            })
+            .catch(error => {
+                console.error("Server Error:", error.response?.data || error.message);
+            });
     };
-
 
     return (
         <div className="signup-container">
@@ -39,6 +40,7 @@ export default function AddClasses() {
                     value={formData.teacher_id}
                     onChange={handleChange}
                     placeholder="Teacher ID"
+                    required
                 />
                 <br />
                 <input
@@ -47,6 +49,7 @@ export default function AddClasses() {
                     value={formData.class_name}
                     onChange={handleChange}
                     placeholder="Class Name"
+                    required
                 />
                 <br />
                 <input
@@ -55,6 +58,7 @@ export default function AddClasses() {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="Subject"
+                    required
                 />
                 <br />
                 <input
@@ -62,10 +66,26 @@ export default function AddClasses() {
                     name="semester_id"
                     value={formData.semester_id}
                     onChange={handleChange}
-                    placeholder="Semester_ID"
+                    placeholder="Semester ID"
+                    required
                 />
-                <button type="submit">Sign Up</button>
+                <br />
+                <select
+                    name="day"
+                    value={formData.day}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <br />
+                <button type="submit">Add Class</button>
             </form>
         </div>
-    )
+    );
 }
