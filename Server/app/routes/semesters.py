@@ -81,3 +81,18 @@ def update_semester_route():
         db.close()
         cursor.close()
     return jsonify({'message': 'Semester updated successfully'}), 200
+
+# DELETE functions
+@semesters_bp.route('/semester', methods=['DELETE'])
+def delete_semester_route():
+    db = get_db_connection()
+    semester_id = request.args.get('semester_id')
+    try:
+        cursor = db.cursor(dictionary=True)
+        sql = "DELETE FROM semesters WHERE id = %s"
+        cursor.execute(sql, (semester_id,))
+        db.commit()
+    finally:
+        db.close()
+        cursor.close()
+    return jsonify({'message': 'Semester deleted successfully'}), 200

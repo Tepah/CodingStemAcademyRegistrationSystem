@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {Layout} from "@/app/layout";
 import {jwtDecode} from "jwt-decode";
-import { DataTable } from '@/app/tables/assignments/student/data-table';
-import { columns } from '@/app/tables/assignments/student/columns';
+import { DataTable } from '@/components/tables/assignments/student/data-table';
+import { columns } from '@/components/tables/assignments/student/columns';
 import { getAssignmentsForStudent } from '@/components/api';
 import { getAssignmentsForTeacher } from '@/components/api';
 

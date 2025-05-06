@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { columns } from "@/app/tables/students/columns";
-import { DataTable } from "@/app/tables/students/data-table";
+import { columns } from "@/components/tables/students/columns";
+import { DataTable } from "@/components/tables/students/data-table";
 
 export default function ClassDetails() {
   const router = useRouter();
@@ -126,10 +126,10 @@ export default function ClassDetails() {
   return (
     <Layout>
       {loading ? (
-          <div className="flex items-center justify-center h-screen">loading</div>
+          <div className="flex items-center justify-center mx-auto h-screen">loading</div>
       )
       : (
-      <div className="p-8 flex flex-col space-y-8">
+      <div className="container flex flex-1 flex-col mx-auto space-y-8 p-8">
         <h1 className="text-3xl font-bold mb-6">Class Details</h1>
         <Card className="w-2/3">
           <CardHeader className="w-[400px]">
@@ -157,25 +157,21 @@ export default function ClassDetails() {
             </div>
           </CardContent>
         </Card>
-        <h1 className="text-3xl font-bold mb-6">Upcoming Assignments</h1>
+        {user.role === "Teacher" && (
         <Card className="w-2/3">
-          <CardHeader className="w-[400px]">
-            <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">Assignments</CardTitle>
+          <CardHeader>
+            <CardTitle>Students</CardTitle>
             <Separator />
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col space-y-2">
-                <Label>Assignment 1:</Label>
-                <p className="text-xl font-semibold tabular-nums">Assignment 1 details</p>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label>Assignment 2:</Label>
-                <p className="text-xl font-semibold tabular-nums">Assignment 2 details</p>
-              </div>
-            </div>
+            <DataTable columns={columns} data={students} />
           </CardContent>
+          <CardFooter>
+            <p className="text-sm text-muted-foreground">Total Students: {students.length}</p>
+          </CardFooter>
         </Card>
+        )}
+        
       </div>
       )}
     </Layout>

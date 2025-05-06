@@ -16,10 +16,10 @@ import {jwtDecode} from "jwt-decode";
 import {useEffect, useState} from "react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {useRouter} from "next/router";
-import {NavClasses} from "@/components/nav-classes";
+import {NavClasses} from "@/components/sidebars/nav-classes";
 import axios from "axios";
 import config from "@/config";
-import NavSecondary from "@/components/nav-secondary";
+import NavSecondary from "@/components/sidebars/nav-secondary";
 
 
 export function AppSidebar({ ...props }) {

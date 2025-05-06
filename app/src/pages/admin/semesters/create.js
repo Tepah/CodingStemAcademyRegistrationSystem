@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {SemesterForm} from '@/app/forms/semester/form';
+import {SemesterForm} from '@/components/forms/semester/form';
 import { Layout } from '@/app/layout';
 
 export default function CreateSemester() {

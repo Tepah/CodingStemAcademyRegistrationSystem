@@ -3,8 +3,8 @@ import { Layout } from "@/app/layout";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from "next/router";
 import { getClassesBySemester, getSemester }  from "@/components/api";
-import { DataTable } from "@/app/tables/classes/data-table";
-import { columns } from "@/app/tables/classes/columns";
+import { DataTable } from "@/components/tables/classes/data-table";
+import { columns } from "@/components/tables/classes/columns";
 
 export default function SemesterPage() {
     const router = useRouter();

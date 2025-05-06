@@ -4,8 +4,8 @@ import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/app/tables/classes/data-table";
-import {columns} from "@/app/tables/classes/columns";
+import {DataTable} from "@/components/tables/classes/data-table";
+import {columns} from "@/components/tables/classes/columns";
 import {Label} from "@/components/ui/label";
 
 export default function Classes() {
@@ -131,7 +131,7 @@ export default function Classes() {
     
     return (
         <Layout>
-            <div className="container mx-auto p-12">
+            <div className="container flex flex-row flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">

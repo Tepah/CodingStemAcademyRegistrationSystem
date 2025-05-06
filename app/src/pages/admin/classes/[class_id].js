@@ -4,8 +4,8 @@ import axios from "axios";
 import { Layout } from "@/app/layout";
 import config from "@/config";
 import { jwtDecode } from "jwt-decode";
-import { 
-  Card, 
+import {
+  Card,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { columns } from "@/app/tables/students/columns";
-import { DataTable } from "@/app/tables/students/data-table";
+import { columns } from "@/components/tables/students/columns";
+import { DataTable } from "@/components/tables/students/data-table";
 
 export default function ClassDetails() {
   const router = useRouter();
@@ -71,7 +71,7 @@ export default function ClassDetails() {
           params: { class_id: classId },
         })
         console.log("Fetched students:", response.data.students);
-        
+
         const finalStudents = response.data.students.map((student) => ({
           ...student,
           class_id: classId,
@@ -82,7 +82,7 @@ export default function ClassDetails() {
         console.error("Error fetching students:", err);
         return null;
       }
-    } 
+    }
 
     if (class_id) {
       const fetchClassDetails = async () => {
@@ -98,7 +98,7 @@ export default function ClassDetails() {
                   semester_name: semester ? semester.name : "N/A",
                 });
               });
-          });
+            });
         } catch (err) {
           console.error("Error fetching class details:", err);
           setError("Failed to load class details.");
@@ -121,49 +121,60 @@ export default function ClassDetails() {
       setLoading(false);
     }
   }, [students, classDetails])
-  
+
 
   return (
     <Layout>
       {loading ? (
-          <div className="flex items-center justify-center h-screen">loading</div>
+        <div className="flex items-center justify-center h-screen">loading</div>
       )
-      : user.role !== "Admin" && user.role !== "Teacher" ? (
-        <div className="flex items-center justify-center h-screen">
-          <h1 className="text-3xl font-bold">Not authorized to view this page</h1>
-        </div>
-      ) : (
-      <div className="container mx-auto p-8 flex flex-col space-y-4">
-        <h1 className="text-3xl font-bold mb-6">Class Details</h1>
-        <Card className="w-full">
-          <CardHeader className="w-[400px]">
-            <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">{classDetails.class_name}</CardTitle>
-            <Separator />
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col space-y-2">
-                <Label>Subject:</Label>
-                <p className="text-xl font-semibold tabular-nums">{classDetails.subject}</p>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label>Time:</Label>
-                <p className="text-xl font-semibold tabular-nums">{classDetails.day} from {classDetails.start_time} to {classDetails.end_time}</p>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label>Teacher:</Label>
-                <p className="text-xl font-semibold tabular-nums">{classDetails.teacher_name}</p>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label>Semester:</Label>
-                <p className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">{classDetails.semester_name}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <DataTable columns={columns} data={students} />
-      </div>
-      )}
+        : user.role !== "Admin" && user.role !== "Teacher" ? (
+          <div className="flex items-center justify-center h-screen">
+            <h1 className="text-3xl font-bold">Not authorized to view this page</h1>
+          </div>
+        ) : (
+          <div className="container flex flex-1 flex-col mx-auto space-y-8 p-8">
+            <h1 className="text-3xl font-bold mb-6">Class Details</h1>
+            <Card className="w-2/3">
+              <CardHeader className="w-[400px]">
+                <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">{classDetails.class_name}</CardTitle>
+                <Separator />
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-2">
+                    <Label>Subject:</Label>
+                    <p className="text-xl font-semibold tabular-nums">{classDetails.subject}</p>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <Label>Time:</Label>
+                    <p className="text-xl font-semibold tabular-nums">{classDetails.day} from {classDetails.start_time} to {classDetails.end_time}</p>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <Label>Teacher:</Label>
+                    <p className="text-xl font-semibold tabular-nums">{classDetails.teacher_name}</p>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <Label>Semester:</Label>
+                    <p className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">{classDetails.semester_name}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="w-2/3">
+              <CardHeader>
+                <CardTitle>Students</CardTitle>
+                <Separator />
+              </CardHeader>
+              <CardContent>
+                <DataTable columns={columns} data={students} />
+              </CardContent>
+              <CardFooter>
+                <p className="text-sm text-muted-foreground">Total Students: {students.length}</p>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
     </Layout>
   );
 }

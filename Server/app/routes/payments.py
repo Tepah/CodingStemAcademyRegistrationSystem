@@ -17,6 +17,20 @@ def get_payments():
         cursor.close()
     return jsonify({'message': 'Payments retrieved', 'payments': payments})
 
+@payments_bp.route('/payments/student', methods=['GET'])
+def get_student_payments():
+    db = get_db_connection()
+    student_id = request.args.get('student_id')
+    try:
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM payments WHERE student_id = %s ORDER BY payment_date DESC"
+        cursor.execute(sql, (student_id,))
+        payments = cursor.fetchall()
+    finally:
+        db.close()
+        cursor.close()
+    return jsonify({'message': 'Payments retrieved', 'payments': payments})
+
 # POST functions
 @payments_bp.route('/payment', methods=['POST'])
 def create_payment():

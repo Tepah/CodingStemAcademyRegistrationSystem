@@ -92,7 +92,7 @@ export default function Classes() {
                                 <Separator />
                             </div>
                         </div>
-                        <div className="grid gap-4 grid-cols-1 md:grid-cos-2 lg:grid-cols-3 px-8">
+                        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-8">
                             {semester.map((classData) => (
                                 <ClassCard classData={classData} />
                             ))}

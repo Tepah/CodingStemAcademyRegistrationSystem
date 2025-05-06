@@ -15,17 +15,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import config from "@/config";
 
-const StudentNamePopover = ({ onSelectStudent }) => {
-    const [students, setStudents] = useState([]);
+const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
+    const [students, setStudents] = useState(studentsList);
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
+        console.log(studentsList);
         try {
             const fetchStudents = async () => {
                 const response = await axios.get(`${config.backendUrl}/students`);
                 setStudents(response.data['students']);
             };
-            fetchStudents();
+            if (studentsList === null) {
+                fetchStudents();
+            }
         } catch (error) {
             console.error("Error fetching students:", error);
         }
@@ -42,9 +45,9 @@ const StudentNamePopover = ({ onSelectStudent }) => {
     );
 
     return (
-        <Popover>
+        <Popover modal={true}>
             <PopoverTrigger asChild>
-                <Button variant="outline">Select Student by Name</Button>
+                <Button variant="default">Select Student by Name</Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
                 <div className="grid gap-4">

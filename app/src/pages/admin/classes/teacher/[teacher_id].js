@@ -4,8 +4,8 @@ import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/app/tables/classes/teacher/data-table";
-import {columns} from "@/app/tables/classes/teacher/columns";
+import {DataTable} from "@/components/tables/classes/teacher/data-table";
+import {columns} from "@/components/tables/classes/teacher/columns";
 import {Label} from "@/components/ui/label";
 
 export default function teacherClasses() {

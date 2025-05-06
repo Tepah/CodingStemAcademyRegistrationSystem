@@ -3,10 +3,16 @@ import axios from 'axios';
 import config from '../config';
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
+import {getCurrentSemester} from "@/components/api";
+import {DataTable} from "@/components/tables/classes/registration/data-table";
+import {columns} from "@/components/tables/classes/registration/columns";
+import {Button} from "@/components/ui/button";
 
 export default function RegisterClasses() {
   const [classes, setClasses] = useState([]);
-  const [selectedClasses, setSelectedClasses] = useState([]);
+  const [currentClasses, setCurrentClasses] = useState([]);
+  const [user, setUser] = useState(null);
+  const [semester, setSemester] = useState(null);
 
   const router = useRouter();
 
@@ -21,67 +27,62 @@ export default function RegisterClasses() {
       alert("You are not authorized to access this page");
       return;
     }
-
-    axios.get(`${config.backendUrl}/classes`).then(response => {
-      setClasses(response.data['classes']);
-    }).catch(error => {
-      console.log(error);
-    });
+    setUser(user['sub']);
   }, []);
 
-  const handleClick = () => {
-    const token = localStorage.getItem('token');
-    const user = jwtDecode(token);
-    const student_id = user['sub']['id'];
-    console.log("Student ID: " + student_id);
-    console.log("Selected Classes: " + selectedClasses);
-
-    console.log("Registering for classes: " + selectedClasses + " for student: " + student_id)
-    axios.post(`${config.backendUrl}/add_multiple_classes_to_student`, {
-      user_id: student_id,
-      classes: selectedClasses,
-    }).then(response => {
-      console.log("Successfully registered for class: " + response.data['message']);
-      if (response.data['message'] === 'Student already registered for this class') {
-        alert("You are already registered for this class");
-      } else {
-        console.log("Successfully registered for class: " + response.data['message']);
-        router.push('/dashboard').then(() => console.log("Redirecting to dashboard"));
-      }
+  useEffect(() => {
+    getCurrentSemester().then(semester => {
+      setSemester(semester);
     }).catch(error => {
       console.log(error);
     });
-  }
+  }, [user]);
 
-  const handleCheckboxChange = (classId) => {
-    setSelectedClasses(prevSelectedClasses => {
-      if (prevSelectedClasses.includes(classId)) {
-        return prevSelectedClasses.filter(id => id !== classId);
-      } else {
-        return [...prevSelectedClasses, classId];
-      }
-    });
-  };
+  useEffect(() => {
+    if (!semester) return;
+    if (currentClasses.length > 0) return;
+    axios.get(`${config.backendUrl}/student-classes-by-semester`, {params: {semester_id: semester.id, student_id: user.id}})
+      .then(response => {
+        const classes = response.data['classes'];
+        setCurrentClasses(classes);
+      })
+      .catch(error => {
+        console.error("Error fetching current classes:", error);
+      });
+  }, [semester]);
+
+  useEffect(() => {
+    if (!semester) return;
+    if (classes.length > 0) return;
+    axios.get(`${config.backendUrl}/classes/semester`, {params: {semester_id: semester.id}})
+      .then(response => {
+        const classes = response.data['classes'];
+        Promise.all(
+          classes.map(async (classData) => {
+            try {
+              const teacher = await axios.get(`${config.backendUrl}/user`, {params: {id: classData.teacher_id}});
+              return { ...classData, teacher: teacher.data }; 
+            } catch (error) {
+              console.error("Error fetching teacher:", error);
+              return classData; 
+            }
+          })
+        ).then((updatedClasses) => {
+          const nonEnrolledClasses = updatedClasses.filter(classData => {
+            return !currentClasses.some(currentClass => currentClass.id === classData.id);
+          });
+          setClasses(nonEnrolledClasses);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching classes:", error);
+      });
+  }, [currentClasses]);
 
   return (
-    <div>
+    <div className="flex flex-col container mx-auto p-8 items-center">
       <h1>Available Classes</h1>
-      <ul>
-        {classes.map((classItem) => (
-          <li key={classItem.id}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedClasses.includes(classItem.id)}
-                onChange={() => handleCheckboxChange(classItem.id)}
-              />
-              {classItem.class_name}
-            </label>
-          </li>
-        ))}
-      </ul>
-      <br />
-      <button onClick={() => handleClick()}>Register Classes</button>
+      <DataTable data={classes} columns={columns} />
     </div>
   );
 }

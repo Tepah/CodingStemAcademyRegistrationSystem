@@ -1,7 +1,10 @@
+from datetime import timedelta, time
 from db_connection import get_db_connection
 from flask import Flask, jsonify, request, Blueprint
 
 assignments_bp = Blueprint('assignments', __name__)
+
+
 
 # GET functions
 @assignments_bp.route('/assignments', methods=['GET'])
@@ -184,7 +187,7 @@ def get_assignments_by_teacher():
             for assignment in assignments_for_class:
                 assignment["teacher_name"] = teacherInfo['first_name']
                 assignment["teacher_gender"] = teacherInfo['gender']
-                assignment["class_id"] = id5
+                assignment["class_id"] = id
                 assignment["class_name"] = classInfo['class_name']
                 assignments.append(assignment)
     finally:
@@ -192,6 +195,91 @@ def get_assignments_by_teacher():
         db.close()
     sorted_assignments = sorted(assignments, key=lambda x: x['due_date'])
     return jsonify({"message": "Assignments retrieved", "assignments": sorted_assignments})
+
+@assignments_bp.route('/events/student', methods=['GET'])
+def get_events_by_student():
+    student_id = request.args.get('student_id')
+    try:
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM class_students WHERE user_id = %s"
+        cursor.execute(sql, (student_id,))
+        class_ids = cursor.fetchall()
+        if not class_ids:
+            return jsonify({"message": "No classes found for this student", "assignments": []})
+        assignments = []
+        classes = []
+        for classData in class_ids:
+            id = classData['class_id']
+            sql = "SELECT * FROM assignments WHERE class_id = %s ORDER BY due_date ASC"
+            cursor.execute(sql, (id,))
+            assignments_for_class = cursor.fetchall()
+            sql = "SELECT * FROM classes WHERE id = %s"
+            cursor.execute(sql, (id, ))
+            classInfo = cursor.fetchone()
+            if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
+                classInfo['start_time'] = format_time(classInfo['start_time'])
+            if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
+                classInfo['end_time'] = format_time(classInfo['end_time'])
+
+            classes.append(classInfo)
+            sql = "SELECT * FROM users WHERE id = %s"
+            cursor.execute(sql, (classInfo['teacher_id'], ))
+            teacherInfo = cursor.fetchone()
+            for assignment in assignments_for_class:
+                assignment["teacher_name"] = teacherInfo['first_name']
+                assignment["teacher_gender"] = teacherInfo["gender"]
+                assignment["class_id"] = id
+                assignment["class_name"] = classInfo['class_name']
+                assignments.append(assignment)
+    finally:
+        cursor.close()
+        db.close()
+    sorted_assignments = sorted(assignments, key=lambda x: x['due_date'])
+    return jsonify({"message": "Assignments retrieved", "assignments": sorted_assignments, "classes": classes})
+
+@assignments_bp.route('/events/teacher', methods=['GET'])
+def get_events_by_teacher():
+    teacher_id = request.args.get('teacher_id')
+    try:
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM classes WHERE teacher_id = %s"
+        cursor.execute(sql, (teacher_id,))
+        class_ids = cursor.fetchall()
+        if not class_ids:
+            return jsonify({"message": "No classes found for this teacher", "assignments": []})
+        assignments = []
+        classes = []
+        for classData in class_ids:
+            id = classData['id']
+            sql = "SELECT * FROM assignments WHERE class_id = %s ORDER BY due_date ASC"
+            cursor.execute(sql, (id,))
+            assignments_for_class = cursor.fetchall()
+            sql = "SELECT * FROM classes WHERE id = %s"
+            cursor.execute(sql, (id, ))
+            classInfo = cursor.fetchone()
+            if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
+                classInfo['start_time'] = format_time(classInfo['start_time'])
+            if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
+                classInfo['end_time'] = format_time(classInfo['end_time'])
+
+            classes.append(classInfo)
+            sql = "SELECT * FROM users WHERE id = %s"
+            cursor.execute(sql, (teacher_id, ))
+            teacherInfo = cursor.fetchone()
+            for assignment in assignments_for_class:
+                assignment["teacher_name"] = teacherInfo['first_name']
+                assignment["teacher_gender"] = teacherInfo['gender']
+                assignment["class_id"] = id
+                assignment["class_name"] = classInfo['class_name']
+                assignments.append(assignment)
+    finally:
+        cursor.close()
+        db.close()
+    sorted_assignments = sorted(assignments, key=lambda x: x['due_date'])
+    return jsonify({"message": "Assignments retrieved", "assignments": sorted_assignments, "classes": classes})
+
 
 # POST functions
 @assignments_bp.route('/assignments', methods=['POST'])
@@ -280,3 +368,12 @@ def delete_assignment(id):
         my_db.close()
     return True
 
+# Helper function to format time
+def format_time(time_obj):
+    if isinstance(time_obj, timedelta):
+        # Convert timedelta to seconds and then to a time object
+        total_seconds = time_obj.total_seconds()
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        time_obj = time(hours, minutes)
+    return time_obj.strftime("%I:%M %p")

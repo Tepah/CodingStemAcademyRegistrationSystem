@@ -31,6 +31,36 @@ def get_classes():
         my_db.close()
     return jsonify({'message': 'All classes retrieved', 'classes': res})
 
+@classes_bp.route('/classes-teacher/count', methods=['GET'])
+def get_classes_count_by_teacher():
+    my_db = get_db_connection()
+    try:
+        cursor = my_db.cursor(dictionary=True)
+        teacher_id = request.args.get('teacher_id')
+        sql = "SELECT count(*) as count FROM classes WHERE teacher_id = %s"
+        val = (teacher_id, )
+        cursor.execute(sql, val)
+        res = cursor.fetchone()
+    finally:
+        cursor.close()
+        my_db.close()
+    return jsonify({'message': 'Classes count retrieved', 'count': res['count']})
+
+@classes_bp.route('/classes-student/count', methods=['GET'])
+def get_classes_count_by_student():
+    my_db = get_db_connection()
+    try:
+        cursor = my_db.cursor(dictionary=True)
+        student_id = request.args.get('student_id')
+        sql = "SELECT count(*) as count FROM class_students WHERE user_id = %s"
+        val = (student_id, )
+        cursor.execute(sql, val)
+        res = cursor.fetchone()
+    finally:
+        cursor.close()
+        my_db.close()
+    return jsonify({'message': 'Classes count retrieved', 'count': res['count']})
+
 @classes_bp.route('/classes/semester', methods=['GET'])
 def get_classes_by_semester():
     my_db = get_db_connection()

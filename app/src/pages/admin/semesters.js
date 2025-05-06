@@ -3,9 +3,9 @@ import {Layout} from "@/app/layout";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import {Label} from "@/components/ui/label";
-import {DataTable} from "@/app/tables/semesters/data-table";
+import {DataTable} from "@/components/tables/semesters/data-table";
 import { getSemesters } from '@/components/api';
-import { columns } from "@/app/tables/semesters/columns";
+import { columns } from "@/components/tables/semesters/columns";
 
 
 export default function Semesters() {

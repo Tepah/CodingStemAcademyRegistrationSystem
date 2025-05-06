@@ -4,9 +4,10 @@ import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/app/tables/users/data-table";
-import {columns} from "@/app/tables/users/columns";
+import {DataTable} from "@/components/tables/users/data-table";
+import {columns} from "@/components/tables/users/columns";
 import {Label} from "@/components/ui/label";
+import { TeacherLink } from '@/components/dialogs/TeacherLink';
 
 
 export default function Users() {
@@ -58,7 +59,9 @@ export default function Users() {
           <h1 className="text-3xl font-bold">Loading...</h1>
         </div>
       ) : user['role'] === 'Admin' ? (
-        <DataTable columns={columns} data={users} />
+        <DataTable columns={columns} data={users}>
+          <TeacherLink />
+        </DataTable>
       ) : (
         <div className="text-center">
           <h1 className="text-3xl font-bold">You are not authorized to view this page</h1>

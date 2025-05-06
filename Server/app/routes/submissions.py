@@ -134,7 +134,7 @@ def get_submissions_by_class():
     return jsonify({"message": "Retrieved All Submissions", "submissions": submissions})
 
 
-@submissions_bp.route('/submissions', methods=['POST'])
+@submissions_bp.route('/submission', methods=['POST'])
 def create_submission():
     data = request.get_json()
     assignment_id = data['assignment_id']

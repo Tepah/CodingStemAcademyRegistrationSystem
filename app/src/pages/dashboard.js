@@ -1,11 +1,9 @@
-import Link from "next/link";
 import {useEffect, useState} from "react";
 import { jwtDecode } from 'jwt-decode'
-import StudentDash from "@/components/StudentDash";
-import TeacherDash from "@/components/TeacherDash";
-import AdminDash from "@/components/AdminDash";
+import StudentDash from "@/components/dashboard/StudentDash";
+import TeacherDash from "@/components/dashboard/TeacherDash";
+import AdminDash from "@/components/dashboard/AdminDash";
 import {Layout, LayoutWithCalendar} from "@/app/layout";
-import { SideCalendar } from "@/components/sidebars/DashboardSidebar";
 
 export default function Dashboard() {
   const [role, setRole] = useState('');
@@ -18,7 +16,7 @@ export default function Dashboard() {
         console.log("Token found in local storage");
         window.location.href = "/";
       } else {
-        const user = await jwtDecode(token);
+        const user = jwtDecode(token);
         console.log(user['sub']);
         setRole(user['sub']['role']);
       }

@@ -2,7 +2,7 @@ import { Layout } from "@/app/layout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { AssignmentForm } from "@/app/forms/assignment/form";
+import { AssignmentForm } from "@/components/forms/assignment/form";
 
 export default function CreateAssignment() {
   const router = useRouter();
