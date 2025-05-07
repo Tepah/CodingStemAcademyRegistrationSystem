@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Layout } from "@/app/layout";
 import { jwtDecode } from "jwt-decode";
+import SingleGradeTable from "@/components/tables/grades/singleGradeTable";
 
 export default function StudentClassDetails() {
     const [user, setUser] = useState({});
@@ -26,12 +27,18 @@ export default function StudentClassDetails() {
         }
     }, []);
 
+    if (user.role !== "Teacher") {
+        <Layout>
+            <div className="container mx-auto flex flex-col p-4 gap-4">
+                <h1 className="text-2xl font-bold">Unauthorized</h1>
+                <p>You do not have permission to view this page.</p>
+            </div>
+        </Layout>
+    }
 
     return (
         <Layout>
-            <div>
-
-            </div>
+            <SingleGradeTable class_id={class_id} student_id={student_id} setLoading={setLoading} />
         </Layout>
     )
 }
