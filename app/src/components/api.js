@@ -16,6 +16,40 @@ export const getUser = async (id) => {
     }
 }
 
+export const fetchAssignments = async (class_id, student_id) => {
+    try {
+        const classRes = await axios.get(`${config.backendUrl}/class/${class_id}`);
+        console.log(classRes.data);
+        const classData = classRes.data['class'];
+        const assignmentRes = await axios.get(`${config.backendUrl}/assignments`, {
+            params: {
+                class_id: class_id,
+            }
+        });
+        console.log(assignmentRes.data);
+        const assignments = assignmentRes.data['assignments'];
+        const updatedAssignments = await Promise.all(assignments.map(async (assignment) => {
+            const scoreRes = await axios.get(`${config.backendUrl}/scores/${assignment.id}/student/${student_id}`)
+            console.log(scoreRes);
+            let score = scoreRes.data['score'];
+            if (!score) {
+                const dueDate = new Date(assignment.due_date);
+                const today = new Date();
+                if (dueDate < today) {
+                    score = { grade: 0, total_points: assignment.total_points };
+                }
+            }
+            return { ...assignment, score: score };
+        }));
+        console.log(updatedAssignments);
+        const totalPoints = updatedAssignments.reduce((acc, assignment) => acc + (assignment.total_points || 0), 0);
+        const totalScore = updatedAssignments.reduce((acc, assignment) => acc + (assignment.score && assignment.score.grade ? assignment.score.grade : 0), 0);
+        return {class: classData, assignments: updatedAssignments, totalPoints: totalPoints, totalScore: totalScore};
+    } catch (error) {
+        console.error('Error fetching classes:', error);
+    }
+}
+
 export const getStudentByName = async (first_name, last_name) => {
     try {
         const res = await axios.get(`${config.backendUrl}/users/by-name`, {

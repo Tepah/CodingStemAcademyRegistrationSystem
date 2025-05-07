@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { columns } from "@/components/tables/students/columns";
+import { columns } from "@/components/tables/students/columns-teach-view";
 import { DataTable } from "@/components/tables/students/data-table";
 
 export default function ClassDetails() {
