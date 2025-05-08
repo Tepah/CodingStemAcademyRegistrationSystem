@@ -39,30 +39,29 @@ export default function SingleGradeTable({ student_id, class_id, personal=false 
 
     useEffect(() => {
         if (!class_id) { return; }
-        if (personal) {
+        
+        Promise.all([
+            fetchAssignments(class_id, student_id)
+            .then((res) => {
+                setAssignments(res.assignments);
+                setClassName(res.class.class_name);
+                setOverallTotal(res.totalPoints);
+                setOverallScore(res.totalScore);
+                setOverallPercent(res.totalScore / res.totalPoints * 100);
+                setGrade(getGrade(res.totalScore / res.totalPoints * 100));
+            })
+            .catch((err) => {
+                console.error(err);
+                setLoading(false);
+            }),
             axios.get(`${config.backendUrl}/user`, { params: { id: student_id } })
             .then((res) => {
                 setStudent(res.data.user);
             })
-        }
-        
-        fetchAssignments(class_id, student_id)
-        .then((res) => {
-            setAssignments(res.assignments);
-            setClassName(res.class.class_name);
-            setOverallTotal(res.totalPoints);
-            setOverallScore(res.totalScore);
-            setOverallPercent(res.totalScore / res.totalPoints * 100);
-            setGrade(getGrade(res.totalScore / res.totalPoints * 100));
-        })
-        .catch((err) => {
-            console.error(err);
-            setLoading(false);
-        })
+        ])
         .finally(() => {
             setLoading(false);
-        }
-        );
+        });
     }, [class_id]);
 
     if (loading) {
@@ -79,11 +78,11 @@ export default function SingleGradeTable({ student_id, class_id, personal=false 
 
     return (
         <div className="w-[900px] mx-auto flex flex-col p-4 gap-4">
-            <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)}{className} Grades</h1>
+            <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)} {className} Grades</h1>
             <Card>
                 <Table>
                     <TableCaption>
-                        {personal ? "Your " : `${student.first_name} ${student.last_name}`}grades for {className}
+                        {personal ? "Your " : `${student.first_name} ${student.last_name} `}grades for {className}
                     </TableCaption>
                     <TableHeader>
                         <TableRow>

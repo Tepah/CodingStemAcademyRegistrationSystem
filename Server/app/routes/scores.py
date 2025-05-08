@@ -16,6 +16,30 @@ def get_scores():
         connection.close()
     return jsonify({'message': 'Scores retrieved successfully', 'scores': scores}), 200
 
+@scores_bp.route('/total', methods=['GET'])
+def get_total_grade():
+    student_id = request.args.get('student_id')
+    class_id = request.args.get('class_id')
+    db = get_db_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT SUM(total_points) AS total_points FROM assignments WHERE class_id = %s", (class_id,))
+        total_points = cursor.fetchone()
+        if not total_points['total_points']:
+            return jsonify({'message': 'No assignments found for this class', 'total': 0})
+        cursor.execute("SELECT SUM(grade) AS total_grade FROM scores WHERE student_id = %s AND assignment_id IN (SELECT id FROM assignments WHERE class_id = %s)", (student_id, class_id))
+        total_grade = cursor.fetchone()
+        if not total_grade['total_grade']:
+            return jsonify({'message': 'No scores found for this student', 'total': 0})
+        if total_points and total_grade:
+            total_grade = (total_grade['total_grade'] / total_points['total_points']) * 100
+        else:
+            total_grade = 0
+    finally:
+        cursor.close()
+        db.close()
+    return jsonify({'message': 'Total grade retrieved successfully', 'total': total_grade if total_grade else 0}), 200
+
 
 @scores_bp.route('/scores/<int:assignment_id>/student/<int:student_id>', methods=['GET'])
 def get_scores_by_student(assignment_id, student_id):
