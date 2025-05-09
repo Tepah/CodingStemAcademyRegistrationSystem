@@ -44,34 +44,34 @@ const formSchema = z.object({
     message: "Last name is required",
   }),
   birth_date: z
-  .object({
-    month: z
-      .string()
-      .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
-    day: z
-      .string()
-      .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
-    year: z
-      .string()
-      .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
-      .refine((year) => parseInt(year) >= 1900 && parseInt(year) <= new Date().getFullYear(), {
-        message: "Year must be between 1900 and the current year",
-      }),
-  })
-  .refine((date) => {
-    const fullDate = `${date.year}-${date.month}-${date.day}`;
-    return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
-  }, { message: "Invalid date" }),
+    .object({
+      month: z
+        .string()
+        .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
+      day: z
+        .string()
+        .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
+      year: z
+        .string()
+        .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
+        .refine((year) => parseInt(year) >= 1900 && parseInt(year) <= new Date().getFullYear(), {
+          message: "Year must be between 1900 and the current year",
+        }),
+    })
+    .refine((date) => {
+      const fullDate = `${date.year}-${date.month}-${date.day}`;
+      return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
+    }, { message: "Invalid date" }),
   email: z.string().email({
     message: "Please enter a valid email address",
   }),
   password: z.string()
-  .min(6, {
-    message: "Password must be at least 6 characters long",
-  })
-  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/, {
-    message: "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-  }),
+    .min(6, {
+      message: "Password must be at least 6 characters long",
+    })
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/, {
+      message: "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    }),
   confirm_password: z.string().min(6, {
     message: "Password must be at least 6 characters long",
   }),
@@ -98,7 +98,7 @@ const formSchema = z.object({
   grade_level: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]),
 })
 
-export function DatePicker({field}) {
+export function DatePicker({ field }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -160,8 +160,11 @@ export default function Register() {
       alert("Passwords do not match");
       return;
     }
-  
-    axios.post(`${config.backendUrl}/register`, data).then(response => {
+
+    values.birth_date = format(new Date(`${values.birth_date.year}-${values.birth_date.month}-${values.birth_date.day}`), 'yyyy-MM-dd');
+    delete values.confirm_password;
+
+    axios.post(`${config.backendUrl}/register`, values).then(response => {
       console.log("Successfully registered: " + response.data['message']);
       if (response.data['access_token']) {
         localStorage.setItem('token', response.data['access_token']);
@@ -180,252 +183,252 @@ export default function Register() {
       <h1>Register</h1>
       <Card className="p-8">
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSignUp)}>
-          <div className="grid space-y-8 grid-cols-1 md:grid-cols-2 gap-x-8">
-          <FormField
-            control={form.control}
-            name="first_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="First Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="last_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Last Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="birth_date"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
-                <FormLabel>Date of Birth</FormLabel>
-                <FormControl>
-                  <div className="flex space-x-2">
-                {/* Month Input */}
-                <Input
-                  type="text"
-                  placeholder="MM"
-                  maxLength={2}
-                  className="w-12 text-center"
-                  value={field.value?.month || ""}
-                  onChange={(e) => {
-                    const month = e.target.value;
-                    field.onChange({ ...field.value, month });
-                  }}
-                />
-                {/* Day Input */}
-                <Input
-                  type="text"
-                  placeholder="DD"
-                  maxLength={2}
-                  className="w-12 text-center"
-                  value={field.value?.day || ""}
-                  onChange={(e) => {
-                    const day = e.target.value;
-                    field.onChange({ ...field.value, day });
-                  }}
-                />
-                {/* Year Input */}
-                <Input
-                  type="text"
-                  placeholder="YYYY"
-                  maxLength={4}
-                  className="w-16 text-center"
-                  value={field.value?.year || ""}
-                  onChange={(e) => {
-                    const year = e.target.value;
-                    field.onChange({ ...field.value, year });
-                  }}
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
-                <FormLabel>Gender</FormLabel>
-                <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirm_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Confirm Password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="Phone" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="john@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="Address" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="guardian"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Guardian Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Guardian Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="guardian_phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Guardian Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="Guardian Phone" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="health_ins"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Health Insurance</FormLabel>
-                <FormControl>
-                  <Input placeholder="Health Insurance" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="health_ins_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Health Insurance Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="Health Insurance Number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="grade_level"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
-                <FormLabel>Grade Level</FormLabel>
-                <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Grade Level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {gradeLevels.map((level) => (
-                        <SelectItem key={level} value={level}>
-                          {level}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          </div>
-          <div className="flex flex-col items-center justify-between mt-4">
-          <Button type="submit">Submit</Button>
-          </div>
-        </form>
+          <form onSubmit={form.handleSubmit(handleSignUp)}>
+            <div className="grid space-y-8 grid-cols-1 md:grid-cols-2 gap-x-8">
+              <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="birth_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                      <div className="flex space-x-2">
+                        {/* Month Input */}
+                        <Input
+                          type="text"
+                          placeholder="MM"
+                          maxLength={2}
+                          className="w-12 text-center"
+                          value={field.value?.month || ""}
+                          onChange={(e) => {
+                            const month = e.target.value;
+                            field.onChange({ ...field.value, month });
+                          }}
+                        />
+                        {/* Day Input */}
+                        <Input
+                          type="text"
+                          placeholder="DD"
+                          maxLength={2}
+                          className="w-12 text-center"
+                          value={field.value?.day || ""}
+                          onChange={(e) => {
+                            const day = e.target.value;
+                            field.onChange({ ...field.value, day });
+                          }}
+                        />
+                        {/* Year Input */}
+                        <Input
+                          type="text"
+                          placeholder="YYYY"
+                          maxLength={4}
+                          className="w-16 text-center"
+                          value={field.value?.year || ""}
+                          onChange={(e) => {
+                            const year = e.target.value;
+                            field.onChange({ ...field.value, year });
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirm_password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Confirm Password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Phone" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="john@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="guardian"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Guardian Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Guardian Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="guardian_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Guardian Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Guardian Phone" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="health_ins"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Health Insurance</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Health Insurance" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="health_ins_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Health Insurance Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Health Insurance Number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="grade_level"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <FormLabel>Grade Level</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Grade Level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {gradeLevels.map((level) => (
+                            <SelectItem key={level} value={level}>
+                              {level}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex flex-col items-center justify-between mt-4">
+              <Button type="submit">Submit</Button>
+            </div>
+          </form>
         </Form>
       </Card>
       {/* <form onSubmit={handleSignUp}>

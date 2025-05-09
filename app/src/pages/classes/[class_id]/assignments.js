@@ -79,7 +79,7 @@ export default function Assignments() {
 
   return (
     <Layout title={"Assignments"}>
-      <div className="container w-[700px] flex flex-1 flex-col gap-4 p-8">
+      <div className="container max-w-[900px] mx-auto flex flex-1 flex-col gap-4 p-8">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Assignments</h1>
           {user && user.role === "Teacher" && (

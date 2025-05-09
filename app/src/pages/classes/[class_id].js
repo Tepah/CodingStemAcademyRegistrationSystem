@@ -129,9 +129,9 @@ export default function ClassDetails() {
           <div className="flex items-center justify-center mx-auto h-screen">loading</div>
       )
       : (
-      <div className="container flex flex-1 flex-col mx-auto space-y-8 p-8">
+      <div className="max-w-[900px] container flex flex-1 flex-col mx-auto space-y-8 p-8">
         <h1 className="text-3xl font-bold mb-6">Class Details</h1>
-        <Card className="w-2/3">
+        <Card className="">
           <CardHeader className="w-[400px]">
             <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">{classDetails.class_name}</CardTitle>
             <Separator />
@@ -158,7 +158,7 @@ export default function ClassDetails() {
           </CardContent>
         </Card>
         {user.role === "Teacher" && (
-        <Card className="w-2/3">
+        <Card className="">
           <CardHeader>
             <CardTitle>Students</CardTitle>
             <Separator />

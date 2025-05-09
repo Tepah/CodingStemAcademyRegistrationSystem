@@ -119,7 +119,7 @@ const ClassPage = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="w-[800px] container p-8 flex flex-col mx-auto space-y-4">
+        <div className="max-w-[900px] container p-8 flex-1 flex flex-col mx-auto space-y-4">
           <Skeleton className="h-8 w-1/2" />
           <Skeleton className="h-[400px] w-full" />
         </div>
@@ -129,7 +129,7 @@ const ClassPage = () => {
 
   return (
     <Layout>
-      <div className="w-[800px] container p-8 flex flex-col mx-auto space-y-4">
+      <div className="max-w-[900px] container p-8 flex-1 flex flex-col mx-auto space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold mb-4">Assignment Details</h1>
           {user && user.role === "Student" && (

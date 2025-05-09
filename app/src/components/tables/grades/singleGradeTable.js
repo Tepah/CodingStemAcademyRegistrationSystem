@@ -77,7 +77,7 @@ export default function SingleGradeTable({ student_id, class_id, personal=false 
     }
 
     return (
-        <div className="w-[900px] mx-auto flex flex-col p-4 gap-4">
+        <div className="container max-w-[900px] mx-auto flex flex-col p-4 gap-4">
             <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)} {className} Grades</h1>
             <Card>
                 <Table>
