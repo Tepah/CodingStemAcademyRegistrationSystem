@@ -21,6 +21,7 @@ export const fetchAssignments = async (class_id, student_id) => {
         const classRes = await axios.get(`${config.backendUrl}/class/${class_id}`);
         console.log(classRes.data);
         const classData = classRes.data['class'];
+
         const assignmentRes = await axios.get(`${config.backendUrl}/assignments`, {
             params: {
                 class_id: class_id,
@@ -28,27 +29,45 @@ export const fetchAssignments = async (class_id, student_id) => {
         });
         console.log(assignmentRes.data);
         const assignments = assignmentRes.data['assignments'];
+
         const updatedAssignments = await Promise.all(assignments.map(async (assignment) => {
-            const scoreRes = await axios.get(`${config.backendUrl}/scores/${assignment.id}/student/${student_id}`)
+            const scoreRes = await axios.get(`${config.backendUrl}/scores/${assignment.id}/student/${student_id}`);
             console.log(scoreRes);
             let score = scoreRes.data['score'];
-            if (!score) {
-                const dueDate = new Date(assignment.due_date);
-                const today = new Date();
-                if (dueDate < today) {
-                    score = { grade: 0, total_points: assignment.total_points };
-                }
+
+            // If no score exists and the due date has passed, set grade to 0
+            const dueDate = new Date(assignment.due_date);
+            const today = new Date();
+            if (!score && dueDate < today) {
+                score = { grade: 0, total_points: assignment.total_points };
             }
+
             return { ...assignment, score: score };
         }));
+
         console.log(updatedAssignments);
-        const totalPoints = updatedAssignments.reduce((acc, assignment) => acc + (assignment.total_points || 0), 0);
-        const totalScore = updatedAssignments.reduce((acc, assignment) => acc + (assignment.score && assignment.score.grade ? assignment.score.grade : 0), 0);
-        return {class: classData, assignments: updatedAssignments, totalPoints: totalPoints, totalScore: totalScore};
+
+        // Filter assignments to include only those with due dates that have passed
+        const filteredAssignments = updatedAssignments.filter((assignment) => {
+            const dueDate = new Date(assignment.due_date);
+            const today = new Date();
+            return dueDate <= today; // Include only assignments with passed due dates
+        });
+
+        // Calculate total points and total score for assignments with passed due dates
+        const totalPoints = filteredAssignments.reduce((acc, assignment) => acc + (assignment.total_points || 0), 0);
+        const totalScore = filteredAssignments.reduce((acc, assignment) => acc + (assignment.score && assignment.score.grade ? assignment.score.grade : 0), 0);
+
+        return {
+            class: classData,
+            assignments: updatedAssignments, // Return all assignments, but calculations are based on filtered ones
+            totalPoints: totalPoints,
+            totalScore: totalScore,
+        };
     } catch (error) {
         console.error('Error fetching classes:', error);
     }
-}
+};
 
 export const getStudentByName = async (first_name, last_name) => {
     try {

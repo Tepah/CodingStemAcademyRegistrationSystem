@@ -14,7 +14,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from "@/components/ui/table"
+} from "@/components/ui/table"
 import { fetchAssignments } from '@/components/api';
 import { format } from 'date-fns';
 
@@ -27,7 +27,7 @@ const getGrade = (percent) => {
     return 'F';
 }
 
-export default function SingleGradeTable({ student_id, class_id, personal=false }) {
+export default function SingleGradeTable({ student_id, class_id, personal = false }) {
     const [assignments, setAssignments] = useState([]);
     const [student, setStudent] = useState(null);
     const [className, setClassName] = useState(null);
@@ -39,29 +39,29 @@ export default function SingleGradeTable({ student_id, class_id, personal=false 
 
     useEffect(() => {
         if (!class_id) { return; }
-        
+
         Promise.all([
             fetchAssignments(class_id, student_id)
-            .then((res) => {
-                setAssignments(res.assignments);
-                setClassName(res.class.class_name);
-                setOverallTotal(res.totalPoints);
-                setOverallScore(res.totalScore);
-                setOverallPercent(res.totalScore / res.totalPoints * 100);
-                setGrade(getGrade(res.totalScore / res.totalPoints * 100));
-            })
-            .catch((err) => {
-                console.error(err);
-                setLoading(false);
-            }),
+                .then((res) => {
+                    setAssignments(res.assignments);
+                    setClassName(res.class.class_name);
+                    setOverallTotal(res.totalPoints);
+                    setOverallScore(res.totalScore);
+                    setOverallPercent(res.totalScore / res.totalPoints * 100);
+                    setGrade(getGrade(res.totalScore / res.totalPoints * 100));
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setLoading(false);
+                }),
             axios.get(`${config.backendUrl}/user`, { params: { id: student_id } })
-            .then((res) => {
-                setStudent(res.data.user);
-            })
+                .then((res) => {
+                    setStudent(res.data.user);
+                })
         ])
-        .finally(() => {
-            setLoading(false);
-        });
+            .finally(() => {
+                setLoading(false);
+            });
     }, [class_id]);
 
     if (loading) {
@@ -98,13 +98,20 @@ export default function SingleGradeTable({ student_id, class_id, personal=false 
                                 <TableCell className="text-left">No assignments found</TableCell>
                             </TableRow>
                         </TableBody>
-                    ): (
+                    ) : (
                         <TableBody>
                             {assignments.map((assignment) => (
                                 <TableRow key={assignment.id}>
                                     <TableCell className="py-4 text-left">{assignment.title}</TableCell>
-                                    <TableCell className="py-4 text-left">{format(new Date(assignment.due_date), "MMM dd, yyyy")}</TableCell>
-                                    <TableCell className="text-left">{assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 0}</TableCell>
+                                    <TableCell className="py-4 text-left">
+                                        {new Date(assignment.due_date).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                            timeZone: "UTC", // Force UTC interpretation
+                                        })}
+                                    </TableCell>
+                                    <TableCell className="text-left">{assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 'N/A'}</TableCell>
                                     <TableCell className="text-left">{assignment.total_points}</TableCell>
                                 </TableRow>
                             ))}

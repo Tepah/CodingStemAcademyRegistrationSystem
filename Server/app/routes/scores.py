@@ -23,14 +23,35 @@ def get_total_grade():
     db = get_db_connection()
     try:
         cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT SUM(total_points) AS total_points FROM assignments WHERE class_id = %s", (class_id,))
+        
+        # Get the total points for assignments with due dates that have passed
+        cursor.execute("""
+            SELECT SUM(total_points) AS total_points 
+            FROM assignments 
+            WHERE class_id = %s AND due_date <= NOW()
+        """, (class_id,))
         total_points = cursor.fetchone()
+        
         if not total_points['total_points']:
-            return jsonify({'message': 'No assignments found for this class', 'total': 0})
-        cursor.execute("SELECT SUM(grade) AS total_grade FROM scores WHERE student_id = %s AND assignment_id IN (SELECT id FROM assignments WHERE class_id = %s)", (student_id, class_id))
+            return jsonify({'message': 'No assignments with passed due dates found for this class', 'total': 0})
+        
+        # Get the total grade for assignments with due dates that have passed
+        cursor.execute("""
+            SELECT SUM(grade) AS total_grade 
+            FROM scores 
+            WHERE student_id = %s 
+            AND assignment_id IN (
+                SELECT id 
+                FROM assignments 
+                WHERE class_id = %s AND due_date <= NOW()
+            )
+        """, (student_id, class_id))
         total_grade = cursor.fetchone()
+        
         if not total_grade['total_grade']:
-            return jsonify({'message': 'No scores found for this student', 'total': 0})
+            return jsonify({'message': 'No scores found for this student for assignments with passed due dates', 'total': 0})
+        
+        # Calculate the total grade percentage
         if total_points and total_grade:
             total_grade = (total_grade['total_grade'] / total_points['total_points']) * 100
         else:
@@ -38,8 +59,8 @@ def get_total_grade():
     finally:
         cursor.close()
         db.close()
+    
     return jsonify({'message': 'Total grade retrieved successfully', 'total': total_grade if total_grade else 0}), 200
-
 
 @scores_bp.route('/scores/<int:assignment_id>/student/<int:student_id>', methods=['GET'])
 def get_scores_by_student(assignment_id, student_id):

@@ -41,7 +41,7 @@ export default function CreateAssignment() {
 
   return (
     <Layout title="Create Assignment">
-      <div className="container mx-auto p-8">
+      <div className="max-w-[500px] container mx-auto p-8">
         <h1 className="text-2xl font-bold mb-4">Create Assignment</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <AssignmentForm class_id={class_id} />

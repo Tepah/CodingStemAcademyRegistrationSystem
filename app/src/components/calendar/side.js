@@ -31,7 +31,7 @@ export default function SideCalendar() {
                     if (temp_assignments.length < 1 || temp_assignments.at(-1).at(-1)['due_date'] !== cur['due_date']) {
                         temp_assignments.push([cur])
                     } else if (temp_assignments.at(-1).at(-1)['due_date'] === cur['due_date']) {
-                        temp_assignments[-1].push(cur)
+                        temp_assignments.at(-1).push(cur)
                     } 
                 }
                 setAssignments(temp_assignments);
@@ -45,7 +45,7 @@ export default function SideCalendar() {
                     if (temp_assignments.length < 1 || temp_assignments.at(-1).at(-1)['due_date'] !== cur['due_date']) {
                         temp_assignments.push([cur])
                     } else if (temp_assignments.at(-1).at(-1)['due_date'] === cur['due_date']) {
-                        temp_assignments[-1].push(cur)
+                        temp_assignments.at(-1).push(cur)
                     } 
                 }
                 setAssignments(temp_assignments);

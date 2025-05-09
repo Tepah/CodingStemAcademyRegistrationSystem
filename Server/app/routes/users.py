@@ -125,6 +125,22 @@ def get_students_by_class():
         cursor.close()
     return jsonify({"message": "Students retrieved", "students": student_list})
 
+@users_bp.route('/get-student-ids-by-class', methods=['GET'])
+def get_student_ids_by_class():
+    class_id = request.args.get('class_id')
+    db = get_db_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM class_students WHERE class_id = %s"
+        val = (class_id, )
+        cursor.execute(sql, val)
+        students = cursor.fetchall()
+        student_ids = [row['user_id'] for row in students]
+    finally:
+        db.close()
+        cursor.close()
+    return jsonify({"message": "Student IDs retrieved", "student_ids": student_ids})
+
 # POST functions
 def add_auth(user_id, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())

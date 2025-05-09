@@ -31,6 +31,27 @@ def get_classes():
         my_db.close()
     return jsonify({'message': 'All classes retrieved', 'classes': res})
 
+@classes_bp.route('/class', methods=['GET'])
+def get_class_by_id():
+    my_db = get_db_connection()
+    try:
+        cursor = my_db.cursor(dictionary=True)
+        class_id = request.args.get('id')
+        sql = "SELECT * FROM classes WHERE id = %s"
+        val = (class_id, )
+        cursor.execute(sql, val)
+        res = cursor.fetchone()
+        if res is None:
+            return jsonify({'message': 'Class not found'}), 404
+        if 'start_time' in res and isinstance(res['start_time'], timedelta):
+            res['start_time'] = format_time(res['start_time'])
+        if 'end_time' in res and isinstance(res['end_time'], timedelta):
+            res['end_time'] = format_time(res['end_time'])
+    finally:
+        cursor.close()
+        my_db.close()
+    return jsonify({'message': 'Class retrieved', 'class': res})
+
 @classes_bp.route('/classes-teacher/count', methods=['GET'])
 def get_classes_count_by_teacher():
     my_db = get_db_connection()
