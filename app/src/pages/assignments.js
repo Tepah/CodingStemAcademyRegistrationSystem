@@ -43,7 +43,7 @@ export default function Assignments() {
 
   return (
     <Layout>
-      <div className="container w-[800px] p-8 flex flex-col flex-1 space-y-8">
+      <div className="container max-w-[900px] mx-auto p-8 flex flex-col flex-1 space-y-8">
         <h1 className="text-2xl font-bold mb-4">Assignments</h1>
         <DataTable data={assignments} columns={columns} />
       </div>

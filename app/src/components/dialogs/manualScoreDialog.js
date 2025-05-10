@@ -10,9 +10,11 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import config from "@/config";
 import StudentNamePopover from "../popovers/StudentNamePopover";
+import { title } from "process";
 
 const schema = z.object({
     student_id: z.number(),
@@ -23,6 +25,7 @@ const schema = z.object({
 
 export default function ManualScoreDialog({ assignment_id, class_id, submissions }) {
     const [students, setStudents] = React.useState([]);
+    
     const [loading, setLoading] = React.useState(false);
 
 
@@ -43,7 +46,8 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
                 const students = response.data.students.map((student) => ({
                     id: student.id,
                     first_name: student.first_name,
-                    last_name: student.last_name
+                    last_name: student.last_name,
+                    email: student.email,
                 })).filter((student) => {
                     return !submissions.some((submission) => submission.student_id === student.id);
                 });
@@ -62,6 +66,15 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
             const submissionData = await axios.post(`${config.backendUrl}/submission`, { student_id: data.student_id, assignment_id: data.assignment_id, content: "Manually Graded" });
             data.submission_id = submissionData.data.submission_id;
             const response = await axios.post(`${config.backendUrl}/score`, data);
+            const user = jwtDecode(localStorage.getItem("token"))['sub'];
+            const assignment = await axios.get(`${config.backendUrl}/assignment`, { params: { id: data.assignment_id } });
+            await axios.post(`${config.backendUrl}/messages`, {
+                sender_user_id: user['id'],
+                receiver_user_id: data.student_id,
+                message: `You have received a new grade for ${assignment.data.assignment.title}.`,
+                title: "New Grade Received for " + assignment.data.assignment.title,
+                class_id: class_id,
+            })
             console.log("Grade submitted successfully:", response.data);
             window.location.reload();
         } catch (error) {
