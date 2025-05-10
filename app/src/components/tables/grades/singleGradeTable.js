@@ -62,7 +62,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
             .finally(() => {
                 setLoading(false);
             });
-    }, [class_id]);
+    }, [class_id, student_id]);
 
     if (loading) {
         return (

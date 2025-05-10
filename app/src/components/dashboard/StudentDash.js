@@ -7,6 +7,7 @@ import axios from 'axios';
 import config from '@/config';
 import ClassCard from './class-cards';
 import { Button } from "@/components/ui/button";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const StudentDash = () => {
   const [user, setUser] = useState({});
@@ -60,12 +61,12 @@ const StudentDash = () => {
           setClasses(data);
         });
       });
-      axios.get(`${config.backendUrl}/classes-student/count`, {params: {student_id: user['id']}})
-      .then((res) => {
-        setTotalClasses(res.data['count']);
-      }).catch((error) => {
-        console.error('Error fetching total classes:', error);
-      })
+      axios.get(`${config.backendUrl}/classes-student/count`, { params: { student_id: user['id'] } })
+        .then((res) => {
+          setTotalClasses(res.data['count']);
+        }).catch((error) => {
+          console.error('Error fetching total classes:', error);
+        })
     }
   }, [semester, user]);
 
@@ -99,13 +100,13 @@ const StudentDash = () => {
         <p>Welcome, {user['first_name']} {user['last_name']}</p>
         <div className="grid auto-rows-min grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {classes.map((classData) => (
-            <ClassCard classData={classData}  />
+            <ClassCard key={classData.id} classData={classData} />
           ))}
           {totalClasses > 0 ? (
             <div className="col-span-1 flex-1 flex flex-col">
-                <Link href="/classes" className="w-full h-2/3 flex items-center justify-center rounded-xl">
-                  <p className="text-center text-gray-500">View All Classes...</p>
-                </Link>
+              <Link href="/classes" className="w-full h-2/3 flex items-center justify-center rounded-xl">
+                <p className="text-center text-gray-500">View All Classes...</p>
+              </Link>
             </div>
           ) : (
             <div className="col-span-2 flex-1 flex flex-col space-y-4 p-16">
@@ -115,20 +116,20 @@ const StudentDash = () => {
               </Link>
             </div>
           )}
-        <Card className="col-span-1 md:col-span-2">
-          <CardHeader>
-            <CardTitle>Quick Links</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid grid-cols-1 md:grid-cols-2 space-y-2">
-              <Link href="/courses">View Courses</Link>
-              <Link href="/register-classes">Enroll in a Course</Link>
-              <Link href="/assignments">View Assignments</Link>
-              <Link href="/calendar">View Calendar</Link>
-              <Link href="/grades">View Grades</Link>
-            </ul>
-          </CardContent>
-        </Card>
+          <Card className="col-span-1 md:col-span-2">
+            <CardHeader>
+              <CardTitle>Quick Links</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="grid grid-cols-1 md:grid-cols-2 space-y-2">
+                <Link href="/courses">View Courses</Link>
+                <Link href="/register-classes">Enroll in a Course</Link>
+                <Link href="/assignments">View Assignments</Link>
+                <Link href="/calendar">View Calendar</Link>
+                <Link href="/grades">View Grades</Link>
+              </ul>
+            </CardContent>
+          </Card>
 
         </div>
       </div>

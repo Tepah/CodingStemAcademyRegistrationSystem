@@ -189,7 +189,7 @@ function MessageCard({ message }) {
       .finally(() => {
         setLoading(false);
       });
-  }, [])
+  }, [message.sender_user_id])
 
   if (loading) {
     return (

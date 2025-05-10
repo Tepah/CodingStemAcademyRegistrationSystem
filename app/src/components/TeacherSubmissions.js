@@ -30,7 +30,7 @@ export default function TeacherSubmissions() {
     };
 
     fetchUser().then(() => console.log("User fetched successfully: ", user));
-  },[]);
+  },[router]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {

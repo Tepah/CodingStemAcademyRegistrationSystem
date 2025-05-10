@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Link from "next/link";
 import { useRouter } from 'next/router';
-import {Button} from "@/components/ui/button";
-import {Layout} from "@/app/layout";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Layout } from "@/app/layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from '@/components/ui/skeleton';
 import ClassCard from './class-cards';
 import axios from 'axios';
@@ -37,9 +37,9 @@ const TeacherDash = () => {
             semester_id: semester.id,
             teacher_id: user['id'],
           }
-          })
-          console.log(res.data);
-          return res.data['classes'];
+        })
+        console.log(res.data);
+        return res.data['classes'];
       } catch (error) {
         console.error('Error fetching classes:', error);
       };
@@ -47,7 +47,7 @@ const TeacherDash = () => {
 
     const fetchTeacher = async (id) => {
       try {
-        const res = await axios.get(`${config.backendUrl}/user`, {params: { id: id }});
+        const res = await axios.get(`${config.backendUrl}/user`, { params: { id: id } });
         console.log("Fetched teacher:", res.data);
         return res.data["user"];
       } catch (error) {
@@ -103,7 +103,7 @@ const TeacherDash = () => {
         <p>Welcome, {user['first_name']} {user['last_name']}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {classes.map((classData) => (
-              <ClassCard classData={classData}  />
+            <ClassCard key={classData.id} classData={classData} />
           ))}
           {classCount !== 0 && (
             <div className="w-full h-full">

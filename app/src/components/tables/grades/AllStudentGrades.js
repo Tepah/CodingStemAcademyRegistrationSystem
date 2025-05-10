@@ -94,7 +94,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                 setLoading(false);
             })
 
-    }, [semester]);
+    }, [semester, student_id]);
 
     const handleClick = async () => {
         const cur = !allGrades;

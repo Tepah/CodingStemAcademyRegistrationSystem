@@ -25,7 +25,7 @@ export default function StudentClassDetails() {
         setUser(decodedToken["sub"]);
         console.log("Decoded token:", decodedToken);
         }
-    }, []);
+    }, [router]);
 
     if (user.role !== "Teacher") {
         <Layout>

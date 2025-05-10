@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Link from "next/link";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AdminDash = () => {
   const [user, setUser] = useState({});

@@ -24,7 +24,7 @@ export default function Donations() {
         setUser(decodedToken['sub']);
         console.log("Decoded token:", decodedToken);
         }
-    }, []);
+    }, [router]);
     
     useEffect(() => {
         const fetchPayments = async () => {

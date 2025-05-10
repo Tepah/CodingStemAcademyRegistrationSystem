@@ -29,7 +29,7 @@ const ClassPage = () => {
     }
     const user = jwtDecode(token);
     setUser(user['sub']);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     // Fetch assignment information here using Axios 

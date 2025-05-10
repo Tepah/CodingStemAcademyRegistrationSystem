@@ -24,7 +24,7 @@ export default function Semesters() {
       setUser(decodedToken['sub']);
       console.log("Decoded token:", decodedToken);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     

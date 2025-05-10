@@ -20,10 +20,7 @@ export default function StudentGrade() {
             setUser(decodedToken["sub"]);
             console.log("Decoded token:", decodedToken);
         }
-    }
-    , []);
-
-
+    }, [router]);
 
     return (
         <div className="container mx-auto flex flex-col p-4 gap-4">

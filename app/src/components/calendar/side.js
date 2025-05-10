@@ -18,7 +18,7 @@ export default function SideCalendar() {
         if (token) {
             const user = jwtDecode(token);
             setUser(user['sub']);
-        } 
+        }
     }, []);
 
     useEffect(() => {
@@ -32,7 +32,7 @@ export default function SideCalendar() {
                         temp_assignments.push([cur])
                     } else if (temp_assignments.at(-1).at(-1)['due_date'] === cur['due_date']) {
                         temp_assignments.at(-1).push(cur)
-                    } 
+                    }
                 }
                 setAssignments(temp_assignments);
             })
@@ -46,7 +46,7 @@ export default function SideCalendar() {
                         temp_assignments.push([cur])
                     } else if (temp_assignments.at(-1).at(-1)['due_date'] === cur['due_date']) {
                         temp_assignments.at(-1).push(cur)
-                    } 
+                    }
                 }
                 setAssignments(temp_assignments);
             }).catch((error) => {
@@ -58,8 +58,8 @@ export default function SideCalendar() {
     return (
         <div className="w-full flex flex-col text-left p-4 pt-8">
             <h1 className="text-lg font-bold mb-4">Upcoming Assignments</h1>
-            {assignments.map((assignmentsForDay) => (
-                <Day assignments={assignmentsForDay} />
+            {assignments.map((assignmentsForDay, index) => (
+                <Day key={index} assignments={assignmentsForDay} /> // Add a unique key here
             ))}
             <Link href="/assignments" className="flex flex-row items-center text-sm font-semibold text-muted-foreground hover:cursor-pointer hover:text-primary">
                 <Label className="hover:cursor-pointer">View All</Label>
@@ -69,7 +69,7 @@ export default function SideCalendar() {
     )
 }
 
-function Day({assignments}) {
+function Day({ assignments }) {
     const date = new Date(assignments[0]['due_date'])
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayName = isToday(assignments[0]['due_date']) ? "Today" : isTomorrow(assignments[0]['due_date']) ? "Tomorrow" : daysOfWeek[date.getDay()]
@@ -84,7 +84,11 @@ function Day({assignments}) {
                 <h4 className="text-sm font-semibold">{dayName}</h4>
                 <div className="text-sm flex flex-col space-y-2 p-2">
                     {assignments.map((assignment) => (
-                        <Link href={`/classes/${assignment['class_id']}/assignments/${assignment['id']}`} className="flex flex-col p-2 rounded-md hover:bg-muted/80">
+                        <Link
+                            key={assignment.id} // Add a unique key here
+                            href={`/classes/${assignment['class_id']}/assignments/${assignment['id']}`}
+                            className="flex flex-col p-2 rounded-md hover:bg-muted/80"
+                        >
                             <Label className="hover:cursor-pointer">{assignment['class_name']}</Label>
                             <p className="text-xs">{assignment['title']}</p>
                         </Link>

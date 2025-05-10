@@ -12,14 +12,15 @@ import {
   ChevronUp,
   Command
 } from "lucide-react";
-import {jwtDecode} from "jwt-decode";
-import {useEffect, useState} from "react";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {useRouter} from "next/router";
-import {NavClasses} from "@/components/sidebars/nav-classes";
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/router";
+import { NavClasses } from "@/components/sidebars/nav-classes";
 import axios from "axios";
 import config from "@/config";
 import NavSecondary from "@/components/sidebars/nav-secondary";
+import Link from "next/link";
 
 
 export function AppSidebar({ ...props }) {
@@ -43,7 +44,7 @@ export function AppSidebar({ ...props }) {
   useEffect(() => {
     const fetchClasses = async () => {
       axios.get(`${config.backendUrl}/all-classes-by-student`, {
-        params : {
+        params: {
           student_id: user['id']
         },
       })
@@ -59,7 +60,7 @@ export function AppSidebar({ ...props }) {
     const fetchClassesTeacher = async () => {
       console.log("Fetching classes for teacher");
       axios.get(`${config.backendUrl}/all-classes-by-teacher`, {
-        params : {
+        params: {
           teacher_id: user['id']
         },
       })
@@ -90,19 +91,19 @@ export function AppSidebar({ ...props }) {
 
   return (
     <Sidebar className="top-[--header-height] !h-[calc(100svh-var(--header-height))]"
-             {...props}>
+      {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
+              <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Stem Action Teen Institution</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -110,8 +111,8 @@ export function AppSidebar({ ...props }) {
       <SidebarContent>
         {loading ? (<span>Loading...</span>) :
           user["role"] !== 'Admin' ? (
-          <NavClasses classes={classes} />
-        ) : null }
+            <NavClasses classes={classes} />
+          ) : null}
         <NavSecondary />
       </SidebarContent>
       <SidebarFooter>
@@ -145,4 +146,5 @@ export function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-)}
+  )
+}

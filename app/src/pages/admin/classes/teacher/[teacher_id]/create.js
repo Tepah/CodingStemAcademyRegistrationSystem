@@ -83,7 +83,7 @@ export default function CreateClass() {
     };
 
     fetchSemesters()
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const fetchTeacher = async () => {
@@ -121,7 +121,7 @@ export default function CreateClass() {
         if (semesters.length > 0 && teacher) {
             setLoadPage(true);
         };
-    }, [semesters, teacher]);
+    }, [semesters, teacher, formData.semester_id]);
 
   return (
     <Layout>

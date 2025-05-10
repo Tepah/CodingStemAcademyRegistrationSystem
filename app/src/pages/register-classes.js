@@ -49,7 +49,7 @@ export default function RegisterClasses() {
       .catch(error => {
         console.error("Error fetching current classes:", error);
       });
-  }, [semester]);
+  }, [semester, currentClasses.length, user.id]);
 
   useEffect(() => {
     if (!semester) return;
@@ -77,7 +77,7 @@ export default function RegisterClasses() {
       .catch(error => {
         console.error("Error fetching classes:", error);
       });
-  }, [currentClasses]);
+  }, [currentClasses, classes.length, semester]);
 
   return (
     <div className="flex flex-col container mx-auto p-8 items-center">

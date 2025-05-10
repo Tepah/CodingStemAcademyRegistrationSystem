@@ -72,7 +72,7 @@ export const columns = [
               <div>
                 <DropdownMenuItem asChild key={user.id}>
                   <Link href={`classes/student/${user.id}`}>
-                    Manage Student's Classes
+                    Manage Student&apos;s Classes
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -82,7 +82,7 @@ export const columns = [
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href={`student/${user.id}`}>
-                    Manage Student's Profile
+                    Manage Student&apos;s Profile
                   </Link>
                 </DropdownMenuItem>
               </div>
@@ -90,7 +90,7 @@ export const columns = [
               <div>
                 <DropdownMenuItem asChild>
                   <Link href={`classes/teacher/${user.id}`}>
-                    Manage Teacher's Classes
+                    Manage Teacher&apos;s Classes
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>Manage Profile</DropdownMenuItem>

@@ -24,7 +24,7 @@ export default function Classes() {
         setUser(decodedToken['sub']);
         console.log("Decoded token:", decodedToken);
         }
-    }, []);
+    }, [router]);
     
     useEffect(() => {
         const fetchTeachers = async (classesData) => {

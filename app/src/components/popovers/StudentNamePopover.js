@@ -32,7 +32,7 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
         } catch (error) {
             console.error("Error fetching students:", error);
         }
-    }, []);
+    }, [studentsList]);
 
     const handleSelectStudent = (studentId) => {
         onSelectStudent(studentId);

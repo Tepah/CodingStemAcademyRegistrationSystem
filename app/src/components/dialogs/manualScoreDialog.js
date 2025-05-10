@@ -25,7 +25,7 @@ const schema = z.object({
 
 export default function ManualScoreDialog({ assignment_id, class_id, submissions }) {
     const [students, setStudents] = React.useState([]);
-    
+
     const [loading, setLoading] = React.useState(false);
 
 
@@ -57,7 +57,7 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
             .catch((error) => {
                 console.error("Error fetching students:", error);
             });
-    }, [])
+    }, [class_id, submissions]);
 
 
 

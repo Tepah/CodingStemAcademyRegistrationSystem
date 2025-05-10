@@ -1,5 +1,6 @@
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 function QRCodeGenerator({ text, props }) {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
@@ -22,7 +23,7 @@ function QRCodeGenerator({ text, props }) {
   return (
     <div {...props}>
       {qrCodeUrl ? (
-        <img src={qrCodeUrl} alt="QR Code" />
+        <Image src={qrCodeUrl} alt="QR Code" />
       ) : (
         <p>Loading QR Code...</p>
       )}

@@ -85,7 +85,7 @@ export default function TeacherGrade() {
         };
 
         fetchGrades();
-    }, [assignments, students]); // Only runs when assignments or students are initially loaded
+    }, [assignments, students, class_id]); // Only runs when assignments or students are initially loaded
 
     if (loading) {
         return (

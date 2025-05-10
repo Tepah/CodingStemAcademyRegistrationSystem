@@ -8,7 +8,7 @@ import {DataTable} from "@/components/tables/classes/teacher/data-table";
 import {columns} from "@/components/tables/classes/teacher/columns";
 import {Label} from "@/components/ui/label";
 
-export default function teacherClasses() {
+export default function TeacherClasses() {
     const router = useRouter()
     const [classes, setClasses] = React.useState([]);
     const [user, setUser] = React.useState({});
@@ -27,7 +27,7 @@ export default function teacherClasses() {
         setUser(decodedToken['sub']);
         console.log("Decoded token:", decodedToken);
         }
-    }, []);
+    }, [router]);
     
     useEffect(() => {
         const fetchStudentCount = async (classesData) => {
@@ -106,7 +106,7 @@ export default function teacherClasses() {
                     console.error("Error fetching teacher:", error);
                 });
         }
-    }, [user, teacherId])
+    }, [user, teacherId, teacher])
 
     useEffect(() => {
         if (classes && teacher){
@@ -124,7 +124,7 @@ export default function teacherClasses() {
             ) : user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">{teacher['first_name']} {teacher['last_name']}'s Classes</h1>
+                    <h1 className="text-3xl font-bold">{teacher['first_name']} {teacher['last_name']}&apos;s Classes</h1>
                         <p className="text-gray-500">Teacher</p>
                     </Label>
                     <DataTable columns={columns} data={classes} teacherId={teacherId} />

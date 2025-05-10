@@ -27,7 +27,7 @@ export default function StudentClasses() {
         setUser(decodedToken['sub']);
         console.log("Decoded token:", decodedToken);
         }
-    }, []);
+    }, [router]);
     
     useEffect(() => {
         const fetchTeachers = async (classesData) => {
@@ -106,7 +106,7 @@ export default function StudentClasses() {
                     console.error("Error fetching student:", error);
                 });
         }
-    }, [user, studentId])
+    }, [user, studentId, student])
 
     useEffect(() => {
         if (classes && student){
@@ -124,7 +124,7 @@ export default function StudentClasses() {
             ) : user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">{student['first_name']} {student['last_name']}'s classes</h1>
+                        <h1 className="text-3xl font-bold">{student['first_name']} {student['last_name']}&apos;s classes</h1>
                         <p>Student</p>
                     </Label>
                     <DataTable columns={columns} data={classes} />

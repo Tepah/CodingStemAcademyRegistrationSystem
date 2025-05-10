@@ -34,7 +34,7 @@ export default function Assignments() {
       }
       const user = jwtDecode(token);
       setUser(user['sub']);
-    }, []);
+    }, [router]);
 
 
   useEffect(() => {

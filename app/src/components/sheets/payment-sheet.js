@@ -12,22 +12,22 @@ import { ModifyPaymentForm } from "../forms/payment/edit-form"
 
 
 
-export function PaymentModifySheet({children, paymentData}) {
+export function PaymentModifySheet({ children, paymentData }) {
 
   return (
     <Sheet>
-        {children}
+      {children}
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Edit class</SheetTitle>
+          <SheetTitle>Edit Payment</SheetTitle>
           <SheetDescription>
-            Make changes to the class here. Click save when you're done.
+            Make changes to the Payment here. Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
         <SheetContent>
-            <div className="grid gap-4 p-8">
-              <ModifyPaymentForm paymentData={paymentData} />
-            </div>
+          <div className="grid gap-4 p-8">
+            <ModifyPaymentForm paymentData={paymentData} />
+          </div>
         </SheetContent>
       </SheetContent>
     </Sheet>
