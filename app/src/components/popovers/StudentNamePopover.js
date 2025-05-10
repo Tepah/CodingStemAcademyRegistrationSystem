@@ -38,11 +38,11 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
         onSelectStudent(studentId);
     };
 
-    const filteredStudents = students.filter(student =>
+    const filteredStudents = students ? ( students.filter(student => {
         student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        student.email.toLowerCase().includes(searchQuery.toLowerCase()) }
+    )) : [];
 
     return (
         <Popover modal={true}>
