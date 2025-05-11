@@ -22,12 +22,12 @@ export default function RegisterClasses() {
       window.location.href = '/';
       return;
     }
-    const user = jwtDecode(token);
-    if (user['sub']['role'] !== 'Student') {
+    const user = jwtDecode(token)['sub'];
+    if (user['role'] !== 'Student') {
       alert("You are not authorized to access this page");
       return;
     }
-    setUser(user['sub']);
+    setUser(user);
   }, []);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function RegisterClasses() {
       .catch(error => {
         console.error("Error fetching current classes:", error);
       });
-  }, [semester, currentClasses.length, user.id]);
+  }, [semester, currentClasses.length]);
 
   useEffect(() => {
     if (!semester) return;
