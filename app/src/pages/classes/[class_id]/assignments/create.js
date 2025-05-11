@@ -85,8 +85,8 @@ export default function CreateAssignment() {
     <div className="max-w-2xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Create Assignment</h1>
       <div className="mb-8">
-        <h2 className="text-xl font-semibold">Class: {classInfo.class_name}</h2>
-        <p className="text-gray-600">ID: {classInfo.id}</p>
+        <h2 className="text-xl font-semibold">Class: {classInfo.class.class_name}</h2>
+        <p className="text-gray-600">ID: {class_id}</p>
       </div>
 
       <Form {...form}>
