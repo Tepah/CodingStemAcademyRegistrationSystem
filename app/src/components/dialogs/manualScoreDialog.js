@@ -92,6 +92,10 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
 
     return (
         <Dialog>
+            { loading ? (
+                <Skeleton className="h-10 w-40" />
+            ) : ( 
+                <>
             <DialogTrigger asChild>
                 <Button variant="default" className="">
                     Manually Input Grade
@@ -144,6 +148,7 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
                     </form>
                 </Form>
             </DialogContent>
+            </>)}
         </Dialog>
     )
 }
