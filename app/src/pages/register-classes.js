@@ -2,19 +2,15 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config';
 import {jwtDecode} from "jwt-decode";
-import {useRouter} from "next/router";
 import {getCurrentSemester} from "@/components/api";
 import {DataTable} from "@/components/tables/classes/registration/data-table";
 import {columns} from "@/components/tables/classes/registration/columns";
-import {Button} from "@/components/ui/button";
 
 export default function RegisterClasses() {
   const [classes, setClasses] = useState([]);
   const [currentClasses, setCurrentClasses] = useState([]);
   const [user, setUser] = useState(null);
   const [semester, setSemester] = useState(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
