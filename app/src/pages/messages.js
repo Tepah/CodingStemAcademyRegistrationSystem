@@ -117,7 +117,7 @@ export default function Messages() {
                     console.log("read: ", message.has_read);
                     if (message.has_read === 1)
                       return;
-                    message.has_read = 1;
+                    message.has_read += 1;
                     setCurrentMessage({...message});
                     console.log("Data to be sent:", currentMessage);
 
