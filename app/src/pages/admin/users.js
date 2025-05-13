@@ -49,7 +49,7 @@ export default function Users() {
 
   return (
     <Layout>
-      <div className="container w-[800px] p-12">
+      <div className="container mx-auto flex flex-col flex-1 max-w-[900px] p-8">
       <Label>
         <h1 className="text-3xl font-bold">Users</h1>
         <p className="text-gray-500">Manage users in the system</p>
