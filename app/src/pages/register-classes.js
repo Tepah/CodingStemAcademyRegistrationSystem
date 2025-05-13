@@ -14,19 +14,18 @@ export default function RegisterClasses() {
   const [user, setUser] = useState(null);
   const [semester, setSemester] = useState(null);
 
-  const router = useRouter();
-
+  // gets current user to see who it is
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = '/';
-      return;
-    }
-    const user = jwtDecode(token);
-    if (user['sub']['role'] !== 'Student') {
-      alert("You are not authorized to access this page");
-      return;
-    }
+    const token = localStorage.getItem('token');    // check token
+    // if (!token) {
+    //   window.location.href = '/';
+    //   return;
+    // }
+    const user = jwtDecode(token);                  // return a json
+    // if (user['sub']['role'] !== 'Student') {
+    //   alert("You are not authorized to access this page");
+    //   return;
+    // }
     setUser(user['sub']);
   }, []);
 
@@ -49,7 +48,7 @@ export default function RegisterClasses() {
       .catch(error => {
         console.error("Error fetching current classes:", error);
       });
-  }, [semester, currentClasses.length, user.id]);
+  }, [semester, currentClasses.length]);
 
   useEffect(() => {
     if (!semester) return;

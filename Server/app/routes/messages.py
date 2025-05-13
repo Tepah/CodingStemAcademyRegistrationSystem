@@ -113,11 +113,13 @@ def update_message():
     receiver_user_id = data.get('receiver_user_id')
     sender_user_id = data.get('sender_user_id')
     class_id = data.get('class_id')
+    has_read = data.get('has_read')
+    # print(data)
 
     conn = get_db_connection()
     try: 
         cursor = conn.cursor()
-        cursor.execute("UPDATE messages SET title=%s, message=%s, receiver_user_id=%s, sender_user_id=%s, class_id=%s WHERE id = %s", (title, message, receiver_user_id, sender_user_id, class_id, message_id))
+        cursor.execute("UPDATE messages SET title=%s, message=%s, receiver_user_id=%s, sender_user_id=%s, class_id=%s, has_read=%s WHERE id = %s", (title, message, receiver_user_id, sender_user_id, class_id, has_read, message_id))
         conn.commit()
     finally:
         cursor.close()

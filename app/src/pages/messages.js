@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export default function Messages() {
   const [user, setUser] = useState({});
   const [messages, setMessages] = useState([]);
+  const [error, setError] = useState("");
   const [currentMessage, setCurrentMessage] = useState(null);
   const [reply, setReply] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -112,7 +113,24 @@ export default function Messages() {
                     }`}
                   onClick={() => {
                     setReply(false)
-                    setCurrentMessage(message)
+                    setError("");
+                    console.log("read: ", message.has_read);
+                    if (message.has_read === 1)
+                      return;
+                    message.has_read = 1;
+                    setCurrentMessage({...message});
+                    console.log("Data to be sent:", currentMessage);
+
+                    axios.put(`${config.backendUrl}/messages`, message)
+                    .then((response) => {
+                        console.log("Message updated successfully", response.data);
+                    }).catch((error) => {
+                        console.error("Error updating message:", error);
+                        setError("Error updating message: " + error.response.data.message);
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                    });
                   }
                   }>
                   <MessageCard key={message.id} message={message} />
@@ -203,7 +221,12 @@ function MessageCard({ message }) {
   return (
     <div className="w-full h-[100px] flex flex-col text-left">
       <div className="flex flex-1 flex-col gap-4 p-4">
-        <h2 className="text-sm font-semibold line-clamp-2">{message.title}</h2>
+        {message.has_read != "0" &&
+          <h2 className="text-sm font-semibold line-clamp-2">{message.title}</h2>
+        }
+        {message.has_read == "0" &&
+          <h2 className="text-sm font-bold line-clamp-2">{message.title}</h2>
+        }
         <p className="text-sm text-gray-500">{sender.first_name} {sender.last_name}</p>
       </div>
       <Separator />
