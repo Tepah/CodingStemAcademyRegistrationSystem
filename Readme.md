@@ -1,10 +1,10 @@
 ## AI-Powered Course Assignment Project
 ___
-### Teacher: Ryan
+### Teacher: Mr. Ryan
 ### Team:
 - **Owen Chen**
+- Brandon Pian
 - Emily Wang
-- Brandon P
 
 ### Summary:
 - A course assignment system that enhances the learning process by automating assignments, grading, and providing personalized feedback through AI enhancements. When a student submits an assignment this would use computer vision to analyze the things on paper, then provide AI created solutions/feedback to the user/teacher. This will give individual students more feedback without having to ask the teacher, while also giving the teacher more time to focus on other tasks. 
@@ -37,11 +37,12 @@ ___
 
 ## AI-Powered Score Submissions System Project
 ___
-### Teacher: Joshua
+### Teacher: Mr. Joshua
 ### Team:
 - **Kenny**
-- Audrey D.
-- Spincer
+- Arick Hong
+- Audrey Don
+- Spincer Wang
 
 ### Summary:
 - An score submission system that uses AI for score validation, feedback generation, and predictive analysis would allow for efficient score management, personalized feedback, and intelligent insights for educators to better track student progress. Would work hand in hand with the Assignment Project because scores should be handled with each other and seen by one another. 
@@ -54,14 +55,14 @@ ___
 - Course page
 
 
-## AI Payment
+## AI Scheduling
 ___
 ### Teacher: Mr. Pete
 
 ### Team:
-- **Aidan
-- Emily
-- Ethan L.
+- **Aidan Hong**
+- Emily Ma
+- Ethan Liu
 
 ### Requirements
 - User information - Username, cardIDs
@@ -89,13 +90,13 @@ ___
 
 ## AI Registration
 ___
-### Teacher: Joyce and Pete
+### Teacher: Mr. Pete
 
 ### Team:
-- Richard Wang
-- Darren Wang
 - **Zichun Hong**
-- ADD MARY
+- Darren Wang
+- Mary Liang
+- Richard Wang
 
 ### Requirements
 -  Basic Information
