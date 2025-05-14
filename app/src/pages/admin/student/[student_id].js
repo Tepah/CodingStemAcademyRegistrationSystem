@@ -58,7 +58,7 @@ export default function StudentPage() {
         );
     }
 
-    if (user['role'] !== 'Admin') {
+    if (user['role'] !== 'Admin' && user['role'] !== 'Teacher') {
         return (
             <Layout title={"Student Page"}>
                 <div className="container max-w-[900px] mx-auto flex-1 flex flex-col p-8">
