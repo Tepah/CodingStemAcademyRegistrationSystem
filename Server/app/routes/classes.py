@@ -19,7 +19,7 @@ def get_classes():
     my_db = get_db_connection()
     try:
         cursor = my_db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM classes")
+        cursor.execute("SELECT * FROM classes ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;")
         res = cursor.fetchall()
         for classData in res:
             if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
@@ -37,7 +37,7 @@ def get_class_by_id():
     try:
         cursor = my_db.cursor(dictionary=True)
         class_id = request.args.get('id')
-        sql = "SELECT * FROM classes WHERE id = %s"
+        sql = "SELECT * FROM classes WHERE id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (class_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
@@ -58,7 +58,7 @@ def get_classes_count_by_teacher():
     try:
         cursor = my_db.cursor(dictionary=True)
         teacher_id = request.args.get('teacher_id')
-        sql = "SELECT count(*) as count FROM classes WHERE teacher_id = %s"
+        sql = "SELECT count(*) as count FROM classes WHERE teacher_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (teacher_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
@@ -73,7 +73,7 @@ def get_classes_count_by_student():
     try:
         cursor = my_db.cursor(dictionary=True)
         student_id = request.args.get('student_id')
-        sql = "SELECT count(*) as count FROM class_students WHERE user_id = %s"
+        sql = "SELECT count(*) as count FROM class_students WHERE user_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (student_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
@@ -88,7 +88,7 @@ def get_classes_by_semester():
     try:
         cursor = my_db.cursor(dictionary=True)
         semester_id = request.args.get('semester_id')
-        sql = "SELECT * FROM classes WHERE semester_id = %s"
+        sql = "SELECT * FROM classes WHERE semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (semester_id, )
         cursor.execute(sql, val)
         res = cursor.fetchall()
@@ -162,7 +162,7 @@ def get_classes_by_teacher():
     db = get_db_connection()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "SELECT * FROM classes WHERE teacher_id = %s"
+        sql = "SELECT * FROM classes WHERE teacher_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (id, )
         cursor.execute(sql, val)
         res = cursor.fetchall()
@@ -210,7 +210,7 @@ def get_student_classes_by_semester():
         res = cursor.fetchall()
         classes = []
         for row in res:
-            sql = "SELECT * FROM classes WHERE id = %s and semester_id = %s"
+            sql = "SELECT * FROM classes WHERE id = %s and semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
             val = (row['class_id'], semester_id )
             cursor.execute(sql, val)
             class_info = cursor.fetchone()
@@ -230,7 +230,7 @@ def get_teachers_classes_by_semesters():
     db = get_db_connection()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "SELECT * FROM classes WHERE teacher_id = %s and semester_id = %s"
+        sql = "SELECT * FROM classes WHERE teacher_id = %s and semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         semester_id = request.args.get('semester_id')
         teacher_id = request.args.get('teacher_id')
         val = (teacher_id, semester_id)

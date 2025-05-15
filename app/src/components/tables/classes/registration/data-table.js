@@ -26,7 +26,7 @@ import { useRouter } from "next/router"
 
 
 
-export function DataTable({ columns, data }) {
+export function DataTable({ columns, data, onClick }) {
     const [sorting, setSorting] = useState([])
     const [rowSelection, setRowSelection] = useState({})
     const router = useRouter()
@@ -46,41 +46,52 @@ export function DataTable({ columns, data }) {
     });
 
     const handleClick = () => {
-        const token = localStorage.getItem('token');
-        const user = jwtDecode(token);
-        const student_id = user['sub']['id'];
+        // const token = localStorage.getItem('token');
+        // const user = jwtDecode(token);
+        // const student_id = user['sub']['id'];
+        // const selectedClasses = Object.keys(rowSelection).map((key) => {
+        //     const row = table.getRowModel().rows.find((row) => row.id === key);
+        //     if (row) {
+        //         return row.original.id;
+        //     }
+        //     return null;
+        // }
+        // ).filter((id) => id !== null);
+        // if (selectedClasses.length === 0) {
+        //     alert("Please select at least one class to register");
+        //     return;
+        // }
+    
+        // console.log("Registering for classes: " + selectedClasses + " for student: " + student_id)
+        // axios.post(`${config.backendUrl}/add_multiple_classes_to_student`, {
+        //     user_id: student_id,
+        //     classes: selectedClasses,
+        // }).then(response => {
+        //     console.log("Successfully registered for class: " + response.data['message']);
+        //     if (response.data['message'] === 'Student already registered for this class') {
+        //     alert("You are already registered for this class");
+        //     } else {
+        //     console.log("Successfully registered for class: " + response.data['message']);
+        //     router.push('/dashboard').then(() => console.log("Redirecting to dashboard"));
+        //     }
+        // }).catch(error => {
+        //     console.log(error);
+        // });
         const selectedClasses = Object.keys(rowSelection).map((key) => {
             const row = table.getRowModel().rows.find((row) => row.id === key);
             if (row) {
-                return row.original.id;
+                return row.original;
             }
             return null;
         }
+
         ).filter((id) => id !== null);
-        if (selectedClasses.length === 0) {
-            alert("Please select at least one class to register");
-            return;
-        }
-    
-        console.log("Registering for classes: " + selectedClasses + " for student: " + student_id)
-        axios.post(`${config.backendUrl}/add_multiple_classes_to_student`, {
-            user_id: student_id,
-            classes: selectedClasses,
-        }).then(response => {
-            console.log("Successfully registered for class: " + response.data['message']);
-            if (response.data['message'] === 'Student already registered for this class') {
-            alert("You are already registered for this class");
-            } else {
-            console.log("Successfully registered for class: " + response.data['message']);
-            router.push('/dashboard').then(() => console.log("Redirecting to dashboard"));
-            }
-        }).catch(error => {
-            console.log(error);
-        });
+        onClick(selectedClasses);
+        setRowSelection({});
         }
 
     return (
-        <div className="py-4">
+        <div className="">
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -128,7 +139,7 @@ export function DataTable({ columns, data }) {
                 </Table>
             </div>
             <div className="flex items-center justify-between py-4">
-                <Button onClick={() => handleClick()}>Register Classes</Button>
+                <Button onClick={() => handleClick()}>Add Classes</Button>
                 <div className="flex items-center justify-end gap-4">
 
                     <span className="text-sm">

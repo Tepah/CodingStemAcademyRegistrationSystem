@@ -1,8 +1,5 @@
 "use client"
 import {
-  ColumnDef,
-  SortingState,
-  ColumnFilterState,
   flexRender,
   getPaginationRowModel,
   getCoreRowModel,
@@ -21,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import Link from "next/link";
+import { useEffect } from "react"
 
 
 export function DataTable({ children, columns, data }) {
@@ -46,6 +43,18 @@ export function DataTable({ children, columns, data }) {
       columnVisibility
     },
   });
+
+  useEffect(() => {
+    if (activeStatus === "Active") {
+      table.setColumnFilters((old) =>
+        old.filter((f) => f.id !== "status")
+      );
+    } else {
+      table.setColumnFilters([
+        { id: "status", value: activeStatus },
+      ]);
+    }
+  }, [activeStatus, table]);
 
   return (
     <div>
