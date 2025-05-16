@@ -11,7 +11,6 @@ from app import create_app
 logging.basicConfig(level=logging.DEBUG)
 
 app = create_app()
-## TODO: CREATE REAL SECRET KEY
 CORS(app)
 
 @app.errorhandler(403)

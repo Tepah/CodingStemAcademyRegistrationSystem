@@ -5,12 +5,10 @@ import {
     Popover,
     PopoverTrigger,
     PopoverContent,
-    PopoverClose,
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { getStudentByName } from "@/components/api";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import config from "@/config";
@@ -20,7 +18,8 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        console.log(studentsList);
+        console.log("This is student List: ", studentsList);
+        console.log("This is students: ", students);
         try {
             const fetchStudents = async () => {
                 const response = await axios.get(`${config.backendUrl}/students`);
@@ -32,17 +31,17 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
         } catch (error) {
             console.error("Error fetching students:", error);
         }
-    }, [studentsList]);
+    }, [studentsList, students]);
 
     const handleSelectStudent = (studentId) => {
         onSelectStudent(studentId);
     };
 
-    const filteredStudents = students ? ( students.filter(student => {
+    const filteredStudents =  students ? students.filter(student => 
         student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.email.toLowerCase().includes(searchQuery.toLowerCase()) }
-    )) : [];
+        student.email.toLowerCase().includes(searchQuery.toLowerCase()) 
+    ) : [];
 
     return (
         <Popover modal={true}>

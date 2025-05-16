@@ -52,7 +52,7 @@ const AdminDash = () => {
                   <Link href="/admin/classes">Manage classes</Link>
                   <Link href="/admin/semesters">Manage semesters</Link>
                   <Link href="/calendar">View Calendar</Link>
-                  <Link href="/admin/payments">Manage Donations</Link>
+                  <Link href="/admin/donations">Manage Donations</Link>
                   <Link href="/admin/users">Manage Users</Link>
                 </ul>
               </CardContent>

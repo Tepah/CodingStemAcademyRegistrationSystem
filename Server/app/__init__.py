@@ -14,7 +14,7 @@ from .routes.messages import messages_bp
 def create_app():
     flask_app = Flask(__name__)
 
-
+    # TODO: Load configuration from a file or environment variables
     flask_app.config["JWT_SECRET_KEY"] = "temporary secret key"
     jwt = JWTManager(flask_app)
     # Import and register blueprints

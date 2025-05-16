@@ -16,6 +16,7 @@ const TeacherDash = () => {
   const [classes, setClasses] = useState([]);
   const [classCount, setClassCount] = useState(0);
   const [semester, setSemester] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -71,11 +72,14 @@ const TeacherDash = () => {
         console.log("Class Count: ", res);
         setClassCount(res);
       })
+      .finally(() => {
+        setLoading(false);
+      })
     }
   }, [semester, user]);
 
 
-  if (!user || !classes) {
+  if (loading) {
     return (
       <div className="p-6 min-h-screen">
         <h1 className="text-4xl font-bold mb-4">Teacher Dashboard</h1>

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Layout } from '@/app/layout';
 import axios from 'axios';
 import config from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from "@/components/ui/label";
 import AllStudentGradesTable from '@/components/tables/grades/AllStudentGrades';
+import { Separator } from '@/components/ui/separator';
 
 export default function StudentPage() {
     const [user, setUser] = useState(null);
@@ -79,6 +79,7 @@ export default function StudentPage() {
                         <CardTitle className="text-2xl font-bold">Student Information</CardTitle>
                     </CardHeader>
                     <CardContent>
+                        <Separator />
                         <div  className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                             <p>Student ID: {student_id}</p>
                             <p>Name: {student.first_name} {student.last_name}</p>
@@ -89,11 +90,13 @@ export default function StudentPage() {
                             <p>Grade: {student.grade_level}</p>
                         </div>
                         <Label className="text-lg font-bold my-4">Guardian Information</Label>
+                        <Separator />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                             <p>Guardian Name: {student.guardian}</p>
                             <p>Guardian Phone: {student.guardian_phone}</p>
                         </div>
                         <Label className="text-lg font-bold my-4">Health Insurance</Label>
+                        <Separator />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                             <p>Insurance Provider: {student.health_ins}</p>
                             <p>Policy Number: {student.health_ins_num}</p>

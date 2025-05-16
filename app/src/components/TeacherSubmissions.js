@@ -20,7 +20,7 @@ export default function TeacherSubmissions() {
         router.push("/").then(() => { console.log("Redirected to login page") });
       } else {
         try {
-          const user = await jwtDecode(token);
+          const user = jwtDecode(token);
           setUser(user['sub']);
         } catch (error) {
           console.error('Error decoding token:', error);
@@ -30,7 +30,7 @@ export default function TeacherSubmissions() {
     };
 
     fetchUser().then(() => console.log("User fetched successfully: ", user));
-  },[router]);
+  },[router, user]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {

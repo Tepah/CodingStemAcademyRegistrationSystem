@@ -1,6 +1,8 @@
 from db_connection import get_db_connection
 from flask import Blueprint, request, jsonify
 from datetime import timedelta, time
+import requests
+import os
 
 classes_bp = Blueprint('classes', __name__)
 
@@ -19,7 +21,7 @@ def get_classes():
     my_db = get_db_connection()
     try:
         cursor = my_db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM classes")
+        cursor.execute("SELECT * FROM classes ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;")
         res = cursor.fetchall()
         for classData in res:
             if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
@@ -37,7 +39,7 @@ def get_class_by_id():
     try:
         cursor = my_db.cursor(dictionary=True)
         class_id = request.args.get('id')
-        sql = "SELECT * FROM classes WHERE id = %s"
+        sql = "SELECT * FROM classes WHERE id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (class_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
@@ -58,7 +60,7 @@ def get_classes_count_by_teacher():
     try:
         cursor = my_db.cursor(dictionary=True)
         teacher_id = request.args.get('teacher_id')
-        sql = "SELECT count(*) as count FROM classes WHERE teacher_id = %s"
+        sql = "SELECT count(*) as count FROM classes WHERE teacher_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (teacher_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
@@ -88,7 +90,7 @@ def get_classes_by_semester():
     try:
         cursor = my_db.cursor(dictionary=True)
         semester_id = request.args.get('semester_id')
-        sql = "SELECT * FROM classes WHERE semester_id = %s"
+        sql = "SELECT * FROM classes WHERE semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (semester_id, )
         cursor.execute(sql, val)
         res = cursor.fetchall()
@@ -162,7 +164,7 @@ def get_classes_by_teacher():
     db = get_db_connection()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "SELECT * FROM classes WHERE teacher_id = %s"
+        sql = "SELECT * FROM classes WHERE teacher_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         val = (id, )
         cursor.execute(sql, val)
         res = cursor.fetchall()
@@ -210,7 +212,7 @@ def get_student_classes_by_semester():
         res = cursor.fetchall()
         classes = []
         for row in res:
-            sql = "SELECT * FROM classes WHERE id = %s and semester_id = %s"
+            sql = "SELECT * FROM classes WHERE id = %s and semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
             val = (row['class_id'], semester_id )
             cursor.execute(sql, val)
             class_info = cursor.fetchone()
@@ -230,7 +232,7 @@ def get_teachers_classes_by_semesters():
     db = get_db_connection()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "SELECT * FROM classes WHERE teacher_id = %s and semester_id = %s"
+        sql = "SELECT * FROM classes WHERE teacher_id = %s and semester_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
         semester_id = request.args.get('semester_id')
         teacher_id = request.args.get('teacher_id')
         val = (teacher_id, semester_id)
@@ -276,6 +278,37 @@ def add_class():
         cursor.close()
         my_db.close()
 
+
+@classes_bp.route('/suggest-schedule', methods=['POST'])
+def suggest_schedule():
+    """
+    Suggests a class schedule for a student based on their data and available classes.
+    """
+    try:
+        student_data = request.get_json()  # Get the JSON data from the request
+        available_classes = student_data.get('available_classes', [])
+
+       
+        prompt = construct_prompt(student_data, available_classes)
+        
+        success, suggestions = call_deepseek_api(prompt) 
+
+        if success:
+            # Parse the suggestions and return the schedule
+            suggested_schedule = parse_suggestions(suggestions, available_classes)
+
+            for classData in suggested_schedule:
+                if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
+                    classData['start_time'] = format_time(classData['start_time'])
+                if 'end_time' in classData and isinstance(classData['end_time'], timedelta):
+                    classData['end_time'] = format_time(classData['end_time'])
+            # Return the suggested schedule
+            return jsonify({'message': 'Suggested schedule retrieved', 'schedule': suggested_schedule})
+        else:
+            return jsonify({'message': 'Failed to generate schedule', 'error': suggestions}), 500
+
+    except Exception as e:
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
 
 # PUT functions
 @classes_bp.route('/update_class/<int:id>', methods=['PUT'])
@@ -324,3 +357,89 @@ def delete_class(id):
         cursor.close()
         my_db.close()
     return jsonify({'message': 'Class has been deleted'})
+
+
+# Helper functions
+
+def call_deepseek_api(prompt):
+    """
+    Calls the DeepSeek API to get class suggestions.
+    """
+    deepseek_api_key = os.environ.get('DEEPSEEK_API_KEY')
+    print(f"DeepSeek API Key: {deepseek_api_key}")  # Debugging line
+    if not deepseek_api_key:
+        return False, "API key not found"
+    try:
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "deepseek-chat",  # Or the correct DeepSeek model name
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False  # Set to False for a complete response
+        }
+
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data)  # Replace with the actual DeepSeek endpoint
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        json_response = response.json()
+
+        # Extract the message content
+        if 'choices' in json_response and len(json_response['choices']) > 0:
+            message_content = json_response['choices'][0]['message']['content']
+            return True, message_content
+        else:
+            return False, "No suggestions found in response"
+
+    except requests.exceptions.RequestException as e:
+        return False, f"API request failed: {e}"
+    except Exception as e:
+        return False, f"An unexpected error occurred: {e}"
+    
+def construct_prompt(student_data, available_classes):
+    """
+    Constructs the prompt for the language model.
+    """
+    student_id = student_data.get('student_id')
+    previous_classes = student_data.get('previous_classes', [])
+    current_grade_level = student_data.get('grade_level', "")
+
+    prompt = f"""
+    Suggest a class schedule for student with the following information:
+    - Student ID: {student_id}
+    - Previously Taken Classes: {previous_classes}
+    - Current Grade Level: {current_grade_level}
+
+    Available Classes:
+    """
+    for class_data in available_classes:
+        prompt += f"""
+        - Class Name: {class_data['class_name']}, Subject: {class_data['subject']}, Id: {class_data['id']}
+        """
+
+    prompt += """
+    Based on this information, suggest a schedule of 3-4 classes that are appropriate for the student.
+    List only the class names, separated by newlines.
+    Consider the student's grade level, previous classes, and conflict-free scheduling
+    """
+    return prompt
+
+def parse_suggestions(suggestions_text, available_classes):
+    """
+    Parses the suggestions from the language model and returns a list of class data.
+    """
+    suggested_class_names = [s.strip() for s in suggestions_text.split("\n") if s.strip()]
+    suggested_schedule = []
+
+    for class_name in suggested_class_names:
+        # Find the class in the available classes list
+        for class_data in available_classes:
+            if class_data['class_name'] == class_name:
+                suggested_schedule.append(class_data)
+                break  # Stop searching once the class is found
+
+    return suggested_schedule

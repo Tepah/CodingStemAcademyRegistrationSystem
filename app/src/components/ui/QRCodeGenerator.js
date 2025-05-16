@@ -23,7 +23,7 @@ function QRCodeGenerator({ text, props }) {
   return (
     <div {...props}>
       {qrCodeUrl ? (
-        <Image src={qrCodeUrl} alt="QR Code" />
+        <Image src={qrCodeUrl} alt="QR Code" width="300" height="300" />
       ) : (
         <p>Loading QR Code...</p>
       )}
