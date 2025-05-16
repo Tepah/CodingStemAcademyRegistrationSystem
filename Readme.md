@@ -1,3 +1,10 @@
+# How to run the project
+In app folder:
+`npm run dev`
+
+In server folder:
+`python run.py`
+
 ## AI-Powered Course Assignment Project
 ___
 ### Teacher: Mr. Ryan
