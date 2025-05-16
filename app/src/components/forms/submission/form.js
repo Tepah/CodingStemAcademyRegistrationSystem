@@ -31,7 +31,7 @@ export function SubmissionForm({assignment_id, user_id}) {
 
     function onSubmit(data) {
         try {
-            axios.post(`${config.backendUrl}/submissions`, {
+            axios.post(`${config.backendUrl}/submission`, {
                 ...data,
                 assignment_id: assignment_id,
                 student_id: user_id,

@@ -56,6 +56,9 @@ export default function Calendar() {
                 minutes: parseInt(endTime.split(':')[1]),
                 seconds: 0,
               });
+              console.log("Date:", date);
+              console.log("Start Date Time:", startDateTime);
+              console.log("End Date Time:", endDateTime);
 
               return {
                 id: event['id'], // Unique ID for each occurrence

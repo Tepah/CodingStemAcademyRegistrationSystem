@@ -126,7 +126,7 @@ def get_submissions_by_class():
     my_db = get_db_connection()
     try:
         cursor = my_db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM submissions WHERE assignment_id = %s AND student_id = %s", (assignment_id, student_id))
+        cursor.execute("SELECT * FROM submissions WHERE assignment_id = %s AND student_id = %s ORDER BY submission_date DESC", (assignment_id, student_id))
         submissions = cursor.fetchall()
     finally:
         cursor.close()

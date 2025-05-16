@@ -13,6 +13,7 @@ import { Form } from "@/components/ui/form";
 import { SubmissionForm } from '@/components/forms/submission/form';
 import ManualScoreDialog from '@/components/dialogs/manualScoreDialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
 
 const ClassPage = () => {
   const router = useRouter();
@@ -99,23 +100,27 @@ const ClassPage = () => {
     if (assignment_id) {
       setLoading(true); // Start loading
       fetchAssignment();
-      fetchSubmissions()
-        .then((submissions) => fetchStudents(submissions))
-        .then((submissionsWithStudentNames) => fetchScores(submissionsWithStudentNames))
-        .then((submissionsWithScores) => {
-          console.log("Final submissions with scores:", submissionsWithScores);
-          setSubmissions(submissionsWithScores);
-        })
-        .catch((error) => {
-          console.error("Error in data fetching pipeline:", error);
-        })
-        .finally(() => {
-          setLoading(false); // Stop loading
-        });
+      if (user.role === "Teacher") {
+        fetchSubmissions()
+          .then((submissions) => fetchStudents(submissions))
+          .then((submissionsWithStudentNames) => fetchScores(submissionsWithStudentNames))
+          .then((submissionsWithScores) => {
+            console.log("Final submissions with scores:", submissionsWithScores);
+            setSubmissions(submissionsWithScores);
+          })
+          .catch((error) => {
+            console.error("Error in data fetching pipeline:", error);
+          })
+          .finally(() => {
+            setLoading(false); // Stop loading
+          });
+      } else if (user.role === "Student") {
+        setLoading(false);
+      }
     }
-  }, [assignment_id])
+  }, [assignment_id, user.role]);
 
-  
+
   if (loading) {
     return (
       <Layout>
@@ -165,10 +170,103 @@ const ClassPage = () => {
             <DataTable columns={columns} data={submissions} />
           </div>
         )}
-
+        {user && user.role === "Student" && (
+          <div className="flex flex-col my-8">
+            <SubmissionInformation student_id={user['id']} assignmentData={assignmentData} />
+          </div>
+        )}
       </div>
     </Layout>
   );
 };
+
+const SubmissionInformation = ({ student_id, assignmentData }) => {
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get(`${config.backendUrl}/submissions/student`, {
+      params: { student_id, assignment_id: assignmentData.id }
+    })
+      .then((res) => {
+        console.log("Fetched submissions:", res.data.submissions);
+        const fetchScores = async (submissions) => {
+          const submissionsWithScores = await Promise.all(submissions.map(async (submission) => {
+            try {
+              const response = await axios.get(`${config.backendUrl}/score`, { params: { submission_id: submission.id } });
+              const score = response.data.score;
+              submission.grade = score ? score.grade : null; // Handle cases where score is null
+              submission.feedback = score ? score.feedback : null; // Handle cases where feedback is null
+              submission.score_id = score ? score.id : null; // Handle cases where score_id is null
+            } catch (error) {
+              console.error(`Error fetching score for submission ${submission.id}:`, error);
+              submission.grade = 0; // Set grade to null in case of error
+            }
+            return submission;
+          }));
+          return submissionsWithScores;
+        }
+        fetchScores(res.data.submissions).then((submissionsWithScores) => {
+          console.log("Final submissions with scores:", submissionsWithScores);
+          setSubmissions(submissionsWithScores);
+        });
+      }
+      ).catch((error) => {
+        console.error('Error fetching submissions:', error);
+      }).finally(() => {
+        setLoading(false);
+      });
+
+  }, [student_id, assignmentData.id]);
+
+  return (
+    <>
+      {submissions.length !== 0 && (
+        <div className="container max-w-[900px] flex flex-col gap-4">
+          <h1 className="text-2xl font-bold">Your Submissions</h1>
+          <Card className="p-4">
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                <Skeleton className="h-[120px] w-full" />
+                <Separator className="my-4" />
+                <Skeleton className="h-[120px] w-full" />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {submissions.map((submission) => (
+                  <div key={submission.id} className="flex flex-col flex gap-4 p-4">
+                    <div className="flex flex-row justify-between">
+                      <div className="flex flex-col justify-between gap-2">
+                        <p className="">Grade: {submission.grade !== null ? submission.grade : "N/A"} / {assignmentData.total_points}</p><p className="text-sm text-gray-500">Feedback:</p>
+                        <p className="text-sm text-gray-500">{submission.feedback !== null ? submission.feedback : "Not Graded"}</p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm text-gray-500">
+                          {new Date(submission.submission_date).toLocaleDateString("en-US", {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            timeZone: 'UTC'
+                          })}</p>
+                      </div>
+                    </div>
+                    <h2 className="">Submission: </h2>
+                    <div className="border border-gray-300 p-4">
+                      <h2 className="text-center justify-center">{submission.content}</h2>
+                    </div>
+                    <Separator className="my-4" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+    </>
+  )
+}
 
 export default ClassPage;

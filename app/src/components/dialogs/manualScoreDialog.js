@@ -15,6 +15,7 @@ import axios from "axios";
 import config from "@/config";
 import StudentNamePopover from "../popovers/StudentNamePopover";
 import { title } from "process";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const schema = z.object({
     student_id: z.number(),
@@ -92,6 +93,10 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
 
     return (
         <Dialog>
+            { loading ? (
+                <Skeleton className="h-10 w-40" />
+            ) : ( 
+                <>
             <DialogTrigger asChild>
                 <Button variant="default" className="">
                     Manually Input Grade
@@ -144,6 +149,7 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
                     </form>
                 </Form>
             </DialogContent>
+            </>)}
         </Dialog>
     )
 }

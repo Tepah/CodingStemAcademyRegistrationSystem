@@ -7,6 +7,8 @@ import config from "@/config";
 import {DataTable} from "@/components/tables/classes/student/data-table";
 import {columns} from "@/components/tables/classes/student/columns";
 import {Label} from "@/components/ui/label";
+import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
 export default function StudentClasses() {
     const router = useRouter()
@@ -116,17 +118,22 @@ export default function StudentClasses() {
     
     return (
         <Layout>
-            <div className="container mx-auto p-12">
+            <div className="container mx-auto max-w-[1000px] p-8">
             {loading ? (
                 <div className="flex items-center justify-center h-screen">
                     <h1 className="text-3xl font-bold">Loading...</h1>
                 </div>
             ) : user['role'] === 'Admin' ? (
-                <div>
-                    <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">{student['first_name']} {student['last_name']}&apos;s classes</h1>
-                        <p>Student</p>
-                    </Label>
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-row items-center justify-between">
+                        <Label className="flex flex-row">
+                            <h1 className="text-3xl font-bold">{student['first_name']} {student['last_name']}&apos;s classes</h1>
+                            <p>Student</p>
+                        </Label>
+                        <Button variant="default" onClick={() => router.push(`${studentId}/register-classes`)}>
+                            Register Classes
+                        </Button>
+                    </div>
                     <DataTable columns={columns} data={classes} />
                 </div>
             ) : (

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { ColumnVisibility } from "@tanstack/react-table"
 
 export const roles = ['Admin', 'Student', 'Teacher'];
 
@@ -51,6 +52,10 @@ export const columns = [
   {
     accessorKey: "phone",
     header: "Phone",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
   },
   {
     id: "actions",

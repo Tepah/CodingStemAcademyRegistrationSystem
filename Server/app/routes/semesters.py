@@ -19,6 +19,21 @@ def get_semesters_by_class_route():
         return jsonify({'message': 'No semesters found'}), 200
     return jsonify({'message': 'Semesters retrieved', 'semesters': semesters}), 200
 
+@semesters_bp.route('/semesters/ongoing-or-upcoming', methods=['GET'])
+def get_concurrent_semesters_route():
+    db = get_db_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM semesters WHERE status = 'Ongoing' OR status = 'Upcoming'"
+        cursor.execute(sql)
+        semesters = cursor.fetchall()
+    finally:
+        db.close()
+        cursor.close()
+    if not semesters:
+        return jsonify({'message': 'No concurrent semesters found'}), 200
+    return jsonify({'message': 'Concurrent semesters retrieved', 'semesters': semesters}), 200
+
 
 @semesters_bp.route('/semester', methods=['GET'])
 def get_semester_by_id_route():
