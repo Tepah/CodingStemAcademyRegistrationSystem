@@ -6,9 +6,9 @@ import {useRouter} from "next/router";
 import SemesterPicker from '@/components/ClassRegistration/semesterPicker';
 import {Layout} from "@/app/layout";
 import ClassPicker from '@/components/ClassRegistration/ClassPicker';
+import Confirmation from '@/components/ClassRegistration/Confirmation';
 
 export default function RegisterClasses() {
-  const [classes, setClasses] = useState([]);
   const [currentClasses, setCurrentClasses] = useState([]);
   const [pickedClasses, setPickedClasses] = useState([]);
   const [user, setUser] = useState(null);
@@ -17,7 +17,6 @@ export default function RegisterClasses() {
 
   const router = useRouter();
   const student_id = router.query.student_id;
-  const [student, setStudent] = useState(null);
   const [step, setStep] = useState(0);
   
 
@@ -56,11 +55,17 @@ export default function RegisterClasses() {
             setCurrentClasses={setCurrentClasses}
             pickedClasses={pickedClasses}
             setPickedClasses={setPickedClasses}
+            setStep={setStep}
             />
         )}
         {step === 2 && (
-          <div>
-          </div>
+          <Confirmation 
+            currentClasses={currentClasses}
+            pickedClasses={pickedClasses}
+            student_id={student_id}
+            setLoading={setLoading}
+            loading={loading}
+          />
         )}
       </div>
     </Layout>

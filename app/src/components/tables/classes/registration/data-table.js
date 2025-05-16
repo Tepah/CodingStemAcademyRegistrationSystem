@@ -139,7 +139,7 @@ export function DataTable({ columns, data, onClick }) {
                 </Table>
             </div>
             <div className="flex items-center justify-between py-4">
-                <Button onClick={() => handleClick()}>Add Classes</Button>
+                <Button size="sm" onClick={() => handleClick()}>Add Classes</Button>
                 <div className="flex items-center justify-end gap-4">
 
                     <span className="text-sm">
