@@ -50,7 +50,7 @@ export default function ClassPicker(props) {
         };
         fetchClasses()
             .then(() => { props.setLoading(false); });
-    }, []);
+    }, [props]);
 
     const handleAddClass = (classData) => {
         props.setLoading(true);
@@ -114,7 +114,7 @@ export default function ClassPicker(props) {
 
         fetchClasses()
             .then(() => { props.setLoading(false); });
-    }, [props.pickedClasses]);
+    }, [props]);
 
     const onAIClick = async () => {
         try {

@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import { jwtDecode } from 'jwt-decode'
-import StudentDash from "@/components/ClassRegistration/dashboard/StudentDash";
-import TeacherDash from "@/components/ClassRegistration/dashboard/TeacherDash";
-import AdminDash from "@/components/ClassRegistration/dashboard/AdminDash";
+import StudentDash from "@/components/dashboard/StudentDash";
+import TeacherDash from "@/components/dashboard/TeacherDash";
+import AdminDash from "@/components/dashboard/AdminDash";
 import {Layout, LayoutWithCalendar} from "@/app/layout";
 
 export default function Dashboard() {

@@ -27,7 +27,7 @@ export default function SemesterPicker(props) {
             console.log("Fetched semesters:", semesters);
             props.setLoading(false);
         })
-    }, []);
+    }, [props, semesters]);
 
     
     return (

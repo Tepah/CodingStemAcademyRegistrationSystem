@@ -1,9 +1,9 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card';
 import Link from 'next/link';
-import { Label } from '../../ui/label';
+import { Label } from '../ui/label';
 import { BookCopy, Megaphone, NotepadText } from 'lucide-react';
-import { Separator } from '../../ui/separator';
+import { Separator } from '../ui/separator';
 
 const ClassCard = ({ classData }) => {
     console.log(classData);
