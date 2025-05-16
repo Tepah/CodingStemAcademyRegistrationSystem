@@ -75,7 +75,7 @@ def get_classes_count_by_student():
     try:
         cursor = my_db.cursor(dictionary=True)
         student_id = request.args.get('student_id')
-        sql = "SELECT count(*) as count FROM class_students WHERE user_id = %s ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
+        sql = "SELECT count(*) as count FROM class_students WHERE user_id = %s"
         val = (student_id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
