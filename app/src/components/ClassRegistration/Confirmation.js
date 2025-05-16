@@ -111,7 +111,7 @@ export default function Confirmation(props) {
                     <DialogHeader>
                         <DialogTitle>Edit profile</DialogTitle>
                         <DialogDescription>
-                            The Student's schedule has been set for the semester.
+                            The Student&apos;s schedule has been set for the semester.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>

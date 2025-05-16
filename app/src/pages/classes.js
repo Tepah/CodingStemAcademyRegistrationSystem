@@ -3,7 +3,7 @@ import { Layout } from "@/app/layout";
 import { jwtDecode } from "jwt-decode";
 import { Separator } from '@/components/ui/separator';
 import { getAllClassesForStudent, getSemester, getUser } from '@/components/api';
-import ClassCard from '@/components/dashboard/class-cards';
+import ClassCard from '@/components/ClassRegistration/dashboard/class-cards';
 import { getAllClassesForTeacher } from '@/components/api';
 
 

@@ -15,6 +15,7 @@ import axios from "axios";
 import config from "@/config";
 import StudentNamePopover from "../popovers/StudentNamePopover";
 import { title } from "process";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const schema = z.object({
     student_id: z.number(),
