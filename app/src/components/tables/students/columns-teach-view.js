@@ -67,6 +67,11 @@ export const columns = [
                                 View Grade
                             </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/admin/student/${data.id}`}>
+                                View Profile
+                            </Link>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

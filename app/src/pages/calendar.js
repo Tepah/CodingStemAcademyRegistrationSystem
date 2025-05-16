@@ -29,6 +29,7 @@ export default function Calendar() {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"
             const dayOfWeek = event['day']; // Day of the week (string)
+            console.log(event, startTime, endTime)
 
             if (!dayOfWeek) {
               console.warn("Event missing dayOfWeek:", event);

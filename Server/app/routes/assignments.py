@@ -218,9 +218,9 @@ def get_events_by_student():
             cursor.execute(sql, (id, ))
             classInfo = cursor.fetchone()
             if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
-                classInfo['start_time'] = format_time(classInfo['start_time'])
+                classInfo['start_time'] = format_24h_time(classInfo['start_time'])
             if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
-                classInfo['end_time'] = format_time(classInfo['end_time'])
+                classInfo['end_time'] = format_24h_time(classInfo['end_time'])
 
             classes.append(classInfo)
             sql = "SELECT * FROM users WHERE id = %s"
@@ -260,9 +260,9 @@ def get_events_by_teacher():
             cursor.execute(sql, (id, ))
             classInfo = cursor.fetchone()
             if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
-                classInfo['start_time'] = format_time(classInfo['start_time'])
+                classInfo['start_time'] = format_24h_time(classInfo['start_time'])
             if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
-                classInfo['end_time'] = format_time(classInfo['end_time'])
+                classInfo['end_time'] = format_24h_time(classInfo['end_time'])
 
             classes.append(classInfo)
             sql = "SELECT * FROM users WHERE id = %s"
@@ -377,3 +377,11 @@ def format_time(time_obj):
         minutes = int((total_seconds % 3600) // 60)
         time_obj = time(hours, minutes)
     return time_obj.strftime("%I:%M %p")
+def format_24h_time(time_obj):
+    if isinstance(time_obj, timedelta):
+        # Convert timedelta to seconds and then to a time object
+        total_seconds = time_obj.total_seconds()
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        time_obj = time(hours, minutes)
+    return time_obj.strftime("%H:%M")

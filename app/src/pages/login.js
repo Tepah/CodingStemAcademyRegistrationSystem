@@ -11,6 +11,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const [showError, setShowError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ export default function Login() {
       password
     }).then(response => {
       console.log("Successfully logged in: " + response.data['message']);
+      setShowError(false);
       if (response.data['access_token']) {
         localStorage.setItem('token', response.data['access_token']);
         router.push('/dashboard').then( () => console.log("Redirecting to dashboard"));
@@ -27,6 +29,7 @@ export default function Login() {
         throw new Error(response.data['message']);
       }
     }).catch( error => {
+      setShowError(true);
       console.log(error);
     });
   };
@@ -59,6 +62,9 @@ export default function Login() {
                 </div>
                 <Input id="password" type="password" onChange={(e) => setPassword(e.target.value)} required />
               </div>
+              {showError == true &&
+                <Label htmlFor="loginerror" className={'text-red-500'}>Invalid email or password</Label>
+              }
             <Button type="submit">Login</Button>
             </div>
           </form>
