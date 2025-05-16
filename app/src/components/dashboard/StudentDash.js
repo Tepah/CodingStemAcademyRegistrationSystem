@@ -111,9 +111,6 @@ const StudentDash = () => {
           ) : (
             <div className="col-span-2 flex-1 flex flex-col space-y-4 p-16">
               <p className="text-center text-gray-500">No Classes Enrolled</p>
-              <Link href="/register-classes" className="w-full h-2/3 flex items-center justify-center rounded-xl">
-                <Button variant="default" className="text-center">Enroll in a Class</Button>
-              </Link>
             </div>
           )}
           <Card className="col-span-1 md:col-span-2">
@@ -123,7 +120,6 @@ const StudentDash = () => {
             <CardContent>
               <ul className="grid grid-cols-1 md:grid-cols-2 space-y-2">
                 <Link href="/courses">View Courses</Link>
-                <Link href="/register-classes">Enroll in a Course</Link>
                 <Link href="/assignments">View Assignments</Link>
                 <Link href="/calendar">View Calendar</Link>
                 <Link href="/grades">View Grades</Link>

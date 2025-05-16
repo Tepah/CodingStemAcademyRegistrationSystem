@@ -115,10 +115,10 @@ export default function Messages() {
                     setReply(false)
                     setError("");
                     console.log("read: ", message.has_read);
+                    setCurrentMessage({...message});
                     if (message.has_read === 1)
                       return;
                     message.has_read += 1;
-                    setCurrentMessage({...message});
                     console.log("Data to be sent:", currentMessage);
 
                     axios.put(`${config.backendUrl}/messages`, message)
