@@ -28,7 +28,7 @@ export function GradesDataTable({
   })
 
   return (
-    <div className="flex flex-1 container max-w-[900px] mx-auto rounded-md border">
+    <div className="flex flex-1 container rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

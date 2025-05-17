@@ -24,6 +24,7 @@ export default function Dashboard() {
 
     fetchRole().then(() => console.log("Role set"));
   }, []);
+  
   if (role === 'Admin') {
     return (
       <Layout>

@@ -62,6 +62,16 @@ export const columns = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href={`/classes/${data.class_id}/student/${data.id}`}>
+                                View Grade
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/admin/student/${data.id}`}>
+                                View Profile
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                             deleteStudentFromClass(data['class_id'], data['id'])
                             .then((response) => {

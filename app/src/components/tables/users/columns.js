@@ -75,6 +75,11 @@ export const columns = [
             <DropdownMenuSeparator />
             {userRole === 'Student' ? (
               <div>
+                <DropdownMenuItem asChild>
+                  <Link href={`grades/${user.id}`}>
+                    View Grades
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild key={user.id}>
                   <Link href={`classes/student/${user.id}`}>
                     Manage Student&apos;s Classes

@@ -15,6 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { columns } from "@/components/tables/students/columns-teach-view";
+import { columns as columnsAdmin } from "@/components/tables/students/columns";
 import { DataTable } from "@/components/tables/students/data-table";
 
 export default function ClassDetails() {
@@ -157,14 +158,14 @@ export default function ClassDetails() {
             </div>
           </CardContent>
         </Card>
-        {user.role === "Teacher" && (
+        {user.role === "Teacher" || user.role === 'Admin' && (
         <Card className="">
           <CardHeader>
             <CardTitle>Students</CardTitle>
             <Separator />
           </CardHeader>
           <CardContent>
-            <DataTable columns={columns} data={students} />
+            <DataTable columns={user.role === 'Teacher' ? columns : columnsAdmin} data={students} />
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">Total Students: {students.length}</p>

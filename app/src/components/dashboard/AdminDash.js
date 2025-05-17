@@ -37,8 +37,7 @@ const AdminDash = () => {
 
 
   return (
-    <div>
-      <div className="container mx-auto p-6 min-h-screen">
+      <div className="container mx-auto p-6 flex flex-col flex-1 space-y-8">
         <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <p>Welcome, {user['first_name']} {user['last_name']}</p>
@@ -61,7 +60,6 @@ const AdminDash = () => {
         </div>
 
       </div>
-    </div>
   );
 }
 

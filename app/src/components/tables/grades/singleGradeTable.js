@@ -16,7 +16,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { fetchAssignments } from '@/components/api';
-import { format } from 'date-fns';
+import Link from "next/link";
 
 
 const getGrade = (percent) => {
@@ -102,24 +102,40 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
                         <TableBody>
                             {assignments.map((assignment) => (
                                 <TableRow key={assignment.id}>
-                                    <TableCell className="py-4 text-left">{assignment.title}</TableCell>
                                     <TableCell className="py-4 text-left">
-                                        {new Date(assignment.due_date).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                            timeZone: "UTC", // Force UTC interpretation
-                                        })}
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.title}
+                                        </Link>
                                     </TableCell>
-                                    <TableCell className="text-left">{assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 'N/A'}</TableCell>
-                                    <TableCell className="text-left">{assignment.total_points}</TableCell>
+                                    <TableCell className="py-4 text-left">
+
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {new Date(assignment.due_date).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                                timeZone: "UTC", // Force UTC interpretation
+                                            })}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="text-left">
+
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 'N/A'}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="text-left">
+                                        <Link href={`classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.total_points}
+                                        </Link>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             <TableRow>
                                 <TableCell className="py-8 text-lg text-left font-bold">Overall Score</TableCell>
                                 <TableCell className="text-left"></TableCell>
                                 <TableCell className="text-left">{overallScore ? overallScore.toFixed(0) : 0}/{overallTotal}</TableCell>
-                                <TableCell className="text-left font-semibold">{overallPercent}%({grade})</TableCell>
+                                <TableCell className="text-left font-semibold">{overallPercent.toFixed(2)}%({grade})</TableCell>
                             </TableRow>
                         </TableBody>
                     )}

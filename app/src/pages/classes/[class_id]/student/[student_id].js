@@ -27,7 +27,7 @@ export default function StudentClassDetails() {
         }
     }, [router]);
 
-    if (user.role !== "Teacher") {
+    if (user.role !== "Teacher" || user.role !== "Admin") {
         <Layout>
             <div className="container mx-auto flex flex-col p-4 gap-4">
                 <h1 className="text-2xl font-bold">Unauthorized</h1>
@@ -38,7 +38,9 @@ export default function StudentClassDetails() {
 
     return (
         <Layout>
-            <SingleGradeTable class_id={class_id} student_id={student_id} setLoading={setLoading} />
+            <div className="container mx-auto flex flex-col p-4 gap-4">
+                <SingleGradeTable class_id={class_id} student_id={student_id} setLoading={setLoading} />
+            </div>
         </Layout>
     )
 }

@@ -100,7 +100,7 @@ const ClassPage = () => {
     if (assignment_id) {
       setLoading(true); // Start loading
       fetchAssignment();
-      if (user.role === "Teacher") {
+      if (user.role === "Teacher" || user.role === "Admin") {
         fetchSubmissions()
           .then((submissions) => fetchStudents(submissions))
           .then((submissionsWithStudentNames) => fetchScores(submissionsWithStudentNames))
@@ -161,7 +161,7 @@ const ClassPage = () => {
           <h3 className="text-lg font-semibold">Description</h3>
           <p className="">{assignmentData.description}</p>
         </Card>
-        {user && user.role === "Teacher" && (
+        {user && user.role === "Teacher" || user.role === "Admin" && (
           <div className="flex flex-col my-8">
             <div className="flex flex-row justify-between items-center">
               <h2 className="text-xl font-semibold">Submissions</h2>

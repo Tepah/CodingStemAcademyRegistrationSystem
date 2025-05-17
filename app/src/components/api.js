@@ -326,7 +326,7 @@ export const deleteStudentFromClass = async (class_id, student_id) => {
         console.log("Deleting student from class...", student_id, class_id);
         const response = await axios.delete(`${config.backendUrl}/delete-student-from-class`, {
             params: {
-                student_id: student_id,
+                user_id: student_id,
                 class_id: class_id
             }
         });
