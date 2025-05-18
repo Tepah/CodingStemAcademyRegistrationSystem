@@ -182,7 +182,7 @@ def get_ai_score_suggestion():
     
     prompt = generate_submission_suggestion_prompt(assignment_file, submission_file, assignment)
 
-    return jsonify({'message': 'AI score suggestion generated successfully', 'response': {'grade': 0, 'feedback': prompt}), 200
+    return jsonify({'message': 'AI score suggestion generated successfully', 'response': {'grade': 0, 'feedback': prompt}}), 200
 
 
 # PUT functions
