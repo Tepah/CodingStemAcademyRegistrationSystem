@@ -12,7 +12,7 @@ import {
 import Link from "next/link"
 import { PaymentModifySheet } from "@/components/sheets/payment-sheet"
 import { SheetTrigger } from "@/components/ui/sheet"
-import { deletePayment } from "@/components/api"
+import { deletePayment } from "@/components/api/api"
 
 
 export const columns = [
@@ -28,7 +28,7 @@ export const columns = [
         cell: ({ row }) => {
             console.log("Row data:", row.original);
             console.log("Row data last name:", row.original.last_name);
-            return row.original.last_name || "N/A";
+            return <div className="text-left">{row.original.last_name || "N/A"}</div>;
         }
     },
     {
@@ -53,6 +53,14 @@ export const columns = [
                     <span>Amount</span>
                 </Button>
             )
+        },
+        cell: ({ row }) => {
+            const amount = row.original.amount;
+            return (
+                <div className="text-center">
+                    {amount ? `$${parseFloat(amount).toFixed(2)}` : "N/A"}
+                </div>
+            );
         }
     },
     {
@@ -86,12 +94,16 @@ export const columns = [
         },
         cell: ({ row }) => {
             const date = new Date(row.original.payment_date);
-            return date.toLocaleDateString("en-US", {
-                timeZone: "UTC",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-            });
+            return (
+            <div className="text-center">
+                {date.toLocaleDateString("en-US", {
+                    timeZone: "UTC",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                })}
+            </div>
+            );
         }
     },
     {
@@ -102,6 +114,9 @@ export const columns = [
                     <span>Donation Type</span>
                 </Button>
             )
+        },
+        cell: ({ row }) => {
+            return <div className="text-center">{row.original.payment_type || "N/A"}</div>;
         }
     },
     {

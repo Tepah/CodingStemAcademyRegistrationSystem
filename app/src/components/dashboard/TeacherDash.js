@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ClassCard from './class-cards';
 import axios from 'axios';
 import config from '@/config';
-import { getClassesCountForTeacher, getCurrentSemester } from '@/components/api';
+import { getClassesCountForTeacher, getCurrentSemester } from '@/components/api/api';
 
 const TeacherDash = () => {
   const [user, setUser] = useState(null);

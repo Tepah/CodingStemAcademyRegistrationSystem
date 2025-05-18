@@ -158,7 +158,7 @@ export default function ClassDetails() {
             </div>
           </CardContent>
         </Card>
-        {user.role === "Teacher" || user.role === 'Admin' && (
+      {(user.role === "Teacher" || user.role === 'Admin') && (
         <Card className="">
           <CardHeader>
             <CardTitle>Students</CardTitle>

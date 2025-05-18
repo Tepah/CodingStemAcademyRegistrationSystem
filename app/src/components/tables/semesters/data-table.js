@@ -46,8 +46,8 @@ export function DataTable({ columns, data }) {
 
     return (
         <div>
-            <div className="flex items-center py-4 space-x-2">
-                <div className="flex flex-row flex-1 items-center justify-end space-x-2 py-4">
+            <div className="flex items-center space-x-2">
+                <div className="flex flex-row flex-1 items-center space-x-2 py-4">
                     <span>Status:</span>
                     <Button
                         variant={activeStatus === "Ongoing" ? "default" : "outline"}

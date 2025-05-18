@@ -12,7 +12,7 @@ import {
 import Link from "next/link"
 import { PaymentModifySheet } from "@/components/sheets/payment-sheet"
 import { SheetTrigger } from "@/components/ui/sheet"
-import { deletePayment } from "@/components/api"
+import { deletePayment } from "@/components/api/api"
 
 
 export const columns = [

@@ -98,7 +98,7 @@ export default function ManualScoreDialog({ assignment_id, class_id, submissions
             ) : ( 
                 <>
             <DialogTrigger asChild>
-                <Button variant="default" className="">
+                <Button size="sm" variant="default" className="">
                     Manually Input Grade
                 </Button>
             </DialogTrigger>

@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchAssignments, getCurrentSemester } from '@/components/api';
+import { fetchAssignments, getCurrentSemester } from '@/components/api/api';
 import { format } from 'date-fns';
 import { BookCopy, Megaphone, NotepadText } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";

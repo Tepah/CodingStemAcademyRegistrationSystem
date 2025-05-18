@@ -8,7 +8,7 @@ import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from "
 import { Select, SelectTrigger, SelectItem, SelectGroup, SelectContent, SelectValue } from '@/components/ui/select';
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { postSemester } from "@/components/api";
+import { postSemester } from "@/components/api/api";
 
 const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),

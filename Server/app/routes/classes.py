@@ -400,6 +400,7 @@ def call_deepseek_api(prompt):
     except Exception as e:
         return False, f"An unexpected error occurred: {e}"
     
+# TODO: Fix the prompt so that it gets ID's and not names
 def construct_prompt(student_data, available_classes):
     """
     Constructs the prompt for the language model.

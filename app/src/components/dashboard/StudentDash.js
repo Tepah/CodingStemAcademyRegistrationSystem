@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentSemester } from "@/components/api";
+import { getCurrentSemester } from "@/components/api/api";
 import axios from 'axios';
 import config from '@/config';
 import ClassCard from './class-cards';

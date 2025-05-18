@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { DataTable } from "@/components/tables/donations/data-table";
 import { columns } from "@/components/tables/donations/columns-ex";
 import { Layout } from "@/app/layout";
-import { getUser, getPaymentsForStudent } from "@/components/api";
+import { getUser, getPaymentsForStudent } from "@/components/api/api";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

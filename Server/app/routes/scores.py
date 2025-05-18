@@ -1,5 +1,7 @@
 from db_connection import get_db_connection
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
+
 
 scores_bp = Blueprint('scores', __name__)
 
@@ -155,6 +157,34 @@ def create_score():
         cursor.close()
         connection.close()
 
+
+ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "jpg", "png"}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@scores_bp.route('/ai/score-suggestion', methods=['POST'])
+def get_ai_score_suggestion():
+    if 'submission_file' not in request.files:
+        return jsonify({'message': 'No SubmissionFile'}), 400
+    if 'assignment_file' in request.files:
+        assignment_file = request.files['assignment_file']
+    else:
+        assignment_file = None
+
+    submission_file = request.files['submission_file']
+    if submission_file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+    if not submission_file or not allowed_file(submission_file.filename):
+        return jsonify({'message': 'Invalid file type'}), 400
+    
+    assignment = request.form.get('assignment')
+    
+    prompt = generate_submission_suggestion_prompt(assignment_file, submission_file, assignment)
+
+    return jsonify({'message': 'AI score suggestion generated successfully', 'response': {'grade': 0, 'feedback': prompt}), 200
+
+
 # PUT functions
 @scores_bp.route('/score', methods=['PUT'])
 def update_score():
@@ -195,3 +225,20 @@ def delete_score():
     finally:
         cursor.close()
         connection.close()
+
+# HELPER functions
+def generate_submission_suggestion_prompt(assignment_file, submission_file, assignmentData):
+    prompt = f"""
+    You are a teacher's assistant. You will be given an assignment file and a student's submission file. 
+    Your task is to grade the submission based on the assignment file and provide feedback.
+    
+    Assignment File: {assignment_file.filename if assignment_file else 'No assignment file provided'}
+    
+    Submission File: {submission_file.filename}
+    
+    Assignment Data: {assignmentData}
+
+    Please provide a grade (out of 100) and feedback.
+    Separate the grade and feedback with a new line.
+    """
+    return prompt

@@ -3,7 +3,7 @@ import { Dialog, DialogDescription, DialogContent, DialogHeader, DialogTitle, Di
 import {Button} from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { postTeacherInvite } from "../api";
+import { postTeacherInvite } from "../api/api";
 import QRCodeGenerator from "../ui/QRCodeGenerator";
 
 export const TeacherLink = ({ children, teacherData }) => {

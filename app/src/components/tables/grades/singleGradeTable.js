@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchAssignments } from '@/components/api';
+import { fetchAssignments } from '@/components/api/api';
 import Link from "next/link";
 
 

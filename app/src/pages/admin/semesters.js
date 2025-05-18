@@ -4,7 +4,7 @@ import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import {Label} from "@/components/ui/label";
 import {DataTable} from "@/components/tables/semesters/data-table";
-import { getSemesters } from '@/components/api';
+import { getSemesters } from '@/components/api/api';
 import { columns } from "@/components/tables/semesters/columns";
 
 
@@ -38,7 +38,7 @@ export default function Semesters() {
 
   return (
     <Layout>
-      <div className="container w-[800px] p-12">
+      <div className="container mx-auto flex flex-col space-y-4 max-w-[1000px] p-8">
       <Label>
         <h1 className="text-3xl font-bold">Semesters</h1>
         <p className="text-gray-500">Manage Semesters in the system</p>

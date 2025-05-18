@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Layout } from "@/app/layout";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from "next/router";
-import { getClassesBySemester, getSemester }  from "@/components/api";
+import { getClassesBySemester, getSemester }  from "@/components/api/api";
 import { DataTable } from "@/components/tables/classes/data-table";
 import { columns } from "@/components/tables/classes/columns";
 
@@ -11,8 +11,16 @@ export default function SemesterPage() {
     const { semester_id } = router.query;
     const [semester, setSemester] = useState(null);
     const [classes, setClasses] = useState(null);
-    const startDate = new Date(semester?.start_date);
-    const endDate = new Date(semester?.end_date);
+    const startDate = new Date(semester?.start_date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+    const endDate = new Date(semester?.end_date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
 
     useEffect(() => {
         if (!semester_id) {
@@ -54,10 +62,10 @@ export default function SemesterPage() {
 
     return (
         <Layout>
-            <div className="flex flex-col container p-8">
+            <div className="flex flex-col container mx-auto max-w-[1000px] p-8">
                 <div className="flex flex-row space-x-4">
                     <Label className="text-2xl font-bold">{semester.name}</Label>
-                    <p>{startDate} - {semester.end_date}</p>
+                    <p>{startDate} - {endDate}</p>
                 </div>
                 <DataTable columns={columns} data={classes} />
             </div>

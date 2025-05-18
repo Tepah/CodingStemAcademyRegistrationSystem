@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { Separator } from '../ui/separator';
-import { getAssignmentsForWeek, getAssignmentsForWeekTeacher } from '../api';
+import { getAssignmentsForWeek, getAssignmentsForWeekTeacher } from '../api/api';
 import { jwtDecode } from 'jwt-decode';
 import { Label } from '@/components/ui/label'
 import { isToday, isTomorrow } from 'date-fns';
