@@ -11,19 +11,22 @@ import {Label} from "@/components/ui/label";
 export default function Classes() {
     const router = useRouter()
     const [classes, setClasses] = React.useState([]);
+    const [semester, setSemester] = React.useState([]);
     const [user, setUser] = React.useState({});
     
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) {
-        router.push('/').then(() => {
-            console.log('Redirected to home page')
-        })
-        } else {
         const decodedToken = jwtDecode(token);
         setUser(decodedToken['sub']);
         console.log("Decoded token:", decodedToken);
-        }
+        axios.get(`${config.backendUrl}/current-semester`)
+        .then((response) => {
+            console.log("Current semester:", response.data);
+            setSemester(response.data['semester']);
+        })
+        .catch((error) => {
+            console.error("Error fetching current semester:", error);
+        });
     }, [router]);
     
     useEffect(() => {
@@ -137,7 +140,7 @@ export default function Classes() {
                     <Label className="flex flex-row">
                         <h1 className="text-3xl font-bold">Manage Classes</h1>
                     </Label>
-                    <DataTable columns={columns} data={classes} />
+                    <DataTable columns={columns} data={classes} semester={semester.name} />
                 </div>
             ) : (
                 <div className="text-center">
