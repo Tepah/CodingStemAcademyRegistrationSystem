@@ -1,5 +1,7 @@
 from db_connection import get_db_connection
 from flask import Flask, jsonify, request, Blueprint
+import requests
+import os
 
 semesters_bp = Blueprint('semesters', __name__)
 
@@ -81,6 +83,20 @@ def create_semester_route():
         cursor.close()
     return jsonify({'message': 'Semester created successfully'}), 201
 
+@semesters_bp.route('/generate-AI-semester-schedule', methods=['POST'])
+def generate_ai_semester_schedule_route():
+    db = get_db_connection()
+    data = request.get_json()
+
+    all_classes = data.get('all_classes', [])
+    semesters = data.get('semesters', [])
+    current_semester_id = ('semester_id', 0)
+    classes = data.get('classes', []),
+    teachers = data.get('teachers', [])
+    try:
+
+
+
 
 # PUT functions
 @semesters_bp.route('/semester', methods=['PUT'])
@@ -111,3 +127,67 @@ def delete_semester_route():
         db.close()
         cursor.close()
     return jsonify({'message': 'Semester deleted successfully'}), 200
+
+# Helper functions
+def call_deepseek_api(prompt):
+    """
+    Calls the DeepSeek API to get class suggestions.
+    """
+    deepseek_api_key = os.environ.get('DEEPSEEK_API_KEY')
+    print(f"DeepSeek API Key: {deepseek_api_key}")  # Debugging line
+    if not deepseek_api_key:
+        return False, "API key not found"
+    try:
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "deepseek-chat",  # Or the correct DeepSeek model name
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False  # Set to False for a complete response
+        }
+
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data)  # Replace with the actual DeepSeek endpoint
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        json_response = response.json()
+
+        # Extract the message content
+        if 'choices' in json_response and len(json_response['choices']) > 0:
+            message_content = json_response['choices'][0]['message']['content']
+            return True, message_content
+        else:
+            return False, "No suggestions found in response"
+
+    except requests.exceptions.RequestException as e:
+        return False, f"API request failed: {e}"
+    except Exception as e:
+        return False, f"An unexpected error occurred: {e}"
+    
+
+def construct_prompt(all_classes, semesters, current_semester_id, classes, teachers):
+    """
+    Constructs the prompt for the language model.
+    """
+
+    prompt = f"""
+    Suggest a Semester schedule for a semester with the following information:
+    - Current Semester Id: {current_semester_id}
+
+    All Previous Classes:
+    """
+    for class_data in all_classes:
+        prompt += f"""
+        - Class Name: {class_data['class_name']}, Subject: {class_data['subject']}, Id: {class_data['id']}
+        """
+
+    prompt += """
+    Based on this information, suggest a schedule of 3-4 classes that are appropriate for the student.
+    List only the class names, separated by newlines.
+    Consider the student's grade level, previous classes, and conflict-free scheduling
+    """
+    return prompt

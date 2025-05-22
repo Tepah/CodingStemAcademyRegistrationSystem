@@ -6,6 +6,7 @@ import { getClassesBySemester, getSemester }  from "@/components/api/api";
 import { DataTable } from "@/components/tables/classes/semester/data-table";
 import { columns } from "@/components/tables/classes/semester/columns";
 import { Button } from "@/components/ui/button";
+import { Brain } from "lucide-react";
 
 export default function SemesterPage() {
     const router = useRouter();
@@ -70,7 +71,8 @@ export default function SemesterPage() {
                     <p>{startDate} - {endDate}</p>
                 </div>
                 <Button size="sm" variant="default" onClick={() => router.push(`/admin/semesters/${semester.id}/createSchedule`)}>
-                    Create Schedule
+                    <Brain className="h-4 w-4" />
+                    Generate Schedule
                 </Button>
                 </div>
                 <DataTable columns={columns} data={classes} />
