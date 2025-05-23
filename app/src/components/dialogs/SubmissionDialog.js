@@ -56,7 +56,7 @@ export function SubmissionDialog({ children, submission }) {
     return (
         <Dialog>
             {children}
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="">
                 <DialogHeader>
                     <DialogTitle>Grade Submission</DialogTitle>
                     <DialogDescription>
@@ -69,7 +69,7 @@ export function SubmissionDialog({ children, submission }) {
                     </p>
                     {aiMode ? (
                         <div className="flex flex-col space-y-2">
-                            <AIComponent submission={submission} assignment_id={submission.assignment_id} />
+                            <AIComponent submission={submission} assignment_id={submission.assignment_id} setFeedback={setFeedback} setGrade={setGrade} setAiMode={setAiMode} />
                         </div>
                     ) : (
                         <div className="flex flex-col space-y-4">
@@ -104,7 +104,7 @@ export function SubmissionDialog({ children, submission }) {
                             Close
                         </Button>
                     </DialogClose>
-                    <Button variant="default" onClick={handleConfirm}>
+                    <Button variant="default" onClick={handleConfirm} disabled={grade === ""}>
                         {loading ? "Loading..." : "Confirm"}
                     </Button>
                 </DialogFooter>
@@ -113,7 +113,7 @@ export function SubmissionDialog({ children, submission }) {
     )
 }
 
-function AIComponent({submission, assignment_id}) {
+function AIComponent({ submission, assignment_id, setFeedback, setGrade, setAiMode }) {
     const [aiResponse, setAiResponse] = useState(null);
     const [aiLoading, setAiLoading] = useState(false);
     const [aiGenerated, setAiGenerated] = useState(false);
@@ -126,12 +126,22 @@ function AIComponent({submission, assignment_id}) {
         setAiLoading(true);
         try {
             const res = await AISubmissionFeedback(submissionFile, assignmentFile, assignment_id);
-            
-            setAiResponse(res.response);
+
+            setAiResponse(res);
             setAiLoading(false);
         } catch (error) {
             console.error("Error generating AI feedback:", error);
             setAiResponse({ feedback: "Error generating AI feedback", grade: null });
+        }
+    }
+
+    const handleSaveResponse = () => {
+        if (aiResponse) {
+            setGrade(aiResponse.grade);
+            setFeedback(aiResponse.feedback);
+            setAiGenerated(false);
+            setAiResponse(null);
+            setAiMode(false);
         }
     }
 
@@ -142,7 +152,7 @@ function AIComponent({submission, assignment_id}) {
                     <div className="flex flex-row justify-between">
                         <Select onValueChange={(value) => setFileType(value)}>
                             <SelectTrigger size="sm">
-                                <SelectValue placeholder="Select file type" onValueChange={setFileType} />
+                                <SelectValue placeholder="Select file type" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="submission">Submission</SelectItem>
@@ -202,14 +212,16 @@ function AIComponent({submission, assignment_id}) {
                             <Skeleton className="w-4/5 h-4 rounded-md" />
                         </div>
                     ) : (
-                        <>
+                        <div className="flex flex-col space-y-2">
                             <Label htmlFor="ai-feedback">
                                 AI Feedback
                             </Label>
-                            <div className="flex flex-row justify-between items-center space-x-4">
-                                <Label>AI Grade</Label>
-                                <div className="flex flex-row justify-between text-sm text-gray-500 border-2 rounded-md p-2">
-                                    <p>{aiResponse.grade} / {submission.total_points}</p>
+                            <div className="flex flex-col justify-between space-y-4 items-center">
+                                <div className="flex flex-row justify-between space-x-4">
+                                    <Label>AI Grade</Label>
+                                    <div className="flex flex-row max-w-[100px] flex-1 justify-between text-sm text-gray-500 border-2 rounded-md p-2">
+                                        <p>{aiResponse.grade} / {submission.total_points}</p>
+                                    </div>
                                 </div>
 
                                 <Label>AI Feedback</Label>
@@ -218,11 +230,11 @@ function AIComponent({submission, assignment_id}) {
                                     <X className="h-4 w-4 cursor-pointer" onClick={() => setAiResponse(null)} />
                                 </div>
                             </div>
-                            
-                        </>
+
+                        </div>
                     )}
                     <div className="flex flex-row justify-end ">
-                        <Button size="sm" variant="default" className="min-w-[150px]" disabled={!submissionFile} onClick={() => { handleAIGenerate() }}>
+                        <Button size="sm" variant="default" className="min-w-[150px]" disabled={!submissionFile} onClick={() => { handleSaveResponse() }}>
                             {aiLoading && (
                                 <LoaderCircle className="h-4 w-4 animate-spin" />
                             )}

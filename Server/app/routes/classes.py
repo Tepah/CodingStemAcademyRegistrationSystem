@@ -411,7 +411,7 @@ def call_deepseek_api(prompt):
             "stream": False  # Set to False for a complete response
         }
 
-        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data)  # Replace with the actual DeepSeek endpoint
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data) 
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
         json_response = response.json()

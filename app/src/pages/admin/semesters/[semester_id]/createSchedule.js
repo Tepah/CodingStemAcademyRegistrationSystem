@@ -183,7 +183,7 @@ export default function CreateSchedule() {
                 <h1 className="text-2xl font-bold mb-4">Create Schedule</h1>
                 <p className="mb-4">Current Schedule: </p>
                 {classes.length === 0 && (
-                    <div className="flex flex-1 items-center text-center justify-center p-2">
+                    <div className="flex items-center text-center justify-center p-8">
                         <span>No classes scheduled..</span>
                     </div>   
                 )}
