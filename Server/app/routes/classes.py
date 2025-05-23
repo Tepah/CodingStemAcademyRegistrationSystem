@@ -1,5 +1,5 @@
 from db_connection import get_db_connection
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, json, request, jsonify
 from datetime import timedelta, time
 import requests
 import os
@@ -419,7 +419,7 @@ def construct_prompt(student_data, available_classes):
     """
     for class_data in available_classes:
         prompt += f"""
-        - Class Name: {class_data['class_name']}, Subject: {class_data['subject']}, Id: {class_data['id']}
+        - {json.dumps(class_data)}
         """
 
     prompt += """

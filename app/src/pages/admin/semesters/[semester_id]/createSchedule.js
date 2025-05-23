@@ -66,7 +66,16 @@ export default function CreateSchedule() {
         const fetchAIScheudle = async () => {
             try {
                 const responseClasses = await axios.get(`${config.backendUrl}/classes`);
-                const allClasses = responseClasses.data['classes'];
+                let allClasses = responseClasses.data['classes'];
+
+                const updatedAllClasses = allClasses.map(async (classItem) => {
+                    const studentCount = await axios.get(`${config.backendUrl}/student-count`, {params: { class_id: classItem.id } });
+                    return {
+                        ...classItem,
+                        student_count: studentCount.data['student_count'],
+                    };
+                });
+                allClasses = updatedAllClasses;
 
                 const responseSem = await axios.get(`${config.backendUrl}/semesters`);
                 const semesters = responseSem.data['semesters'];
@@ -87,7 +96,7 @@ export default function CreateSchedule() {
                 setLoading(false);
             }
         }
-
+        fetchAIScheudle();
     }
 
     if (loading) {

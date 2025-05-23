@@ -1,5 +1,5 @@
 from db_connection import get_db_connection
-from flask import Flask, jsonify, request, Blueprint
+from flask import Flask, json, jsonify, request, Blueprint
 import requests
 import os
 
@@ -175,19 +175,107 @@ def construct_prompt(all_classes, semesters, current_semester_id, classes, teach
     """
 
     prompt = f"""
-    Suggest a Semester schedule for a semester with the following information:
+    Suggest a semester schedule for a semester with the following information:
     - Current Semester Id: {current_semester_id}
 
-    All Previous Classes:
-    """
-    for class_data in all_classes:
-        prompt += f"""
-        - Class Name: {class_data['class_name']}, Subject: {class_data['subject']}, Id: {class_data['id']}
-        """
+    All Previous Classes (JSON Array):
+    {json.dumps(all_classes)}
 
-    prompt += """
-    Based on this information, suggest a schedule of 3-4 classes that are appropriate for the student.
-    List only the class names, separated by newlines.
-    Consider the student's grade level, previous classes, and conflict-free scheduling
+    All Semesters (JSON Array):
+    {json.dumps(semesters)}
+
+    Teachers (JSON Array of Objects with id and name):
+    {json.dumps([{'id': t['id'], 'name': t['name']} for t in teachers])}
+
+    Current Classes (JSON Array):
+    {json.dumps(classes)}
+
+    Based on this information, generate a JSON array of classes for the semester. Each class object should have the following fields:
+    - class_id (integer)
+    - class_name (string)
+    - teacher_id (integer)
+    - start_time (string, format HH:MM, e.g., 09:00)
+    - end_time (string, format HH:MM, e.g., 10:50)
+    - day (string, e.g "Monday", "Tuesday")
+    - semester_id (integer)
+
+    Consider the following constraints:
+    - Previous classes offered in past semesters
+    - Classes should be 1 hour and 50 minutes long
+    - Offer more sections of popular classes to accommodate the student count
+    - The number of teachers available
+    - The teacher's previously taught classes
+    - The teacher's experience
+    - Valid start times are 9:00 AM, 11:00 AM, 1:30 PM, 3:30 PM, and 5:30 PM
+    - Friday classes should only be able to start past 3:30 PM
+
+    Example Output:
+    [
+        {{
+            "class_id": 101,
+            "class_name": "Introduction to Programming",
+            "teacher_id": 1,
+            "start_time": "09:00",
+            "end_time": "10:50",
+            "day": "Friday",
+            "semester_id": 202501
+        }},
+        {{
+            "class_id": 102,
+            "class_name": "Data Structures and Algorithms",
+            "teacher_id": 2,
+            "start_time": "11:00",
+            "end_time": "12:50",
+            "day": "Tuesday",
+            "semester_id": 202501
+        }}
+    ]
     """
     return prompt
+
+def parse_ai_schedule(ai_response_text):
+    """
+    Parses the AI-generated schedule from the language model's response.
+    """
+    try:
+        # Attempt to parse the AI response as a JSON array
+        schedule = json.loads(ai_response_text)
+
+        # Validate the structure of the schedule
+        if not isinstance(schedule, list):
+            raise ValueError("AI response is not a JSON array")
+
+        for class_data in schedule:
+            if not isinstance(class_data, dict):
+                raise ValueError("Each item in the AI response should be a JSON object")
+
+            # Check for required keys
+            required_keys = ["class_id", "class_name", "teacher_id", "start_time", "end_time", "day", "semester_id"]
+            for key in required_keys:
+                if key not in class_data:
+                    raise ValueError(f"Missing key: {key} in class data")
+
+            # Basic type validation (you can add more specific validation)
+            if not isinstance(class_data["class_id"], int):
+                raise ValueError("class_id must be an integer")
+            if not isinstance(class_data["class_name"], str):
+                raise ValueError("class_name must be a string")
+            if not isinstance(class_data["teacher_id"], int):
+                raise ValueError("teacher_id must be an integer")
+            if not isinstance(class_data["start_time"], str):
+                raise ValueError("start_time must be a string")
+            if not isinstance(class_data["end_time"], str):
+                raise ValueError("end_time must be a string")
+            if not isinstance(class_data["day"], list):
+                raise ValueError("day must be a list")
+            if not isinstance(class_data["semester_id"], int):
+                raise ValueError("semester_id must be an integer")
+
+        return True, schedule  # Return the parsed schedule
+
+    except json.JSONDecodeError as e:
+        return False, f"Invalid JSON format: {e}"
+    except ValueError as e:
+        return False, str(e)  # Return the error message
+    except Exception as e:
+        return False, f"An unexpected error occurred during parsing: {e}"
