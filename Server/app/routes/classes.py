@@ -278,6 +278,34 @@ def add_class():
         cursor.close()
         my_db.close()
 
+@classes_bp.route('/save-semester-schedule', methods=['POST'])
+def save_semester_schedule():
+    try:
+        data = request.get_json()
+        semester_id = data.get('semester_id')
+        classes = data.get('classes', [])
+        my_db = get_db_connection()
+        cursor = my_db.cursor()
+        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        for class_data in classes:
+            teacher_id = class_data.get('teacher_id')
+            class_name = class_data.get('class_name')
+            subject = class_data.get('subject')
+            day = class_data.get('day')
+            start_time = class_data.get('start_time')
+            end_time = class_data.get('end_time')
+
+            vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time)
+            cursor.execute(sql, vals)
+        my_db.commit()
+        return jsonify({'message': 'Semester schedule saved successfully'})
+    except Exception as e:
+        my_db.rollback()
+        return jsonify({'message': 'Error occurred while saving semester schedule', 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        my_db.close()
+
 
 @classes_bp.route('/suggest-schedule', methods=['POST'])
 def suggest_schedule():
