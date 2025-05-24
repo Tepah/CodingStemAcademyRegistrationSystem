@@ -14,6 +14,7 @@ export default function RegisterClasses() {
   const [user, setUser] = useState(null);
   const [semester, setSemester] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [donations, setDonations] = useState(0);
 
   const router = useRouter();
   const student_id = router.query.student_id;
@@ -56,6 +57,7 @@ export default function RegisterClasses() {
             pickedClasses={pickedClasses}
             setPickedClasses={setPickedClasses}
             setStep={setStep}
+            setDonations={setDonations}
             />
         )}
         {step === 2 && (
@@ -65,6 +67,7 @@ export default function RegisterClasses() {
             student_id={student_id}
             setLoading={setLoading}
             loading={loading}
+            donations={donations}
           />
         )}
       </div>

@@ -41,7 +41,7 @@ export default function CreateClass() {
 
     return (
         <Layout>
-            <div className="container p-8 w-[500px]">
+            <div className="container mx-auto flex flex-col flex-1 p-8 max-w-[600px]">
                 <h1 className="text-2xl font-bold mb-4">Create Class</h1>
                 <ClassForm semesters={semesters} teachers={teachers} />
             </div>

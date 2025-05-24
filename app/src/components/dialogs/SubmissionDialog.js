@@ -10,7 +10,6 @@ import { Brain, Loader, LoaderCircle, X } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
-import { set } from 'date-fns';
 import { AISubmissionFeedback } from '../api/ai';
 
 
@@ -20,6 +19,19 @@ export function SubmissionDialog({ children, submission }) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [aiMode, setAiMode] = useState(false);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(`${config.backendUrl}/user`);
+                setUser(response.data);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
+        fetchUser();
+    }, [])
 
     const handleConfirm = () => {
         setLoading(true);
@@ -40,17 +52,29 @@ export function SubmissionDialog({ children, submission }) {
             student_id: submission.student_id,
         }
 
+        Promise.all([
         axios.post(`${config.backendUrl}/score`, data)
             .then((response) => {
                 console.log("Submission graded successfully", response.data);
-                window.location.reload();
             }).catch((error) => {
                 console.error("Error grading submission:", error);
                 setError("Error grading submission: " + error.response.data.message);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+            }),
+        axios.post(`${config.backendUrl}/messages`, 
+            {
+                sender_user_id: user.id,
+                class_id: submission.class_id,
+                receiver_user_id: submission.student_id,
+                message: `Your submission for ${submission.assignment_name} has been graded. \n\nGrade: ${grade} / ${submission.total_points} \nFeedback: ${feedback}`,
+                title: `Grade for ${submission.assignment_name}`
+            }
+        ).then((response) => {
+            console.log("Message sent successfully", response.data);
+        })
+    ]).then(() => {
+            setLoading(false);
+            window.location.reload();
+    })
     }
 
     return (

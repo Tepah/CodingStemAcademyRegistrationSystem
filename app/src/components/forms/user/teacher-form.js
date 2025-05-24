@@ -71,6 +71,7 @@ const formSchema = z.object({
         message: "Address is required",
     }),
     role: z.enum(["Student", "Admin", "Teacher"]),
+    experience: z.string().optional()
 })
 
 

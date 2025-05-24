@@ -263,10 +263,11 @@ def add_class():
         day = data.get('day')
         start_time = data.get('start_time')
         end_time = data.get('end_time')
+        rate = data.get('rate')
 
         cursor = my_db.cursor()
-        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time) VALUES(%s, %s, %s, %s, %s, %s, %s)"
-        vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time)
+        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+        vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate)
         cursor.execute(sql, vals)
         my_db.commit()
     
@@ -349,6 +350,8 @@ def update_class(id):
     day = data.get('day')
     start_time = data.get('start_time')
     end_time = data.get('end_time')
+    rate = data.get('rate')
+
     my_db = get_db_connection()
     try:
         cursor = my_db.cursor()

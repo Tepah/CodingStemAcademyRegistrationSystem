@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { CreatePaymentForm } from "@/components/forms/payment/form";
+import { CreatePaymentForm } from "@/components/forms/donation/form";
 import { Layout } from "@/app/layout";
 import { getUser } from "@/components/api/api";
 import { set } from "date-fns";

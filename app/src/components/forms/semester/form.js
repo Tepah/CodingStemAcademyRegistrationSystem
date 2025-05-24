@@ -14,6 +14,7 @@ const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),
     start_date: z.string(),
     end_date: z.string(),
+    rate: z.number().min(0, "Rate must be a positive number"),
     status: z.enum(["Ongoing", "Completed", "Upcoming"], {
         required_error: "Status is required",
     }),
@@ -141,6 +142,27 @@ export const SemesterForm = () => {
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="rate"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>Default Rate($)</FormLabel>
+                                <FormControl>
+                                    <div className="flex flex-row space-x-2">
+                                    <Input className="max-w-[100px]" type="number" placeholder="Rate" {...field} onChange={(e) => {
+                                        const parsedValue = parseFloat(e.target.value);
+                                        field.onChange(isNaN(parsedValue) ? null : parsedValue);
+                                    }} />
+                                    <span className="text-sm text-gray-500">per hour</span>
+                                    </div>
+                                </FormControl>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
 
                 <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Saving..." : "Save"}

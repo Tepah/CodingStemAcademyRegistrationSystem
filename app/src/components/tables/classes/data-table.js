@@ -131,7 +131,7 @@ export function  DataTable({columns, data, semester}) {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Link href={`/admin/classes/create`}>
-            <Button variant="outline" size="sm">
+            <Button variant="default" size="sm">
               Add class
             </Button>
           </Link>

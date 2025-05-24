@@ -8,7 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { ModifyPaymentForm } from "../forms/payment/edit-form"
+import { ModifyPaymentForm } from "../forms/donation/edit-form"
 
 
 

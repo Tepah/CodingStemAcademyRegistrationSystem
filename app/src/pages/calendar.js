@@ -25,6 +25,10 @@ export default function Calendar() {
       axios.get(`${config.backendUrl}/events/student`, { params: { student_id: user['id'] } })
         .then((response) => {
           console.log(response.data);
+          if (!response.data['classes'] || !response.data['assignments']) {
+            setEvents([]);
+            return;
+          }
           const classEvents = response.data['classes'].map((event) => {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"

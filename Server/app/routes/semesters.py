@@ -76,8 +76,8 @@ def create_semester_route():
     data = request.get_json()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "INSERT INTO semesters (name, start_date, end_date, status) VALUES (%s, %s, %s, %s)"
-        cursor.execute(sql, (data['name'], data['start_date'], data['end_date'], data['status']))
+        sql = "INSERT INTO semesters (name, start_date, end_date, status, rate) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(sql, (data['name'], data['start_date'], data['end_date'], data['status'], data['rate'] if 'rate' in data else None))
         db.commit()
     finally:
         db.close()

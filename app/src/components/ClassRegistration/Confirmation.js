@@ -51,6 +51,15 @@ export default function Confirmation(props) {
             }))
         });
 
+        promises.push(axios.post(`${config.backendUrl}/payment`, {
+            student_id: student_id,
+            amount: props.donations,
+            notes: "Class registration",
+            payment_date: new Date().toISOString(),
+            payment_type: "Cash",
+            payment_status: "Balance",
+        }))
+
         Promise.all(promises).then(() => {
             console.log("All class registrations completed successfully.");
             props.setLoading(false);
@@ -70,6 +79,7 @@ export default function Confirmation(props) {
                             <TableHead>Subject</TableHead>
                             <TableHead>Teacher</TableHead>
                             <TableHead>Time</TableHead>
+                            <TableHead>Rate</TableHead>
                         </TableHeader>
                         <TableBody>
                             {props.currentClasses.map((classData) => (
@@ -77,6 +87,7 @@ export default function Confirmation(props) {
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
                                     <TableCell className="text-sm whitespace-normal">{classData.day} {classData.start_time} - {classData.end_time}</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">${classData.rate}/hr</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -90,15 +101,21 @@ export default function Confirmation(props) {
                             <TableHead>Subject</TableHead>
                             <TableHead>Teacher</TableHead>
                             <TableHead>Time</TableHead>
+                            <TableHead>Rate</TableHead>
                         </TableHeader>
                         <TableBody>
                             {props.pickedClasses.map((classData) => (
                                 <TableRow key={classData.id}>
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">{classData.day} {classData.start_time} - {classData.end_time}</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br />{classData.start_time} -<br />{classData.end_time}</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">${classData.rate}/hr</TableCell>
                                 </TableRow>
                             ))}
+                            <TableRow>
+                                <TableCell colSpan={3} className="text-right font-bold">Monthly Total:</TableCell>
+                                <TableCell className="text-sm whitespace-normal">${props.donations}</TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
                 </Card>
