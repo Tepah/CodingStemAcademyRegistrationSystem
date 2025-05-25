@@ -89,7 +89,7 @@ def add_assignment(class_id, title, description, due_date):
         cursor.close()
         my_db.close()
 
-@assignments_bp.route('/generate-assignment', methods=['POST'])
+@assignments_bp.route('/ai/generate-assignment', methods=['POST'])
 def generate_assignment():
     data = request.get_json()
     prompt = data.get('prompt')
@@ -119,7 +119,7 @@ def generate_assignment():
         response = requests.post(
             'https://api.deepseek.com/v1/chat/completions',
             headers={
-                'Authorization': f'Bearer {os.getenv("DEEPSEEK_API_KEY")}',
+                'Authorization': f'Bearer {os.environ.get('DEEPSEEK_API_KEY')}',
                 'Content-Type': 'application/json'
             },
             json={
