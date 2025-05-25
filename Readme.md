@@ -34,6 +34,22 @@ ___
 - Should students get similar assignments if in same class so they can collaborate?
 - Are we looking at doing assignments on the computer?
 
+### How to run:
+- create 2 new terminals
+- cd CodingStemAcademyRegistrationSystem in both of them
+- In one of the terminals
+- cd server
+- then run
+- python run.py
+- Then, in the other terminals, run
+- cd app
+- Then run
+- npm run dev
+- Congrats, you ran the app
+- ctrl + click on the network URL
+- Congrats, you have the website working :)
+  
+
 
 ## AI-Powered Score Submissions System Project
 ___
