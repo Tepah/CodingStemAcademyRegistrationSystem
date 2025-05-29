@@ -15,6 +15,15 @@ def format_time(time_obj):
         time_obj = time(hours, minutes)
     return time_obj.strftime("%I:%M %p")
 
+def format_time(time_obj):
+    if isinstance(time_obj, timedelta):
+        # Convert timedelta to seconds and then to a time object
+        total_seconds = time_obj.total_seconds()
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        time_obj = time(hours, minutes)
+    return time_obj.strftime("%I:%M %p")
+
 # GET functions
 @classes_bp.route('/classes', methods=['GET'])
 def get_classes():
@@ -23,6 +32,11 @@ def get_classes():
         cursor = my_db.cursor(dictionary=True)
         cursor.execute("SELECT * FROM classes ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;")
         res = cursor.fetchall()
+        for classData in res:
+            if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
+                classData['start_time'] = format_time(classData['start_time'])
+            if 'end_time' in classData and isinstance(classData['end_time'], timedelta):
+                classData['end_time'] = format_time(classData['end_time'])
         for classData in res:
             if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
                 classData['start_time'] = format_time(classData['start_time'])
@@ -130,6 +144,7 @@ def get_all_classes_by_student():
     db = get_db_connection()
     try:
         user_id = request.args.get('student_id')
+        user_id = request.args.get('student_id')
         cursor = db.cursor(dictionary=True)
         sql = "SELECT * FROM class_students WHERE user_id = %s"
         vals = (user_id, )
@@ -154,6 +169,8 @@ def get_all_classes_by_student():
     finally:
         db.close()
         cursor.close()
+    if not classes:
+        return jsonify({'message': 'No classes found for this student', 'classes': []})
     if not classes:
         return jsonify({'message': 'No classes found for this student', 'classes': []})
     return jsonify({'message': 'Classes retrieved', 'classes': classes})
@@ -188,6 +205,12 @@ def get_class(id):
         val = (id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
+        if res is None:
+            return jsonify({'message': 'Class not found'}), 404
+        if 'start_time' in res and isinstance(res['start_time'], timedelta):
+            res['start_time'] = format_time(res['start_time'])
+        if 'end_time' in res and isinstance(res['end_time'], timedelta):
+            res['end_time'] = format_time(res['end_time'])
         if res is None:
             return jsonify({'message': 'Class not found'}), 404
         if 'start_time' in res and isinstance(res['start_time'], timedelta):
@@ -253,6 +276,7 @@ def get_teachers_classes_by_semesters():
 
 @classes_bp.route('/add-class', methods=['POST'])
 def add_class():
+    my_db = get_db_connection()
     my_db = get_db_connection()
     data = request.get_json()
     try: 

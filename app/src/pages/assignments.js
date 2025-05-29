@@ -11,6 +11,7 @@ export default function Assignments() {
   const [user, setUser] = useState(null);
   const [assignments, setAssignments] = useState([]);
 
+  // Get user from JWT token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
