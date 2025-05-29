@@ -2,7 +2,7 @@ import React from "react";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns"
+import { format, parse } from "date-fns" // Import parse
 import { SheetFooter } from "@/components/ui/sheet";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,7 +67,6 @@ const studentSchema = z.object({
 
 export default function EditStudentForm({ student }) {
     const gradeLevels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-    console.log("EditStudentForm student:", student);
     
     const form = useForm({
         resolver: zodResolver(studentSchema),

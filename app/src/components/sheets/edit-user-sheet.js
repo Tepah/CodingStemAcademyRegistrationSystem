@@ -3,20 +3,21 @@ import React, { useEffect } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import EditStudentForm from "../forms/user/edit-student"
+import EditTeacherForm from "../forms/user/edit-teacher"
 
 export default function EditUserSheet({ children, user }) {
     const [userData, setUserData] = React.useState({});
 
     useEffect(() => {
-        setUserData({
-            ...user,
-            birth_date: {
-                month: new Date(user.birth_date).getMonth() + 1,
-                day: new Date(user.birth_date).getDate() + 1,
-                year: new Date(user.birth_date).getFullYear(),
-            }
-        });
-    }, []);
+    setUserData({
+        ...user,
+        birth_date: {
+            month: String(new Date(user.birth_date).getMonth() + 1).padStart(2, '0'),
+            day: String(new Date(user.birth_date).getDate()).padStart(2, '0'),
+            year: String(new Date(user.birth_date).getFullYear()),
+        }
+    });
+}, [user]);
 
     return (
         <Sheet>
@@ -27,11 +28,11 @@ export default function EditUserSheet({ children, user }) {
                     <SheetDescription>
                         Modify user details and save changes.
                     </SheetDescription>
-                    {/* {user.role === 'Teacher' && (
-                        <EditTeacherForm user={user} />
-                    )} */}
+                    {user.role === 'Teacher' && (
+                        <EditTeacherForm teacher={userData} />
+                    )}
                     {user.role === 'Student' && (
-                        <EditStudentForm student={userData} onSubmit={(data) => console.log(data)} />
+                        <EditStudentForm student={userData} />
                     )}
                 </SheetHeader>
             </SheetContent>
