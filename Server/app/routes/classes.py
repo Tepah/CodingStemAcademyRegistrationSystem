@@ -361,11 +361,11 @@ def update_class(id):
         classes = cursor.fetchone()
         if classes is None:
             return None
-        sql = "UPDATE classes SET teacher_id = %s, class_name = %s, subject = %s, semester_id = %s, day = %s, start_time = %s, end_time = %s WHERE id = %s"
+        sql = "UPDATE classes SET teacher_id = %s, class_name = %s, subject = %s, semester_id = %s, day = %s, start_time = %s, end_time = %s, rate = %s WHERE id = %s"
         vals = (
             teacher_id if teacher_id else classes["teacher_id"], class_name if class_name else classes["class_name"], 
             subject if subject else classes["subject"], semester_id if semester_id else classes["semester_id"],
-            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], id
+            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], rate if rate else classes["rate"], id
         )
         cursor.execute(sql, vals)
         my_db.commit()
@@ -444,7 +444,7 @@ def construct_prompt(student_data, available_classes):
     Suggest a class schedule for student with the following information:
     - Student ID: {student_id}
     - Previously Taken Classes: {previous_classes}
-    - Current Grade Level: {current_grade_level}
+    - Current Grade Level and accelerate them a little bit: {current_grade_level}
 
     Available Classes:
     """
@@ -455,8 +455,8 @@ def construct_prompt(student_data, available_classes):
 
     prompt += """
     Based on this information, suggest a schedule of 3-4 classes that are appropriate for the student.
-    List only the class names, separated by newlines.
-    Consider the student's grade level, previous classes, and conflict-free scheduling
+    List only the class ids, separated by newlines with no additional text.
+    Consider the student's grade level, previous classes, and conflict-free scheduling. Please ensure that the suggested classes do not overlap in time.
     """
     return prompt
 
@@ -464,13 +464,13 @@ def parse_suggestions(suggestions_text, available_classes):
     """
     Parses the suggestions from the language model and returns a list of class data.
     """
-    suggested_class_names = [s.strip() for s in suggestions_text.split("\n") if s.strip()]
+    suggested_ids = [s.strip() for s in suggestions_text.split("\n") if s.strip()]
     suggested_schedule = []
 
-    for class_name in suggested_class_names:
+    for id in suggested_ids:
         # Find the class in the available classes list
         for class_data in available_classes:
-            if class_data['class_name'] == class_name:
+            if class_data['id'] == int(id):
                 suggested_schedule.append(class_data)
                 break  # Stop searching once the class is found
 

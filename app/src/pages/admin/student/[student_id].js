@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from "@/components/ui/label";
 import AllStudentGradesTable from '@/components/tables/grades/AllStudentGrades';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 export default function StudentPage() {
     const [user, setUser] = useState(null);
@@ -73,7 +74,13 @@ export default function StudentPage() {
     return (
         <Layout title={"Student Page"}>
             <div className="container max-w-[900px] mx-auto flex-1 flex flex-col gap-4 p-8">
-                <h1 className="text-2xl font-bold">{student.first_name} {student.last_name}</h1>
+                <div className="flex flex-row justify-between items-center">
+                    <h1 className="text-2xl font-bold">{student.first_name} {student.last_name}</h1>
+                    <Button variant="default" size="sm">
+                        Edit Student
+                    </Button>
+                </div>
+                
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Student Information</CardTitle>

@@ -72,50 +72,42 @@ export default function Confirmation(props) {
             <h1 className="text-2xl font-bold mb-4">Confirm Class Registration</h1>
             <p className="text-center">Please review your selected classes before proceeding.</p>
             <div className="flex flex-col md:flex-row flex-1 gap-4 mt-4">
-                <Card className="max-w-[500px]">
+                <Card className="">
                     <Table>
                         <TableCaption>Current Class Schedule</TableCaption>
                         <TableHeader>
                             <TableHead>Subject</TableHead>
                             <TableHead>Teacher</TableHead>
                             <TableHead>Time</TableHead>
-                            <TableHead>Rate</TableHead>
                         </TableHeader>
                         <TableBody>
                             {props.currentClasses.map((classData) => (
                                 <TableRow key={classData.id}>
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">{classData.day} {classData.start_time} - {classData.end_time}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">${classData.rate}/hr</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br/>{classData.start_time} - {classData.end_time}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </Card>
                 <p className="text-center flex flex-col justify-center">To</p>
-                <Card className="max-w-[500px]">
+                <Card className="">
                     <Table>
                         <TableCaption>New Class Schedule</TableCaption>
                         <TableHeader>
                             <TableHead>Subject</TableHead>
                             <TableHead>Teacher</TableHead>
                             <TableHead>Time</TableHead>
-                            <TableHead>Rate</TableHead>
                         </TableHeader>
                         <TableBody>
                             {props.pickedClasses.map((classData) => (
                                 <TableRow key={classData.id}>
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br />{classData.start_time} -<br />{classData.end_time}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">${classData.rate}/hr</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br />{classData.start_time} - {classData.end_time}</TableCell>
                                 </TableRow>
                             ))}
-                            <TableRow>
-                                <TableCell colSpan={3} className="text-right font-bold">Monthly Total:</TableCell>
-                                <TableCell className="text-sm whitespace-normal">${props.donations}</TableCell>
-                            </TableRow>
                         </TableBody>
                     </Table>
                 </Card>

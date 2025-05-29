@@ -272,6 +272,7 @@ def update_user():
     health_ins_num = data.get('health_ins_num')
     role = data.get('role')
     grade_level = data.get('grade_level', None)
+    print(data)
 
     my_db = get_db_connection()
     try:
@@ -341,6 +342,9 @@ def verify_teacher_invite():
         db.close()
         cursor.close()
     return jsonify({"message": "Invite verified", "status": True, "email": invite['email']})
+
+
+
 
 
 # DELETE functions

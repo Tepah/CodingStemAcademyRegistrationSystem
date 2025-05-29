@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
-import config from '@/config';
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import SemesterPicker from '@/components/ClassRegistration/semesterPicker';
@@ -41,7 +39,7 @@ export default function RegisterClasses() {
 
   return (
     <Layout>
-      <div className="flex flex-col container max-w-[900px] mx-auto p-8 items-center">
+      <div className="flex flex-col container max-w-[1300px] mx-auto p-8 items-center">
         <h1 className="text-2xl font-bold mb-4">Register Classes for Student</h1>
         {step === 0 && (
           <SemesterPicker setSemester={setSemester} setStep={setStep} loading={loading} setLoading={setLoading} />

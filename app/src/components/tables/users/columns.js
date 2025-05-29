@@ -10,7 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { ColumnVisibility } from "@tanstack/react-table"
+import EditUserSheet from "@/components/sheets/edit-user-sheet"
+import { SheetTrigger } from "@/components/ui/sheet"
 
 export const roles = ['Admin', 'Student', 'Teacher'];
 
@@ -63,51 +64,63 @@ export const columns = [
       const user = row.original;
       const userRole = user['role'];
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {userRole === 'Student' ? (
-              <div>
-                <DropdownMenuItem asChild>
-                  <Link href={`grades/${user.id}`}>
-                    View Grades
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild key={user.id}>
-                  <Link href={`classes/student/${user.id}`}>
-                    Manage Student&apos;s Classes
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={`payments/${user.id}`}>
-                    Manage Payments
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={`student/${user.id}`}>
-                    Manage Student&apos;s Profile
-                  </Link>
-                </DropdownMenuItem>
-              </div>
-            ) : userRole === 'Teacher' ? (
-              <div>
-                <DropdownMenuItem asChild>
-                  <Link href={`classes/teacher/${user.id}`}>
-                    Manage Teacher&apos;s Classes
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>Manage Profile</DropdownMenuItem>
-              </div>
-            ) : null}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <EditUserSheet user={user}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userRole === 'Student' ? (
+                <div>
+                  <DropdownMenuItem asChild>
+                    <Link href={`grades/${user.id}`}>
+                      View Grades
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild key={user.id}>
+                    <Link href={`classes/student/${user.id}`}>
+                      Manage Student&apos;s Classes
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`donations/${user.id}`}>
+                      Manage Payments
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`student/${user.id}`}>
+                      Manage Student&apos;s Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <SheetTrigger asChild>
+                  <DropdownMenuItem>
+                      Edit Student
+                  </DropdownMenuItem>
+                  </SheetTrigger>
+                </div>
+              ) : userRole === 'Teacher' ? (
+                <div>
+                  <DropdownMenuItem asChild>
+                    <Link href={`classes/teacher/${user.id}`}>
+                      Manage Teacher&apos;s Classes
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>Manage Profile</DropdownMenuItem>
+                  <SheetTrigger asChild>
+                    <DropdownMenuItem>
+                      Edit Teacher
+                    </DropdownMenuItem>
+                  </SheetTrigger>
+                </div>
+              ) : null}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </EditUserSheet>
       )
     }
   }
