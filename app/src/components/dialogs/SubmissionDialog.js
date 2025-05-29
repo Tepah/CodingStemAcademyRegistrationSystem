@@ -11,6 +11,7 @@ import { Plus } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
 import { AISubmissionFeedback } from '../api/ai';
+import { useEffect } from 'react';
 
 
 export function SubmissionDialog({ children, submission }) {
@@ -53,34 +54,34 @@ export function SubmissionDialog({ children, submission }) {
         }
 
         Promise.all([
-        axios.post(`${config.backendUrl}/score`, data)
-            .then((response) => {
-                console.log("Submission graded successfully", response.data);
-            }).catch((error) => {
-                console.error("Error grading submission:", error);
-                setError("Error grading submission: " + error.response.data.message);
-            }),
-        axios.post(`${config.backendUrl}/messages`, 
-            {
-                sender_user_id: user.id,
-                class_id: submission.class_id,
-                receiver_user_id: submission.student_id,
-                message: `Your submission for ${submission.assignment_name} has been graded. \n\nGrade: ${grade} / ${submission.total_points} \nFeedback: ${feedback}`,
-                title: `Grade for ${submission.assignment_name}`
-            }
-        ).then((response) => {
-            console.log("Message sent successfully", response.data);
-        })
-    ]).then(() => {
+            axios.post(`${config.backendUrl}/score`, data)
+                .then((response) => {
+                    console.log("Submission graded successfully", response.data);
+                }).catch((error) => {
+                    console.error("Error grading submission:", error);
+                    setError("Error grading submission: " + error.response.data.message);
+                }),
+            axios.post(`${config.backendUrl}/messages`,
+                {
+                    sender_user_id: user.id,
+                    class_id: submission.class_id,
+                    receiver_user_id: submission.student_id,
+                    message: `Your submission for ${submission.assignment_name} has been graded. \n\nGrade: ${grade} / ${submission.total_points} \nFeedback: ${feedback}`,
+                    title: `Grade for ${submission.assignment_name}`
+                }
+            ).then((response) => {
+                console.log("Message sent successfully", response.data);
+            })
+        ]).then(() => {
             setLoading(false);
             window.location.reload();
-    })
+        })
     }
 
     return (
         <Dialog>
             {children}
-            <DialogContent className="">
+            <DialogContent className="flex flex-col flex-1">
                 <DialogHeader>
                     <DialogTitle>Grade Submission</DialogTitle>
                     <DialogDescription>
@@ -88,7 +89,9 @@ export function SubmissionDialog({ children, submission }) {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="min-h-[220px] flex flex-col mt-4 space-y-4">
-                    <p className="text-center text-sm text-blue-500 border-2 p-2">
+                    <p
+                        className="text-center text-sm text-blue-500 border-2 p-2 break-words overflow-auto max-h-[150px]"
+                    >
                         {submission.content}
                     </p>
                     {aiMode ? (

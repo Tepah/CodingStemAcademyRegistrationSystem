@@ -48,7 +48,18 @@ export const columns = [
         header: ({ column }) =>
             <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                 <span>Content</span>
-            </Button>
+            </Button>,
+        cell: ({ row }) => {
+            const content = row.original.content;
+            if (content.length > 100) {
+                return (
+                    <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {content}
+                    </div>
+                );
+            }
+            return content;
+        }
 
     },
     {

@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { Layout } from "@/app/layout";
 
 export default function CreateAssignment() {
   const router = useRouter();
@@ -171,7 +172,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
+    <Layout title="Create Assignment">
+      <div className="container max-w-[800px] mx-auto flex flex-col p-8">
       <h1 className="text-3xl font-bold mb-6">Create Assignment</h1>
       <div className="mb-8">
         <h2 className="text-xl font-semibold">
@@ -279,6 +281,7 @@ useEffect(() => {
           </Button>
         </form>
       </Form>
-    </div>
+      </div>
+    </Layout>
   );
 }

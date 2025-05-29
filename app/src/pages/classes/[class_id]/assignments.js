@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
   TableCaption,
+  TableFooter,
 } from "@/components/ui/table";
 import { jwtDecode } from "jwt-decode";
 
@@ -121,34 +122,6 @@ export default function Assignments() {
           </Table>
         </div>
       </div>
-      <Card className="p-4">
-        <Table>
-          <TableCaption>A list of all assignments for this class.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Due Date</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {assignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell className="font-medium">{assignment.id}</TableCell>
-                <TableCell>{assignment.title}</TableCell>
-                <TableCell>{assignment.description}</TableCell>
-                <TableCell className="text-right">{assignment.due_date}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={4}>Total Assignments: {assignments.length}</TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </Card>
     </Layout>
   );
 }
