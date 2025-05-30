@@ -36,6 +36,8 @@ def get_feedback():
     finally:
         cursor.close()
         connection.close()
+    if not feedback:
+        return jsonify({'message': 'Feedback not found', 'feedback': None}), 200
     return jsonify({'message': 'Feedback retrieved successfully', 'feedback': feedback}), 200
 
 @scores_bp.route('/feedback-for-class', methods=['GET'])
@@ -46,11 +48,11 @@ def get_feedback_for_class():
     try:
         cursor = connection.cursor(dictionary=True)
         cursor.execute("SELECT * FROM feedback WHERE class_id = %s AND user_id = %s", (class_id, user_id))
-        feedback = cursor.fetchone()
+        feedback = cursor.fetchall()
     finally:
         cursor.close()
         connection.close()
-    return jsonify({'message': 'Feedback retrieved successfully', 'feedback': feedback}), 200
+    return jsonify({'message': 'Feedback retrieved successfully', 'feedback': feedback[0] if feedback else None}), 200
 
 @scores_bp.route('/total', methods=['GET'])
 def get_total_grade():

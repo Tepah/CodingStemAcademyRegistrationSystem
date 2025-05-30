@@ -134,7 +134,7 @@ export default function Classes() {
     
     return (
         <Layout>
-            <div className="container flex flex-row flex-1 mx-auto p-12">
+            <div className="container max-w-[1000px] flex flex-row flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">

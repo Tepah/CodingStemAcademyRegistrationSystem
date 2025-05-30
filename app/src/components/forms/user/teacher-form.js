@@ -103,6 +103,7 @@ export default function TeacherRegisterForm({ email } ) {
             health_ins_number: null,
             role: "Teacher",
             grade_level: null,
+            experience: "",
         },
     })
 
@@ -300,6 +301,20 @@ export default function TeacherRegisterForm({ email } ) {
                                 <FormLabel>Address</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Address" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    
+                    <FormField
+                        control={form.control}
+                        name="experience"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Experience</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="Experience" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

@@ -16,7 +16,7 @@ const options = [
   { label: 'Calendar', link: '/calendar', icon: CalendarFold },
 ]
 
-export default function NavSecondary() {
+export default function NavSecondary({role = null}) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
@@ -26,12 +26,14 @@ export default function NavSecondary() {
         {options.map((option) => (
           <SidebarMenuItem key={option.label}>
             <SidebarMenuButton asChild>
+              {!(role === 'Admin' && option.label === 'Grades' || role === 'Admin' && option.label === 'Assignments') && (
               <a href={option.link}>
                 <option.icon />
                 <span>
                   {option.label}
                 </span>
               </a>
+              )}
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
