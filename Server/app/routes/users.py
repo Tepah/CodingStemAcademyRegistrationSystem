@@ -1,4 +1,7 @@
 import datetime
+import os
+
+import requests
 from db_connection import get_db_connection
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask import request, jsonify, Blueprint
@@ -343,7 +346,20 @@ def verify_teacher_invite():
         cursor.close()
     return jsonify({"message": "Invite verified", "status": True, "email": invite['email']})
 
+@users_bp.route('/ai', methods=['POST'])
+def ai_suggestions():
+    data = request.get_json()
+    questions = data.get('questions')
+    answers = data.get('answers')
 
+    prompt = create_prompt(questions, answers)
+    print(f"Prompt for DeepSeek API: {prompt}")
+
+    success, response = call_deepseek_api(prompt)
+    if not success:
+        return jsonify({"message": response}), 500
+
+    return jsonify({"message": "AI suggestions retrieved", "suggestions": response})
 
 
 
@@ -362,3 +378,63 @@ def delete_user():
         cursor.close()
         my_db.close()
     return jsonify({"message": "User deleted"})
+
+
+# HELPER functions
+def call_deepseek_api(prompt):
+    """
+    Calls the DeepSeek API to get class suggestions.
+    """
+    deepseek_api_key = os.environ.get('DEEPSEEK_API_KEY')
+    print(f"DeepSeek API Key: {deepseek_api_key}")  # Debugging line
+    if not deepseek_api_key:
+        return False, "API key not found"
+    try:
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "deepseek-chat",  # Or the correct DeepSeek model name
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False  # Set to False for a complete response
+        }
+
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data) 
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        json_response = response.json()
+
+        # Extract the message content
+        if 'choices' in json_response and len(json_response['choices']) > 0:
+            message_content = json_response['choices'][0]['message']['content']
+            return True, message_content
+        else:
+            return False, "No suggestions found in response"
+
+    except requests.exceptions.RequestException as e:
+        return False, f"API request failed: {e}"
+    except Exception as e:
+        return False, f"An unexpected error occurred: {e}"
+    
+
+def create_prompt (questions, answers):
+    """
+    Creates a prompt for the DeepSeek API based on the provided questions and answers.
+    """
+    prompt = "You are a helpful assistant at a Stem Coding Academy in Maple, CA. Answer the last question:\n\n"
+    for i in range(len(questions)):
+        prompt += f"Q: {questions[i]}\n"
+    prompt += "\n Here are the previous answers to the questions to help you answer the last question:\n\n"
+    for i in range(len(answers)):
+        prompt += f"A: {answers[i]}\n"
+    prompt += """\n\nPlease answer only the last question in a concise and informative manner. 
+    Do not answer any questions that are not related to being a Stem Coding Academy in Maple, CA.
+    Do not include any personal information about students or teachers.
+    Explain why it is a good opportunity for students to join the Stem Coding Academy in Maple, CA.
+    Questions related to registering for classes, class schedules, and class content are acceptable.
+    """
+    return prompt
