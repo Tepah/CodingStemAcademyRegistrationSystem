@@ -27,7 +27,7 @@ const getGrade = (percent) => {
     return 'F';
 }
 
-export default function SingleGradeTable({ student_id, class_id, personal = false }) {
+export default function SingleGradeTable({ student_id, class_id, personal = false}) {
     const [assignments, setAssignments] = useState([]);
     const [student, setStudent] = useState(null);
     const [className, setClassName] = useState(null);
@@ -38,7 +38,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
     const [grade, setGrade] = useState(null);
 
     useEffect(() => {
-        if (!class_id) { return; }
+        if (!class_id || !student_id) { return; }
 
         Promise.all([
             fetchAssignments(class_id, student_id)
@@ -66,7 +66,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
 
     if (loading) {
         return (
-            <div className="w-[900px] mx-auto flex flex-col p-4">
+            <div className="flex flex-col p-4">
                 <Skeleton className="h-8 w-full mb-4" />
                 <Skeleton className="h-8 w-full mb-4" />
                 <Skeleton className="h-8 w-full mb-4" />
@@ -77,8 +77,6 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
     }
 
     return (
-        <div className="container max-w-[900px] mx-auto flex flex-col p-4 gap-4">
-            <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)} {className} Grades</h1>
             <Card>
                 <Table>
                     <TableCaption>
@@ -125,7 +123,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
                                         </Link>
                                     </TableCell>
                                     <TableCell className="text-left">
-                                        <Link href={`classes/${class_id}/assignments/${assignment.id}`}>
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
                                             {assignment.total_points}
                                         </Link>
                                     </TableCell>
@@ -141,6 +139,5 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
                     )}
                 </Table>
             </Card>
-        </div>
     )
 }

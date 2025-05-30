@@ -103,7 +103,7 @@ const StudentDash = () => {
             <ClassCard key={classData.id} classData={classData} />
           ))}
           {totalClasses > 0 ? (
-            <div className="col-span-1 flex-1 flex flex-col">
+            <div className="col-span-1 flex-1 flex flex-col hover:scale-105 transition-transform duration-200 ease-in-out">
               <Link href="/classes" className="w-full h-2/3 flex items-center justify-center rounded-xl">
                 <p className="text-center text-gray-500">View All Classes...</p>
               </Link>

@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import AllStudentGradesTable from '@/components/tables/grades/AllStudentGrades';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import EditUserSheet from '@/components/sheets/edit-user-sheet';
+import { SheetTrigger } from '@/components/ui/sheet';
 
 export default function StudentPage() {
     const [user, setUser] = useState(null);
@@ -76,18 +78,22 @@ export default function StudentPage() {
             <div className="container max-w-[900px] mx-auto flex-1 flex flex-col gap-4 p-8">
                 <div className="flex flex-row justify-between items-center">
                     <h1 className="text-2xl font-bold">{student.first_name} {student.last_name}</h1>
-                    <Button variant="default" size="sm">
-                        Edit Student
-                    </Button>
+                    <EditUserSheet user={student}>
+                        <SheetTrigger asChild>
+                            <Button variant="default" size="sm">
+                                Edit Student
+                            </Button>
+                        </SheetTrigger>
+                    </EditUserSheet>
                 </div>
-                
+
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Student Information</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Separator />
-                        <div  className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                             <p>Student ID: {student_id}</p>
                             <p>Name: {student.first_name} {student.last_name}</p>
                             <p>Gender: {student.gender}</p>
