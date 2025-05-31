@@ -14,30 +14,32 @@ import StudentNamePopover from "@/components/popovers/StudentNamePopover";
 import { useRouter } from 'next/router';
 
 const paymentSchema = z.object({
-    student_id: z.number({
-        required_error: "Student is required",
-    }).int(),
-    amount: z.number({
+    student_id: z.number().int().nullable().refine(value => value === null || (typeof value === 'number'), {
+        message: "Student is required",
+    }),
+    amount: z.string({
         required_error: "Amount is required",
         invalid_type_error: "Amount must be a number",
-    }).positive(),
-    status: z.enum(["Compete", "Refund", "Balance"]),
+    }).refine(value => !isNaN(parseFloat(value)), {
+        message: "Amount must be a valid number",
+    }),
+    status: z.enum(["Complete", "Refund", "Balance"]),
     notes: z.string().optional(),
-    payment_date: z.date(),
+    payment_date: z.string(),
     payment_type: z.enum(["cash", "check", "zelle"]),
 })
 
 export function CreatePaymentForm({ children, student_id = null }) {
-    const [selectedStudentId, setSelectedStudentId] = useState(student_id || "");
+    const [selectedStudentId, setSelectedStudentId] = useState(student_id || null);
     const router = useRouter();
 
     const form = useForm({
-        resoslver: zodResolver(paymentSchema),
+        resolver: zodResolver(paymentSchema),
         defaultValues: {
             student_id: selectedStudentId,
             amount: "",
             status: "",
-            notes:  "",
+            notes: "",
             payment_date: "",
             payment_type: ""
         }
@@ -49,18 +51,24 @@ export function CreatePaymentForm({ children, student_id = null }) {
             const response = await axios.post(`${config.backendUrl}/payment`, data)
             console.log(response.data)
             if (!student_id) {
-                router.push("/admin/payments");
+                router.push("/admin/donations");
             } else {
-                router.push(`/admin/payments/${data.student_id}`);
+                router.push(`/admin/donations/${data.student_id}`);
             }
         } catch (error) {
             console.error(error)
         }
     }
 
+
     const handleSelectStudent = (studentId) => {
-        setSelectedStudentId(studentId);
-        form.setValue("student_id", studentId);
+        if (studentId) {
+            setSelectedStudentId(studentId);
+            form.setValue("student_id", parseInt(studentId, 10));
+        } else {
+            setSelectedStudentId(null);
+            form.setValue("student_id", null);
+        }
     }
 
     return (
@@ -74,7 +82,15 @@ export function CreatePaymentForm({ children, student_id = null }) {
                             <FormItem>
                                 <FormLabel>Student ID</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Student ID" {...field} value={selectedStudentId} />
+                                    <Input
+                                        placeholder="Student ID"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const parsedValue = value ? parseInt(value, 10) : "";
+                                            field.onChange(parsedValue);
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                                 <StudentNamePopover onSelectStudent={handleSelectStudent} />
@@ -140,10 +156,10 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                            <FormLabel>Donation Date</FormLabel>
-                            <FormControl>
-                                <Input type="date" className="w-1/3" {...field} />
-                            </FormControl>
+                                <FormLabel>Donation Date</FormLabel>
+                                <FormControl>
+                                    <Input type="date" className="w-1/3" {...field} />
+                                </FormControl>
                             </div>
                             <FormMessage />
                         </FormItem>

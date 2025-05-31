@@ -18,8 +18,6 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        console.log("This is student List: ", studentsList);
-        console.log("This is students: ", students);
         try {
             const fetchStudents = async () => {
                 const response = await axios.get(`${config.backendUrl}/students`);
@@ -31,7 +29,7 @@ const StudentNamePopover = ({ onSelectStudent, studentsList = null }) => {
         } catch (error) {
             console.error("Error fetching students:", error);
         }
-    }, [studentsList, students]);
+    }, [studentsList]);
 
     const handleSelectStudent = (studentId) => {
         onSelectStudent(studentId);

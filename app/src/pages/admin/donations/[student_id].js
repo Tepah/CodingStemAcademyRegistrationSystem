@@ -36,7 +36,7 @@ export default function Payments() {
                 <h1 className="text-2xl font-bold">{student['first_name']} {student['last_name']} Donations</h1>
                 <DataTable data={payments} columns={columns}>
                     <Button asChild variant="default" size="sm">
-                        <Link href={`/admin/payments/${student_id}/add`}>
+                        <Link href={`/admin/donations/${student_id}/add`}>
                             Add Donation
                         </Link>
                     </Button>

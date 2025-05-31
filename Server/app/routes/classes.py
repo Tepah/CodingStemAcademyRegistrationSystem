@@ -277,7 +277,6 @@ def get_teachers_classes_by_semesters():
 @classes_bp.route('/add-class', methods=['POST'])
 def add_class():
     my_db = get_db_connection()
-    my_db = get_db_connection()
     data = request.get_json()
     try: 
         teacher_id = data.get('teacher_id')
