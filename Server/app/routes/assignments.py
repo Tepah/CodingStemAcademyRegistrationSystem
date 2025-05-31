@@ -337,10 +337,14 @@ def generate_assignment():
         """
 
         # Call DeepSeek API
+        api_key = os.environ.get('DEEPSEEK_API_KEY')
+        if not api_key:
+            return jsonify({"error": "DEEPSEEK_API_KEY not set"}), 500
+
         response = requests.post(
             'https://api.deepseek.com/v1/chat/completions',
             headers={
-                'Authorization': f'Bearer {os.environ.get('DEEPSEEK_API_KEY')}',
+                'Authorization': f'Bearer {api_key}',
                 'Content-Type': 'application/json'
             },
             json={
