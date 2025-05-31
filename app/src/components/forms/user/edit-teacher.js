@@ -26,7 +26,7 @@ import { z } from "zod"
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-    id: z.number(),
+    id: z.number().optional(),
     first_name: z.string().min(1, {
         message: "First name is required",
     }),
@@ -77,12 +77,11 @@ export default function EditTeacherForm({ teacher } ) {
 
     function handleUpdate(values) {
         values.birth_date = format(new Date(`${values.birth_date.year}-${values.birth_date.month}-${values.birth_date.day}`), 'yyyy-MM-dd');
-        delete values.confirm_password;
 
         axios.put(`${config.backendUrl}/users/update`, values).then(response => {
             console.log("Successfully Updated: " + response.data['message']);
             router.push('/admin/users');
-            router.refresh();
+            window.location.reload();
         }).catch(error => {
             console.log(error);
         });

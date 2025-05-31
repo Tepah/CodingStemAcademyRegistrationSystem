@@ -139,8 +139,8 @@ def update_semester_route():
     data = request.get_json()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "UPDATE semesters SET name = %s, start_date = %s, end_date = %s, status = %s WHERE id = %s"
-        cursor.execute(sql, (data['name'], data['start_date'], data['end_date'], data['status'], data['id']))
+        sql = "UPDATE semesters SET name = %s, start_date = %s, end_date = %s, status = %s, rate = %s WHERE id = %s"
+        cursor.execute(sql, (data['name'], data['start_date'], data['end_date'], data['status'], data['rate'], data['id']))
         db.commit()
     finally:
         db.close()

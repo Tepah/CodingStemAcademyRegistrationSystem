@@ -186,7 +186,7 @@ export default function Calendar() {
             });
 
             return {
-              id: `${event['id']}-${format(date, 'yyyyMMdd')}`, // Unique ID for each occurrence
+              id: `${event['id']}`, // Unique ID for each occurrence
               title: event['class_name'],
               startDate: startDateTime,
               endDate: endDateTime,

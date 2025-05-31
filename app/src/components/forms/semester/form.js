@@ -12,9 +12,9 @@ import { postSemester } from "@/components/api/api";
 
 const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),
-    start_date: z.string(),
-    end_date: z.string(),
-    rate: z.number().min(0, "Rate must be a positive number"),
+    start_date: z.string().min(1, "Start date is required"),
+    end_date: z.string().min(1, "End date is required"),
+    rate: z.number().optional(),
     status: z.enum(["Ongoing", "Completed", "Upcoming"], {
         required_error: "Status is required",
     }),
@@ -26,14 +26,6 @@ const semesterSchema = z.object({
         path: ["end_date"], // path to the error
       });
     }
-  }).superRefine(({start_date}, ctx) => {
-    if (new Date(start_date) <= new Date()) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Start date must be in the future",
-          path: ["start_date"], // path to the error
-        });
-      }
   })
 
 export const SemesterForm = () => {

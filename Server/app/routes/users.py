@@ -275,6 +275,7 @@ def update_user():
     health_ins_num = data.get('health_ins_num')
     role = data.get('role')
     grade_level = data.get('grade_level', None)
+    experience = data.get('experience', None)
     print(data)
 
     my_db = get_db_connection()
@@ -288,13 +289,13 @@ def update_user():
             return jsonify({"message": "User not found"})
         sql = "UPDATE users SET first_name = %s, last_name = %s, birth_date" \
         " = %s, gender = %s, email = %s, phone = %s, address = %s, guardian = %s, guardian_phone = %s, health_ins = %s, " \
-        "health_ins_num = %s, role = %s, grade_level = %s WHERE id = %s"
+        "health_ins_num = %s, role = %s, grade_level = %s, experience = %s WHERE id = %s"
         vals = (first_name if first_name else user["first_name"], last_name if last_name else user["last_name"],
                 birth_date if birth_date else user["birth_date"], gender if gender else user["gender"], email if email else user["email"],
                 phone if phone else user["phone"], address if address else user["address"], guardian if guardian else user["guardian"],
                 guardian_phone if guardian_phone else user["guardian_phone"], health_ins if health_ins else user["health_ins"],
                 health_ins_num if health_ins_num else user["health_ins_num"], role if role else user["role"],
-                grade_level if grade_level else user["grade_level"], id)
+                grade_level if grade_level else user["grade_level"], experience if experience else user["experience"], id)
         cursor.execute(sql, vals)
         my_db.commit()
     finally:

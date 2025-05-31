@@ -277,7 +277,6 @@ def get_teachers_classes_by_semesters():
 @classes_bp.route('/add-class', methods=['POST'])
 def add_class():
     my_db = get_db_connection()
-    my_db = get_db_connection()
     data = request.get_json()
     try: 
         teacher_id = data.get('teacher_id')
@@ -389,7 +388,8 @@ def update_class(id):
         vals = (
             teacher_id if teacher_id else classes["teacher_id"], class_name if class_name else classes["class_name"], 
             subject if subject else classes["subject"], semester_id if semester_id else classes["semester_id"],
-            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], rate if rate else classes["rate"], id
+            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], 
+            rate if rate else classes["rate"], id
         )
         cursor.execute(sql, vals)
         my_db.commit()
