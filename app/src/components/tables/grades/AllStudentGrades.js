@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchAssignments, getCurrentSemester } from '@/components/api';
+import { fetchAssignments, getCurrentSemester } from '@/components/api/api';
 import { format } from 'date-fns';
 import { BookCopy, Megaphone, NotepadText } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
@@ -99,12 +99,12 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
     const handleClick = async () => {
         const cur = !allGrades;
         setAllGrades(cur);
-    
+
         if (cur) {
             try {
                 const res = await axios.get(`${config.backendUrl}/all-classes-by-student`, { params: { student_id: student_id } });
                 console.log(res.data);
-    
+
                 const updatedClasses = await Promise.all(
                     res.data['classes'].map(async (classItem) => {
                         const teacher = await axios.get(`${config.backendUrl}/total`, {
@@ -117,7 +117,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                         return classItem;
                     })
                 );
-    
+
                 setClasses(updatedClasses); // Set the resolved data
             } catch (error) {
                 console.error('Error fetching all classes:', error);
@@ -131,7 +131,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                     },
                 });
                 console.log(res.data);
-    
+
                 const updatedClasses = await Promise.all(
                     res.data['classes'].map(async (classItem) => {
                         const teacher = await axios.get(`${config.backendUrl}/total`, {
@@ -144,7 +144,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                         return classItem;
                     })
                 );
-    
+
                 setClasses(updatedClasses); // Set the resolved data
             } catch (error) {
                 console.error('Error fetching semester classes:', error);
@@ -165,7 +165,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
     }
 
     return (
-        <div className="container max-w-[900px] mx-auto flex flex-col gap-4">
+        <div className="container mx-auto flex flex-col gap-4">
             <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)} Grades</h1>
             <Card>
                 <Table>
@@ -182,7 +182,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                     {(classes || []).length === 0 ? (
                         <TableBody>
                             <TableRow>
-                                <TableCell className="text-center">No classes found</TableCell>
+                                <TableCell colSpan={3} className="text-center">No classes found</TableCell>
                             </TableRow>
                         </TableBody>
                     ) : (
@@ -191,7 +191,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                                 <TableRow key={classData.id}>
                                     <TableCell className="py-4 text-left">{classData.class_name}</TableCell>
                                     <TableCell className="text-left">
-                                        {getGrade(classData.grade)} ({classData.grade}%)
+                                        {getGrade(classData.grade)} ({parseFloat(classData.grade).toFixed(2)}%)
                                     </TableCell>
                                     <TableCell className="flex flex-row text-left justify-center space-x-4">
                                         <Link href={`/classes/${classData.id}`} className="text-center">
@@ -200,9 +200,11 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                                         <Link href={`/classes/${classData.id}/assignments`} className="text-center">
                                             <NotepadText className="w-[25px] h-[25px]" />
                                         </Link>
-                                        <Link href={`/classes/${classData.id}/announcements`} className="text-center">
-                                            <Megaphone className="w-[25px] h-[25px]" />
-                                        </Link>
+                                        {personal && (
+                                            <Link href={`/classes/${classData.id}/announcements`} className="text-center">
+                                                <Megaphone className="w-[25px] h-[25px]" />
+                                            </Link>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -210,7 +212,7 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                     )}
                 </Table>
             </Card>
-            <p onClick={() => {handleClick()}} className="flex flex-row items-center text-sm font-semibold text-muted-foreground hover:cursor-pointer hover:text-primary">
+            <p onClick={() => { handleClick() }} className="flex flex-row items-center text-sm font-semibold text-muted-foreground hover:cursor-pointer hover:text-primary">
                 {!allGrades ? ("View All Grades...") : ("View Semester Grades...")}
             </p>
         </div>

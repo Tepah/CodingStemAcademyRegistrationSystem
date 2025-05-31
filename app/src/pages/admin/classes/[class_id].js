@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { columns } from "@/components/tables/students/columns";
 import { DataTable } from "@/components/tables/students/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function ClassDetails() {
   const router = useRouter();
@@ -126,17 +128,20 @@ export default function ClassDetails() {
   return (
     <Layout>
       {loading ? (
-        <div className="flex items-center justify-center h-screen">loading</div>
+        <div className="container max-w-[1400px] mx-auto flex flex-col p-8 space-y-8">
+          <Skeleton className="w-full h-[700px] rounded-xl" />
+          <Skeleton className="w-[400px] h-[50px] rounded-xl" />
+        </div>
       )
         : user.role !== "Admin" && user.role !== "Teacher" ? (
-          <div className="flex items-center justify-center h-screen">
+          <div className="container mx-auto flex justify-center ">
             <h1 className="text-3xl font-bold">Not authorized to view this page</h1>
           </div>
         ) : (
-          <div className="container flex flex-1 flex-col mx-auto space-y-8 p-8">
+          <div className="container max-w-[1000px] flex flex-1 flex-col mx-auto space-y-8 p-8">
             <h1 className="text-3xl font-bold mb-6">Class Details</h1>
-            <Card className="w-2/3">
-              <CardHeader className="w-[400px]">
+            <Card className="">
+              <CardHeader className="w-1/2">
                 <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">{classDetails.class_name}</CardTitle>
                 <Separator />
               </CardHeader>
@@ -161,9 +166,13 @@ export default function ClassDetails() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="w-2/3">
+            <Card className="">
               <CardHeader>
+              <div className="flex flex-row items-center justify-between">
                 <CardTitle>Students</CardTitle>
+                <Button size="sm" variant="default" onClick={() => router.push(`/classes/${class_id}/grades`)}>Grades Overview</Button>
+              </div>
+                
                 <Separator />
               </CardHeader>
               <CardContent>

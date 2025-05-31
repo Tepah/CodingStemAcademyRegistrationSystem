@@ -51,6 +51,15 @@ export default function Confirmation(props) {
             }))
         });
 
+        promises.push(axios.post(`${config.backendUrl}/payment`, {
+            student_id: student_id,
+            amount: props.donations,
+            notes: "Class registration",
+            payment_date: new Date().toISOString(),
+            payment_type: "Cash",
+            payment_status: "Balance",
+        }))
+
         Promise.all(promises).then(() => {
             console.log("All class registrations completed successfully.");
             props.setLoading(false);
@@ -63,7 +72,7 @@ export default function Confirmation(props) {
             <h1 className="text-2xl font-bold mb-4">Confirm Class Registration</h1>
             <p className="text-center">Please review your selected classes before proceeding.</p>
             <div className="flex flex-col md:flex-row flex-1 gap-4 mt-4">
-                <Card className="max-w-[500px]">
+                <Card className="">
                     <Table>
                         <TableCaption>Current Class Schedule</TableCaption>
                         <TableHeader>
@@ -76,14 +85,14 @@ export default function Confirmation(props) {
                                 <TableRow key={classData.id}>
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">{classData.day} {classData.start_time} - {classData.end_time}</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br/>{classData.start_time} - {classData.end_time}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </Card>
                 <p className="text-center flex flex-col justify-center">To</p>
-                <Card className="max-w-[500px]">
+                <Card className="">
                     <Table>
                         <TableCaption>New Class Schedule</TableCaption>
                         <TableHeader>
@@ -96,7 +105,7 @@ export default function Confirmation(props) {
                                 <TableRow key={classData.id}>
                                     <TableCell>{classData.subject}</TableCell>
                                     <TableCell>{classData.teacher.first_name}</TableCell>
-                                    <TableCell className="text-sm whitespace-normal">{classData.day} {classData.start_time} - {classData.end_time}</TableCell>
+                                    <TableCell className="text-sm whitespace-normal">{classData.day}<br />{classData.start_time} - {classData.end_time}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

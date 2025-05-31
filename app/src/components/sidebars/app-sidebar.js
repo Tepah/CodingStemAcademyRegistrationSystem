@@ -101,7 +101,7 @@ export function AppSidebar({ ...props }) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Stem Action Teen Institution</span>
+                  <span className="font-semibold text-center">Stem Action Teen Institution</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -113,7 +113,7 @@ export function AppSidebar({ ...props }) {
           user["role"] !== 'Admin' ? (
             <NavClasses classes={classes} />
           ) : null}
-        <NavSecondary />
+        <NavSecondary role={user["role"]} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
@@ -128,15 +128,6 @@ export function AppSidebar({ ...props }) {
               side="top"
               className="w-[--radix-popper-anchor-width]"
             >
-              <DropdownMenuItem>
-                <span>Account</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span>Billing</span>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleSignOutClick}>
                 <span>Sign out</span>

@@ -15,8 +15,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchAssignments } from '@/components/api';
-import { format } from 'date-fns';
+import { fetchAssignments } from '@/components/api/api';
+import Link from "next/link";
 
 
 const getGrade = (percent) => {
@@ -27,7 +27,7 @@ const getGrade = (percent) => {
     return 'F';
 }
 
-export default function SingleGradeTable({ student_id, class_id, personal = false }) {
+export default function SingleGradeTable({ student_id, class_id, personal = false}) {
     const [assignments, setAssignments] = useState([]);
     const [student, setStudent] = useState(null);
     const [className, setClassName] = useState(null);
@@ -38,7 +38,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
     const [grade, setGrade] = useState(null);
 
     useEffect(() => {
-        if (!class_id) { return; }
+        if (!class_id || !student_id) { return; }
 
         Promise.all([
             fetchAssignments(class_id, student_id)
@@ -66,7 +66,7 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
 
     if (loading) {
         return (
-            <div className="w-[900px] mx-auto flex flex-col p-4">
+            <div className="flex flex-col p-4">
                 <Skeleton className="h-8 w-full mb-4" />
                 <Skeleton className="h-8 w-full mb-4" />
                 <Skeleton className="h-8 w-full mb-4" />
@@ -77,8 +77,6 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
     }
 
     return (
-        <div className="container max-w-[900px] mx-auto flex flex-col p-4 gap-4">
-            <h1 className="text-2xl font-bold">{!personal && (`${student.first_name} ${student.last_name}`)} {className} Grades</h1>
             <Card>
                 <Table>
                     <TableCaption>
@@ -102,29 +100,44 @@ export default function SingleGradeTable({ student_id, class_id, personal = fals
                         <TableBody>
                             {assignments.map((assignment) => (
                                 <TableRow key={assignment.id}>
-                                    <TableCell className="py-4 text-left">{assignment.title}</TableCell>
                                     <TableCell className="py-4 text-left">
-                                        {new Date(assignment.due_date).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                            timeZone: "UTC", // Force UTC interpretation
-                                        })}
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.title}
+                                        </Link>
                                     </TableCell>
-                                    <TableCell className="text-left">{assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 'N/A'}</TableCell>
-                                    <TableCell className="text-left">{assignment.total_points}</TableCell>
+                                    <TableCell className="py-4 text-left">
+
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {new Date(assignment.due_date).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                                timeZone: "UTC", // Force UTC interpretation
+                                            })}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="text-left">
+
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.score ? assignment.score.grade : assignment.score ? assignment.score.grade : 'N/A'}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="text-left">
+                                        <Link href={`/classes/${class_id}/assignments/${assignment.id}`}>
+                                            {assignment.total_points}
+                                        </Link>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             <TableRow>
                                 <TableCell className="py-8 text-lg text-left font-bold">Overall Score</TableCell>
                                 <TableCell className="text-left"></TableCell>
                                 <TableCell className="text-left">{overallScore ? overallScore.toFixed(0) : 0}/{overallTotal}</TableCell>
-                                <TableCell className="text-left font-semibold">{overallPercent}%({grade})</TableCell>
+                                <TableCell className="text-left font-semibold">{overallPercent.toFixed(2)}%({grade})</TableCell>
                             </TableRow>
                         </TableBody>
                     )}
                 </Table>
             </Card>
-        </div>
     )
 }

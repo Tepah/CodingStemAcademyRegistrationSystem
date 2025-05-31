@@ -100,7 +100,7 @@ export default function TeacherGrade() {
     }
 
     return (
-        <div className="container mx-auto flex flex-col p-4 gap-4">
+        <div className="container mx-auto max-w-[1000px] flex flex-col p-4 gap-4">
             <h1 className="text-4xl font-bold mb-4">Grades for {classData?.class_name}</h1>
             <GradesDataTable data={processedStudents} columns={columns(assignments)} />
         </div>

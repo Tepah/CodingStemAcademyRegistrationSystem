@@ -31,7 +31,7 @@ const ClassCard = ({ classData }) => {
     console.log(unread);
 
     return (
-        <Card className="col-span-1 flex-1 flex flex-col">
+        <Card className="col-span-1 flex-1 flex flex-col hover:scale-105 transition-transofrm duration-200 ease-in-out">
             <CardHeader>
                 <div className="w-full flex flex-1 justify-between">
                     <div className="text-left">
@@ -57,15 +57,15 @@ const ClassCard = ({ classData }) => {
             <Separator />
             <CardContent className="w-full py-3 flex flex-row justify-evenly items-center">
                 <Link href={`/classes/${classData.id}`} className="text-center">
-                    <BookCopy className="w-[25px] h-[25px]" />
+                    <BookCopy className="w-[25px] h-[25px] hover:scale-105" />
                 </Link>
                 <Separator orientation="vertical" className="h-[25px]" />
                 <Link href={`/classes/${classData.id}/assignments`} className="text-center">
-                    <NotepadText className="w-[25px] h-[25px]" />
+                    <NotepadText className="w-[25px] h-[25px] hover:scale-105" />
                 </Link>
                 <Separator orientation="vertical" className="h-[25px]" />
                 <Link href={`/classes/${classData.id}/announcements`} className="text-center relative">
-                    <Megaphone className="w-[25px] h-[25px]" />
+                    <Megaphone className="w-[25px] h-[25px] hover:scale-105" />
                     {unread > 0 && <CircleAlert className="absolute -top-2 -right-3 cursor-pointer w-[15px] text-yellow-500"></CircleAlert>}
                 </Link>
             </CardContent>

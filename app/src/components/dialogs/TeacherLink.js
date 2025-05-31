@@ -3,7 +3,7 @@ import { Dialog, DialogDescription, DialogContent, DialogHeader, DialogTitle, Di
 import {Button} from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { postTeacherInvite } from "../api";
+import { postTeacherInvite } from "../api/api";
 import QRCodeGenerator from "../ui/QRCodeGenerator";
 
 export const TeacherLink = ({ children, teacherData }) => {
@@ -15,7 +15,8 @@ export const TeacherLink = ({ children, teacherData }) => {
         setLoading(true);
         postTeacherInvite(email).then((response) => {
             console.log(response);
-            setLink("localhost:3000/register-teacher?token=" + response['invite_id']);
+            const baseUrl = window.location.origin;
+            setLink(`${baseUrl}/register-teacher?token=${response['invite_id']}`);
             setLoading(false);
         }).catch((error) => {
             console.error("Error creating teacher invite:", error);

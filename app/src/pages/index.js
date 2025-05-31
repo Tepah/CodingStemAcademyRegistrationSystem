@@ -2,8 +2,11 @@ import Link from "next/link";
 import React, {useEffect} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
+import { MessageCircleQuestion } from "lucide-react";
+import AIRegistrationQuestions from "@/components/sheets/ai-registration-questions";
 
 export default function Home() {
+
 
   useEffect (() => {
     if (localStorage.getItem('token')) {
@@ -14,7 +17,9 @@ export default function Home() {
 
   return (
     <div className={"flex items-center justify-center h-screen"}>
-      <Card className={"w-[350px]"}>
+
+      <AIRegistrationQuestions> 
+      <Card className={"relative w-[350px]"}>
         <CardHeader className="text-center">
           <CardTitle className="text-4xl">Stem Action Teen Institution</CardTitle>
           <CardDescription>
@@ -31,8 +36,12 @@ export default function Home() {
               <Link href={"/register"}>Register</Link>
             </Button>
           </div>
+            <div className="absolute -top-12 -right-12 transform hover:scale-110 transition-transform hover:cursor-pointer">
+              <MessageCircleQuestion className="h-12 w-12" />
+            </div>
         </CardContent>
       </Card>
+      </AIRegistrationQuestions>
     </div>
   );
 }

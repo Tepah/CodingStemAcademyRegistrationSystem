@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";
 import { Select, SelectTrigger, SelectItem, SelectGroup, SelectContent, SelectValue } from '@/components/ui/select';
 import { Input } from "@/components/ui/input";
-import { updateSemester } from "@/components/api";
+import { updateSemester } from "@/components/api/api";
 import { set } from "date-fns";
 import {
     Dialog,
@@ -17,7 +17,7 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-  import { deleteSemester } from "@/components/api";
+  import { deleteSemester } from "@/components/api/api";
 
 const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),

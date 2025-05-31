@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { jwtDecode } from "jwt-decode";
 import AllStudentGradesTable from "@/components/tables/grades/AllStudentGrades";
-import { getCurrentSemester } from "@/components/api";
+import { getCurrentSemester } from "@/components/api/api";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Grades() {

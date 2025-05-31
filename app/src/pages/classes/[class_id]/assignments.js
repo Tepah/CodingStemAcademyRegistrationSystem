@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
   TableCaption,
+  TableFooter,
 } from "@/components/ui/table";
 import { jwtDecode } from "jwt-decode";
 

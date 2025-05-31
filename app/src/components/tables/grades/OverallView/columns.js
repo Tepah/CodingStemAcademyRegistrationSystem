@@ -33,7 +33,6 @@ export const columns = (assignments) => {
         accessorKey: `assignment_${assignment.id}`, // Unique key for each assignment
         header: () => <div className="text-center">{index + 1}</div>, // Assignment header (e.g., 1, 2, 3)
         cell: ({ row }) => {
-            console.log("Row data:", row.original); // Log the row data for debugging
             const studentAssignments = row.original.assignments; // Access the student's assignments
             const assignmentData = studentAssignments.find((a) => a.id === assignment.id); // Match assignment by ID
             const today = new Date();

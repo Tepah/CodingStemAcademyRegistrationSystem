@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Layout } from "@/app/layout";
 import { jwtDecode } from "jwt-decode";
 import { Separator } from '@/components/ui/separator';
-import { getAllClassesForStudent, getSemester, getUser } from '@/components/api';
+import { getAllClassesForStudent, getSemester, getUser } from '@/components/api/api';
 import ClassCard from '@/components/dashboard/class-cards';
-import { getAllClassesForTeacher } from '@/components/api';
+import { getAllClassesForTeacher } from '@/components/api/api';
 
 
 export default function Classes() {

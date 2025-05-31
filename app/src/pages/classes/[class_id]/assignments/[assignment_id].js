@@ -50,6 +50,7 @@ const ClassPage = () => {
         const response = await axios.get(`${config.backendUrl}/assignments-submissions`, {
           params: { assignment_id },
         });
+        console.log("Fetched submissions:", response.data.submissions);
         return response.data.submissions;
       } catch (error) {
         console.error("Error fetching submissions:", error);
@@ -100,7 +101,7 @@ const ClassPage = () => {
     if (assignment_id) {
       setLoading(true); // Start loading
       fetchAssignment();
-      if (user.role === "Teacher") {
+      if (user.role === "Teacher" || user.role === "Admin") {
         fetchSubmissions()
           .then((submissions) => fetchStudents(submissions))
           .then((submissionsWithStudentNames) => fetchScores(submissionsWithStudentNames))
@@ -147,6 +148,11 @@ const ClassPage = () => {
               </Popover>
             </div>
           )}
+          {user && (user.role === "Teacher" || user.role === "Admin") && (
+            <div className="flex justify-end">
+              <Button size="sm" type="default">Edit Assignment</Button>
+            </div>
+          )}
         </div>
         <Card className="p-4">
           <div className="grid grid-cols-2 gap-4">
@@ -161,7 +167,7 @@ const ClassPage = () => {
           <h3 className="text-lg font-semibold">Description</h3>
           <p className="">{assignmentData.description}</p>
         </Card>
-        {user && user.role === "Teacher" && (
+        {user && (user.role === "Teacher" || user.role === "Admin") && (
           <div className="flex flex-col my-8">
             <div className="flex flex-row justify-between items-center">
               <h2 className="text-xl font-semibold">Submissions</h2>

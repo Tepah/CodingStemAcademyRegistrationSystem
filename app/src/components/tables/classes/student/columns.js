@@ -1,7 +1,7 @@
 "use client"
 import { MoreHorizontal, Trash } from "lucide-react" 
 import { Button } from "@/components/ui/button"
-import { deleteStudentFromClass } from "@/components/api"
+import { deleteStudentFromClass } from "@/components/api/api"
 
 
 export const columns = [

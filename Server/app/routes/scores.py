@@ -1,5 +1,14 @@
+## Handles the Scores and Feedback for Assignments
 from db_connection import get_db_connection
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
+import json
+import requests
+import os
+from dotenv import load_dotenv
+from PIL import Image
+import pytesseract
+
 
 scores_bp = Blueprint('scores', __name__)
 
@@ -15,6 +24,35 @@ def get_scores():
         cursor.close()
         connection.close()
     return jsonify({'message': 'Scores retrieved successfully', 'scores': scores}), 200
+
+@scores_bp.route('/feedback', methods=['GET'])
+def get_feedback():
+    connection = get_db_connection()
+    feedback_id = request.args.get('id')
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM feedback WHERE id = %s", (feedback_id,))
+        feedback = cursor.fetchone()
+    finally:
+        cursor.close()
+        connection.close()
+    if not feedback:
+        return jsonify({'message': 'Feedback not found', 'feedback': None}), 200
+    return jsonify({'message': 'Feedback retrieved successfully', 'feedback': feedback}), 200
+
+@scores_bp.route('/feedback-for-class', methods=['GET'])
+def get_feedback_for_class():
+    class_id = request.args.get('class_id')
+    user_id = request.args.get('user_id')
+    connection = get_db_connection()
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM feedback WHERE class_id = %s AND user_id = %s", (class_id, user_id))
+        feedback = cursor.fetchall()
+    finally:
+        cursor.close()
+        connection.close()
+    return jsonify({'message': 'Feedback retrieved successfully', 'feedback': feedback[0] if feedback else None}), 200
 
 @scores_bp.route('/total', methods=['GET'])
 def get_total_grade():
@@ -155,6 +193,83 @@ def create_score():
         cursor.close()
         connection.close()
 
+@scores_bp.route('/ai/feedback-suggestion', methods=['POST'])
+def get_ai_feedback_suggestion():
+    data = request.get_json()
+    prompt = generate_feedback_suggestion_prompt(data['assignments'], data['className'], data['student'])
+
+    success, ai_response = call_deepseek_api(prompt)
+    if success:
+        return jsonify({'message': 'AI feedback suggestion retrieved successfully', 'feedback': {'message': ai_response}}), 200
+
+    return jsonify({'message': 'Error retrieving AI feedback suggestion'}), 500
+
+@scores_bp.route('/feedback', methods=['POST'])
+def create_feedback():
+    data = request.get_json()
+    connection = get_db_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO feedback (user_id, class_id, message) VALUES (%s, %s, %s)",
+                       (data['user_id'], data['class_id'], data['message']))
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+    return jsonify({'message': 'Feedback created successfully'}), 201
+
+
+ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "jpg", "png"}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@scores_bp.route('/ai/score-suggestion', methods=['POST'])
+def get_ai_score_suggestion():
+    submission_file = request.files.get('submission_file')
+    assignment_file = request.files.get('assignment_file')
+
+    if not submission_file:
+        return jsonify({'message': 'No SubmissionFile'}), 400
+
+    if submission_file.filename == '':
+        return jsonify({'message': 'No selected submission file'}), 400
+
+    if not allowed_file(submission_file.filename):
+        return jsonify({'message': 'Invalid submission file type'}), 400
+
+    assignment_text = None  # Initialize assignment_text
+    try:
+        # Process submission file
+        img = Image.open(submission_file.stream)
+        submission_text = pytesseract.image_to_string(img)
+        submission_filename = submission_file.filename + ".txt"
+
+        # Process assignment file (if provided)
+        if assignment_file and assignment_file.filename != '':
+            if not allowed_file(assignment_file.filename):
+                return jsonify({'message': 'Invalid assignment file type'}), 400
+            img = Image.open(assignment_file.stream)
+            assignment_text = pytesseract.image_to_string(img)
+            assignment_filename = assignment_file.filename + ".txt"
+        assignment = request.form.get('assignment')
+        prompt = generate_submission_suggestion_prompt(assignment_text, submission_text, assignment)
+
+        ai_response = get_deepseek_completion_with_files(prompt)
+        if ai_response:
+            parsed_response = parse_ai_response(ai_response)
+            if parsed_response:
+                grade = parsed_response.get('grade')
+                feedback = parsed_response.get('feedback')
+                return jsonify({'message': 'AI score suggestion retrieved successfully', 'grade': grade, 'feedback': feedback}), 200
+            else:
+                return jsonify({'message': 'Error parsing AI response'}), 500
+        else:
+            return jsonify({'message': 'Error retrieving AI score suggestion'}), 500
+
+    except Exception as e:
+        return jsonify({'message': f'Error processing image: {str(e)}'}), 500
+
 # PUT functions
 @scores_bp.route('/score', methods=['PUT'])
 def update_score():
@@ -195,3 +310,121 @@ def delete_score():
     finally:
         cursor.close()
         connection.close()
+
+# HELPER functions
+def get_deepseek_completion_with_files(prompt):
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if not api_key:
+        raise ValueError("API key is not set in the environment variables.")
+
+    url = "https://api.deepseek.com/v1/chat/completions"  # Double-check this URL!
+
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": "deepseek-chat",  # Or the correct DeepSeek model name
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant"},
+            {"role": "user", "content": prompt},
+        ],
+        "stream": False  # Set to False for a complete response
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=data)  # Send as data
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        return response.json()['choices'][0]['message']['content']  # Adjust based on actual DeepSeek response format
+
+    except requests.exceptions.RequestException as e:
+        raise ValueError(f"Error in API request: {e}")
+    except (KeyError, ValueError, TypeError) as e:
+        raise ValueError(f"Error parsing JSON response: {e}")
+    
+def call_deepseek_api(prompt):
+    """
+    Calls the DeepSeek API to get class suggestions.
+    """
+    deepseek_api_key = os.environ.get('DEEPSEEK_API_KEY')
+    print(f"DeepSeek API Key: {deepseek_api_key}")  # Debugging line
+    if not deepseek_api_key:
+        return False, "API key not found"
+    try:
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "deepseek-chat",  # Or the correct DeepSeek model name
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False  # Set to False for a complete response
+        }
+
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data) 
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        json_response = response.json()
+
+        # Extract the message content
+        if 'choices' in json_response and len(json_response['choices']) > 0:
+            message_content = json_response['choices'][0]['message']['content']
+            return True, message_content
+        else:
+            return False, "No suggestions found in response"
+
+    except requests.exceptions.RequestException as e:
+        return False, f"API request failed: {e}"
+    except Exception as e:
+        return False, f"An unexpected error occurred: {e}"
+
+
+def generate_submission_suggestion_prompt(assignment_text, submission_text, assignmentData):
+    prompt = f"""
+    You are a teacher's assistant. You will be given an assignment (if provided) and a student's submission.
+    Your task is to grade the submission based on the assignment and provide feedback.
+
+    Both the assignment and the submission are TEXTUAL representations of images.
+
+    Assignment: {assignment_text if assignment_text else 'No assignment provided'}
+
+    Submission: {submission_text}
+
+    Assignment Data: {json.dumps(assignmentData)}
+
+    Please provide a grade (out of 100) and feedback.
+    Separate the grade and feedback with a new line.
+    """
+    return prompt
+
+def generate_feedback_suggestion_prompt(assignments, className, student):
+    prompt = f"""
+    You are a teacher's assistant. You will be given a list of assignments, the class name, and a student.
+    Your task is to provide constructive feedback for the student based on the assignments, and the feedback
+    provided by the teacher in the score, feedback section. Assume that 0 scores mean that the student did
+    not turn in the assignment, and that null scores mean that the student has not been graded yet.
+
+    Class Name: {className}
+    Student: {student}
+
+    Assignments: {json.dumps(assignments, indent=2)}
+    Please provide overall feedback for the student based on the assignments, their scores, and the feedback provided by the teacher.
+    Use the student's name in the feedback.
+    Provide the feedback in a single paragraph.
+    """
+    
+    return prompt
+
+def parse_ai_response(response):
+    # Example response: "85\nGood job, but you could improve on the introduction."
+    try:
+        response_lines = response.split('\n')
+        grade = int(response_lines[0].strip())
+        feedback = '\n'.join(response_lines[1:]).strip()
+        return {'grade': grade, 'feedback': feedback}
+    except (IndexError, ValueError):
+        return {'grade': 0, 'feedback': 'Invalid AI response'}

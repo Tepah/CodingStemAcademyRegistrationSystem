@@ -22,6 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -71,6 +72,7 @@ const formSchema = z.object({
         message: "Address is required",
     }),
     role: z.enum(["Student", "Admin", "Teacher"]),
+    experience: z.string().optional()
 })
 
 
@@ -102,6 +104,7 @@ export default function TeacherRegisterForm({ email } ) {
             health_ins_number: null,
             role: "Teacher",
             grade_level: null,
+            experience: "",
         },
     })
 
@@ -299,6 +302,20 @@ export default function TeacherRegisterForm({ email } ) {
                                 <FormLabel>Address</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Address" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    
+                    <FormField
+                        control={form.control}
+                        name="experience"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Experience</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="Experience" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

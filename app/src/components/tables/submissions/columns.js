@@ -48,7 +48,18 @@ export const columns = [
         header: ({ column }) =>
             <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                 <span>Content</span>
-            </Button>
+            </Button>,
+        cell: ({ row }) => {
+            const content = row.original.content;
+            if (content.length > 100) {
+                return (
+                    <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {content}
+                    </div>
+                );
+            }
+            return content;
+        }
 
     },
     {
@@ -59,12 +70,13 @@ export const columns = [
             </Button>,
         cell: ({ row }) => {
             const grade = row.original.grade;
+            const total = row.original.total_points;
 
             if (grade === null) {
                 return (
                     <div className="flex flex-row items-center justify-center space-x-2">
                         <Input className="w-[100px]" type="text" value="0" readOnly />
-                        <p>/100</p>
+                        <p>/{total}</p>
                     </div>
                 )
             }
@@ -72,7 +84,7 @@ export const columns = [
             return (
                 <div className="flex flex-row items-center justify-center space-x-2">
                     <Input className="w-[100px]" type="text" value={grade} readOnly />
-                    <p>/100</p>
+                    <p>/{total}</p>
                 </div>
             )
         }

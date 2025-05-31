@@ -4,8 +4,8 @@ import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/components/tables/payments/data-table";
-import {columns} from "@/components/tables/payments/columns";
+import {DataTable} from "@/components/tables/donations/data-table-all";
+import {columns} from "@/components/tables/donations/columns";
 import {Label} from "@/components/ui/label";
 
 export default function Donations() {
@@ -84,7 +84,7 @@ export default function Donations() {
     
     return (
         <Layout>
-            <div className="container flex flex-col flex-1 mx-auto p-12">
+            <div className="container max-w-[1000px] flex flex-col flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">

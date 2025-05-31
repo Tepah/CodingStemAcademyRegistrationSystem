@@ -3,14 +3,15 @@ import {Layout} from "@/app/layout";
 import {jwtDecode} from "jwt-decode";
 import { DataTable } from '@/components/tables/assignments/student/data-table';
 import { columns } from '@/components/tables/assignments/student/columns';
-import { getAssignmentsForStudent } from '@/components/api';
-import { getAssignmentsForTeacher } from '@/components/api';
+import { getAssignmentsForStudent } from '@/components/api/api';
+import { getAssignmentsForTeacher } from '@/components/api/api';
 
 
 export default function Assignments() {
   const [user, setUser] = useState(null);
   const [assignments, setAssignments] = useState([]);
 
+  // Get user from JWT token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {

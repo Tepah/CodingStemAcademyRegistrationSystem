@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { verfiyTeacherInvite } from '@/components/api';
+import { verfiyTeacherInvite } from '@/components/api/api';
 import { Card } from '@/components/ui/card';
 import RegisterTeacherForm from '@/components/forms/user/teacher-form';
 

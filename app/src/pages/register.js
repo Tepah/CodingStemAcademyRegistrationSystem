@@ -168,7 +168,7 @@ export default function Register() {
       console.log("Successfully registered: " + response.data['message']);
       if (response.data['access_token']) {
         localStorage.setItem('token', response.data['access_token']);
-        router.push('/register-classes').then(() => console.log("Redirecting to register classes"));
+        router.push('/dashboard').then(() => console.log("Redirecting to register classes"));
       } else {
         throw new Error(response.data['message']);
       }

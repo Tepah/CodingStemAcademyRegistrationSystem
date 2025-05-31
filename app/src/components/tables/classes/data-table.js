@@ -16,18 +16,36 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { useMemo } from "react"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { set } from "date-fns"
+
  
 
-export function  DataTable({columns, data}) {
+export function  DataTable({columns, data, semester}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [activeRole, setActiveRole] = useState(null);
+  const [activeSemester, setActiveSemester] = useState(null);
+
+  const filteredData = useMemo(() => {
+    let filtered = data;
+    if (activeSemester === "All") {
+      filtered = data;
+    } else if (activeSemester) {
+      filtered = filtered.filter((row) => row.semester === activeSemester);
+    }
+    return filtered;
+  }, [data, activeSemester]);
+
+  useEffect(() => {
+    setActiveSemester(semester);
+  }, [semester]);
 
   const table = useReactTable({
-      data,
+      data: filteredData,
       columns,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
@@ -42,7 +60,29 @@ export function  DataTable({columns, data}) {
     });
   
     return (
-      <div className="py-4">
+      <div className="py-4 flex flex-col space-y-4">
+        <div className="flex flex-row">
+          <Select
+            value={activeSemester}
+            onValueChange={(value) => {
+              setActiveSemester(value);
+            }}
+            >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select semester">
+                {activeSemester || "Select semester"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              {[...new Set(data.map((row) => (row.semester)))].map((semesterName) =>(
+                <SelectItem key={semesterName} value={semesterName}>
+                  {semesterName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -91,7 +131,7 @@ export function  DataTable({columns, data}) {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Link href={`/admin/classes/create`}>
-            <Button variant="outline" size="sm">
+            <Button variant="default" size="sm">
               Add class
             </Button>
           </Link>

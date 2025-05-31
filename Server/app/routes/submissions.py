@@ -11,7 +11,12 @@ def get_submissions_for_assignment():
     try:
         assignment_id = request.args.get('assignment_id')
         cursor = my_db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM submissions WHERE assignment_id = %s", (assignment_id,))
+        cursor.execute("""SELECT 
+                       s.*,
+                       a.total_points 
+                       FROM submissions s
+                       JOIN assignments a ON s.assignment_id = a.id
+                       WHERE s.assignment_id = %s""", (assignment_id,))
         submissions = cursor.fetchall()
     finally:
         cursor.close()
@@ -151,3 +156,4 @@ def create_submission():
         cursor.close()
         my_db.close()
     return jsonify({"message": "Submission Created", "submission_id": submission_id})
+
