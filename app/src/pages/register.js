@@ -179,7 +179,7 @@ export default function Register() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:h-screen">
+    <div className="flex flex-col max-w-[700px] mx-auto items-center justify-center p-8 md:h-screen">
       <h1>Register</h1>
       <Card className="p-8">
         <Form {...form}>
@@ -215,7 +215,8 @@ export default function Register() {
                 control={form.control}
                 name="birth_date"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Date of Birth</FormLabel>
                     <FormControl>
                       <div className="flex space-x-2">
@@ -257,6 +258,7 @@ export default function Register() {
                         />
                       </div>
                     </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -265,7 +267,8 @@ export default function Register() {
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Gender</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
@@ -279,10 +282,11 @@ export default function Register() {
                         </SelectContent>
                       </Select>
                     </FormControl>
+                  </div>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                </FormItem>
+              )}
+            />
               <FormField
                 control={form.control}
                 name="password"
@@ -404,7 +408,8 @@ export default function Register() {
                 control={form.control}
                 name="grade_level"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Grade Level</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
@@ -420,6 +425,7 @@ export default function Register() {
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
