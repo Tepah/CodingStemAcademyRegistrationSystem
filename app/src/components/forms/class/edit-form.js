@@ -33,6 +33,9 @@ const formSchema = z.object({
     teacher_id: z.string().min(1, {
         message: "Teacher is required",
     }),
+    rate: z.number().nullable().optional().refine((value) => value === null || value >= 0, {
+        message: "Rate must be a positive number or null",
+    }),
 })
 
 function convertTo24HourFormat(time) {
@@ -60,6 +63,7 @@ export function ClassForm({classData, semesters, teachers}) {
             end_time: convertTo24HourFormat(classData.end_time) || "10:00",
             semester_id: String(classData.semester_id) || "",
             teacher_id: String(classData.teacher_id) || "",
+            rate: classData.rate || null,
         },
     })
 
@@ -232,6 +236,26 @@ export function ClassForm({classData, semesters, teachers}) {
                                 </Select>
                             </FormControl>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="rate"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-col">
+                                <div className="flex flex-row justify-between">
+                                    <FormLabel>Rate</FormLabel>
+                                    <FormControl>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <Input placeholder="Rate" {...field} />
+                                            <p>$</p>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </div>
+                            </div>
                         </FormItem>
                     )}
                 />
