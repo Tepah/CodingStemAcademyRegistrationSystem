@@ -93,7 +93,7 @@ export default function AIRegistrationQuestions({ children }) {
                             }}
                         />
                         <Button onClick={() => { callAI(question); setQuestion(""); setIsLoading(true); }} disabled={isLoading}>
-                            <SendHorizontal className="h-8 w-8 text-primary cursor-pointer" />
+                            <SendHorizontal className="h-8 w-8 text-white cursor-pointer" />
                         </Button>
                     </div>
                 </SheetFooter>
