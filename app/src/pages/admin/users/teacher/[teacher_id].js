@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import EditUserSheet from '@/components/sheets/edit-user-sheet';
 import { SheetTrigger } from '@/components/ui/sheet';
-import { format } from 'path';
+import formatDate from '@/components/helpers/date';
 
 export default function TeacherPage() {
     const [user, setUser] = useState(null);
@@ -104,7 +104,7 @@ export default function TeacherPage() {
                             <p>Teacher ID: {teacher_id}</p>
                             <p>Name: {teacher.first_name} {teacher.last_name}</p>
                             <p>Gender: {teacher.gender}</p>
-                            <p>Date of Birth: {teacher.date_of_birth ? formatDate(teacher.date_of_birth) : "Not provided"}</p>
+                            <p>Date of Birth: {teacher.birth_date ? formatDate(teacher.birth_date) : "Not provided"}</p>
                             <p>Email: {teacher.email}</p>
                             <p>Phone: {teacher.phone}</p>
                             <p>Address: {teacher.address}</p>
