@@ -50,8 +50,7 @@ export default function RegisterTeacher() {
     }
 
     return (
-
-        <div className="flex flex-col items-center justify-center p-8 md:h-screen">
+        <div className="flex flex-col mx-auto container md:w-[800px] items-center justify-center p-8 md:h-screen">
             <h1 className="text-2xl font-bold">Register</h1>
             <Card className="p-8">
                 <RegisterTeacherForm email={email} />

@@ -36,21 +36,23 @@ const formSchema = z.object({
         .object({
             month: z
                 .string()
-                .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
+                .regex(/^(0?[1-9]|1[0-2])$/, { message: "Invalid month" }), // Allows 1-9 and 10-12
             day: z
                 .string()
-                .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
+                .regex(/^(0?[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Allows 1-9, 10-29, and 30-31
             year: z
                 .string()
                 .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
-                .refine((year) => parseInt(year) >= 1900 && parseInt(year) <= new Date().getFullYear(), {
-                    message: "Year must be between 1900 and the current year",
-                }),
         })
         .refine((date) => {
             const fullDate = `${date.year}-${date.month}-${date.day}`;
             return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
-        }, { message: "Invalid date" }),
+        }, { message: "Invalid date" })
+        .refine((date) => {
+            const year = parseInt(date.year);
+            const currentYear = new Date().getFullYear();
+            return year >= 1900 && year <= currentYear;
+        }, { message: "Year must be between 1900 and the current year" }),
     email: z.string().email({
         message: "Please enter a valid email address",
     }),
@@ -76,7 +78,7 @@ const formSchema = z.object({
 })
 
 
-export default function TeacherRegisterForm({ email } ) {
+export default function TeacherRegisterForm({ email }) {
     const router = useRouter();
     const dayRef = React.useRef(null);
     const monthRef = React.useRef(null);
@@ -165,7 +167,8 @@ export default function TeacherRegisterForm({ email } ) {
                         control={form.control}
                         name="birth_date"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between">
+                            <FormItem>
+                                <div className="flex flex-row items-center justify-between">
                                 <FormLabel>Date of Birth</FormLabel>
                                 <FormControl>
                                     <div className="flex space-x-2">
@@ -191,7 +194,7 @@ export default function TeacherRegisterForm({ email } ) {
                                             placeholder="DD"
                                             maxLength={2}
                                             className="w-12 text-center"
-                                            ref ={dayRef}
+                                            ref={dayRef}
                                             value={field.value?.day || ""}
                                             onChange={(e) => {
                                                 const day = e.target.value;
@@ -216,6 +219,7 @@ export default function TeacherRegisterForm({ email } ) {
                                         />
                                     </div>
                                 </FormControl>
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -224,7 +228,8 @@ export default function TeacherRegisterForm({ email } ) {
                         control={form.control}
                         name="gender"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between">
+                            <FormItem>
+                                <div className="flex flex-row items-center justify-between">
                                 <FormLabel>Gender</FormLabel>
                                 <FormControl>
                                     <Select value={field.value} onValueChange={field.onChange}>
@@ -238,6 +243,7 @@ export default function TeacherRegisterForm({ email } ) {
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -307,7 +313,7 @@ export default function TeacherRegisterForm({ email } ) {
                             </FormItem>
                         )}
                     />
-                    
+
                     <FormField
                         control={form.control}
                         name="experience"
