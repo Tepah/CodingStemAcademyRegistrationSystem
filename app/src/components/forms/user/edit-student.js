@@ -25,10 +25,10 @@ const studentSchema = z.object({
     .object({
       month: z
         .string()
-        .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
+        .regex(/^(0?[1-9]|1[0-2])$/, { message: "Invalid month" }), // Allows 1-9 and 10-12
       day: z
         .string()
-        .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
+        .regex(/^(0?[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Allows 1-9, 10-29, and 30-31
       year: z
         .string()
         .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
@@ -38,10 +38,10 @@ const studentSchema = z.object({
       return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
     }, { message: "Invalid date" })
     .refine((date) => {
-    const year = parseInt(date.year);
-    const currentYear = new Date().getFullYear();
-    return year >= 1900 && year <= currentYear;
-  }, { message: "Year must be between 1900 and the current year" }),
+      const year = parseInt(date.year);
+      const currentYear = new Date().getFullYear();
+      return year >= 1900 && year <= currentYear;
+    }, { message: "Year must be between 1900 and the current year" }),
   email: z.string().email({
     message: "Please enter a valid email address",
   }),
@@ -65,10 +65,11 @@ const studentSchema = z.object({
     message: "Health insurance number is required",
   }),
   role: z.enum(["Student", "Admin", "Teacher"]),
+  status: z.enum(["Active", "Inactive"]),
   grade_level: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]),
 });
 
-export default function EditStudentForm({ student }) {
+export default function EditStudentForm({ student, setOpen }) {
   const gradeLevels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
   const form = useForm({
@@ -81,16 +82,16 @@ export default function EditStudentForm({ student }) {
     delete data.confirm_password;
 
     axios.put(`${config.backendUrl}/users/update`, data)
-    .then((response) => {
-    console.log("Form submitted successfully:", data);
-    window.location.reload();
-    });
+      .then((response) => {
+        console.log("Form submitted successfully:", data);
+        window.location.reload();
+      });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <ScrollArea className="h-4/5 w-full py-4 px-2 border rounded">
+        <ScrollArea className="h-[500px] w-full py-4 px-2 border rounded">
           <div className="space-y-8">
             <FormField
               control={form.control}
@@ -307,12 +308,43 @@ export default function EditStudentForm({ student }) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-row items-center justify-between">
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Active", "Inactive"].map((status) => (
+                          <SelectItem key={status} value={status}>
+                            {status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </ScrollArea>
 
 
         <SheetFooter>
-          <Button type="submit">Save Changes</Button>
+          <div className="flex flex-row items-center justify-between">
+            <Button type="submit">Save Changes</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+          </div>
         </SheetFooter>
       </form>
     </Form>

@@ -47,24 +47,23 @@ const formSchema = z.object({
     .object({
       month: z
         .string()
-        .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
+        .regex(/^(0?[1-9]|1[0-2])$/, { message: "Invalid month" }), // Allows 1-9 and 10-12
       day: z
         .string()
-        .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
+        .regex(/^(0?[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Allows 1-9, 10-29, and 30-31
       year: z
         .string()
         .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
-        .refine((year) => parseInt(year) >= 1900 && parseInt(year) <= new Date().getFullYear(), {
-          message: "Year must be between 1900 and the current year",
-        }),
     })
     .refine((date) => {
       const fullDate = `${date.year}-${date.month}-${date.day}`;
       return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
-    }, { message: "Invalid date" }),
-  email: z.string().email({
-    message: "Please enter a valid email address",
-  }),
+    }, { message: "Invalid date" })
+    .refine((date) => {
+    const year = parseInt(date.year);
+    const currentYear = new Date().getFullYear();
+    return year >= 1900 && year <= currentYear;
+  }, { message: "Year must be between 1900 and the current year" }),
   password: z.string()
     .min(6, {
       message: "Password must be at least 6 characters long",
@@ -74,6 +73,9 @@ const formSchema = z.object({
     }),
   confirm_password: z.string().min(6, {
     message: "Password must be at least 6 characters long",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address",
   }),
   gender: z.enum(["Male", "Female", "Other"]),
   phone: z.string().min(10, {
@@ -91,12 +93,12 @@ const formSchema = z.object({
   health_ins: z.string().min(1, {
     message: "Health insurance is required",
   }),
-  health_ins_number: z.string().min(1, {
+  health_ins_num: z.string().min(1, {
     message: "Health insurance number is required",
   }),
   role: z.enum(["Student", "Admin", "Teacher"]),
   grade_level: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]),
-})
+});
 
 export function DatePicker({ field }) {
   return (
@@ -148,7 +150,7 @@ export default function Register() {
       guardian: "",
       guardian_phone: "",
       health_ins: "",
-      health_ins_number: "",
+      health_ins_num: "",
       role: "Student", // Default role can be "Student"
       grade_level: "", // Leave empty or set a default grade level
     },
@@ -393,7 +395,7 @@ export default function Register() {
               />
               <FormField
                 control={form.control}
-                name="health_ins_number"
+                name="health_ins_num"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Health Insurance Number</FormLabel>

@@ -26,6 +26,12 @@ export default function Assignments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [crumbs, setCrumbs] = useState([
+    { name: "Home", href: "/dashboard" },
+    { name: "Classes", href: "/classes" },
+    { name: 'Class', href: `/classes/${class_id}` },
+    { name: "Assignments", href: `/classes/${class_id}/assignments` },
+  ]);
 
 
   useEffect(() => {
@@ -49,12 +55,23 @@ export default function Assignments() {
         } catch (err) {
           console.error("Error fetching assignments:", err);
           setError("Failed to load assignments.");
-        } finally {
-          setLoading(false);
-        }
+        } 
       };
 
-      fetchAssignments();
+      Promise.all([
+        fetchAssignments(),
+        axios.get(`${config.backendUrl}/class`, { params: { id: class_id } })
+      ])
+      .then(([assignmentsResponse, classResponse]) => {
+        setCrumbs(prev => {
+          const updatedCrumbs = [...prev];
+          updatedCrumbs[2] = { name: classResponse.data.class.class_name, href: `/classes/${class_id}` };
+          return updatedCrumbs;
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
     }
   }, [class_id]);
 
@@ -70,7 +87,7 @@ export default function Assignments() {
 
   if (error) {
     return (
-      <Layout title={"Assignments"}>
+      <Layout breadcrumbs={crumbs} title={"Assignments"}>
         <div className="flex items-center justify-center h-screen">
           <p className="text-red-500">{error}</p>
         </div>
@@ -79,7 +96,7 @@ export default function Assignments() {
   }
 
   return (
-    <Layout title={"Assignments"}>
+    <Layout breadcrumbs={crumbs} title={"Assignments"}>
       <div className="container max-w-[900px] mx-auto flex flex-1 flex-col gap-4 p-8">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Assignments</h1>

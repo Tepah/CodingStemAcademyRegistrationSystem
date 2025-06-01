@@ -12,9 +12,10 @@ import axios from 'axios';
 import config from "@/config";
 import StudentNamePopover from "@/components/popovers/StudentNamePopover";
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const paymentSchema = z.object({
-    student_id: z.number().int().nullable().refine(value => value === null || (typeof value === 'number'), {
+    student_id: z.number().int().refine(value => value === null || (typeof value === 'number'), {
         message: "Student is required",
     }),
     amount: z.string({
@@ -32,6 +33,7 @@ const paymentSchema = z.object({
 export function CreatePaymentForm({ children, student_id = null }) {
     const [selectedStudentId, setSelectedStudentId] = useState(student_id || null);
     const router = useRouter();
+    const [error, setError] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(paymentSchema),
@@ -45,6 +47,13 @@ export function CreatePaymentForm({ children, student_id = null }) {
         }
     })
 
+    useEffect(() => {
+        if (student_id) {
+            setSelectedStudentId(parseInt(student_id, 10));
+            form.setValue("student_id", parseInt(student_id, 10));
+        }
+    }, [student_id]);
+
     const onSubmit = async (data) => {
         console.log(data)
         try {
@@ -53,10 +62,15 @@ export function CreatePaymentForm({ children, student_id = null }) {
             if (!student_id) {
                 router.push("/admin/donations");
             } else {
-                router.push(`/admin/donations/${data.student_id}`);
+                router.push(`/admin/users/donations/${student_id}`);
             }
         } catch (error) {
             console.error(error)
+            if (error.response && error.response.data) {
+                setError(error.response.data.message || "An error occurred while submitting the form.");
+            } else {
+                setError("An unexpected error occurred.");
+            }
         }
     }
 
@@ -192,6 +206,7 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     )}
                 />
                 <Button type="submit">Submit</Button>
+                {error && <p className="text-red-500">{error}</p>}
             </form>
         </Form>
     )

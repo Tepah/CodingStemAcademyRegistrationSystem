@@ -23,6 +23,11 @@ export default function SemesterPage() {
         month: "2-digit",
         day: "2-digit",
     });
+    const [crumbs, setCrumbs] = useState([
+        { name: "Home", href: "/dashboard" },
+        { name: "Semesters", href: "/admin/semesters" },
+        { name: semester?.name || "Loading...", href: `/admin/semesters/${semester_id}` },
+    ]);
 
     useEffect(() => {
         if (!semester_id) {
@@ -33,6 +38,10 @@ export default function SemesterPage() {
             .then((semester) => {
                 console.log("Semester details:", semester);
                 setSemester(semester);
+                setCrumbs((prevCrumbs) => [
+                    ...prevCrumbs.slice(0, 2),
+                    { name: semester.name, href: `/admin/semesters/${semester.id}` },
+                ]);
             })
             .catch((error) => {
                 console.error("Error fetching semester details:", error);
@@ -54,7 +63,7 @@ export default function SemesterPage() {
 
     if (!semester || !classes) {
         return (
-            <Layout>
+            <Layout breadcrumbs={crumbs}>
                 <div className="flex flex-col container p-8">
                     <Label className="text-2xl font-bold">Loading...</Label>
                 </div>
@@ -63,7 +72,7 @@ export default function SemesterPage() {
     }
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="flex flex-col container mx-auto max-w-[1000px] p-8">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row space-x-4">

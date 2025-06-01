@@ -22,6 +22,11 @@ import { Button } from "@/components/ui/button";
 export default function ClassDetails() {
   const router = useRouter();
   const { class_id } = router.query;
+  const [crumbs, setCrumbs] = useState([
+    { name: "Home", href: "/dashboard" },
+    { name: "Classes", href: "/admin/classes" },
+    { name: "Class Details", href: `/admin/classes/${class_id}` },
+  ])
 
   const [classDetails, setClassDetails] = useState(null);
   const [user, setUser] = useState({});
@@ -120,13 +125,18 @@ export default function ClassDetails() {
 
   useEffect(() => {
     if (students && classDetails) {
+      setCrumbs([
+        { name: "Home", href: "/dashboard" },
+        { name: "Classes", href: "/admin/classes" },
+        { name: classDetails.class_name, href: `/admin/classes/${class_id}` },
+      ])
       setLoading(false);
     }
   }, [students, classDetails])
 
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs}>
       {loading ? (
         <div className="container max-w-[1400px] mx-auto flex flex-col p-8 space-y-8">
           <Skeleton className="w-full h-[700px] rounded-xl" />

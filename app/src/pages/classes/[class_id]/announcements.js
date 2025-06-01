@@ -17,6 +17,12 @@ export default function ClassAnnouncements() {
 
     const router = useRouter();
     const { class_id } = router.query;
+    const [crumbs, setCrumbs] = useState([
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Classes', href: '/classes' },
+        { name: 'Class', href: `/classes/${class_id}` },
+        { name: 'Announcements', href: `/classes/${class_id}/announcements` },
+    ]);
 
 
     useEffect(() => {
@@ -27,6 +33,12 @@ export default function ClassAnnouncements() {
                 const res = await axios.get(`${config.backendUrl}/class`, { params: { id: class_id } });
                 console.log(res.data);
                 setClassData(res.data['class']);
+                setCrumbs(prevCrumbs => {
+                    const updatedCrumbs = [...prevCrumbs];
+                    updatedCrumbs[2] = { name: res.data['class'].class_name, href:
+                        `/classes/${class_id}` };
+                    return updatedCrumbs;
+                });
             } catch (error) {
                 console.error('Error fetching class data:', error);
             }
@@ -56,7 +68,7 @@ export default function ClassAnnouncements() {
 
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs} title={`${classData ? classData.class_name : 'Class'} Announcements`}>
             <div className="container max-w-[900px] h-full mx-auto flex flex-col gap-4 my-8">
                 {loading ? (
                     <Skeleton className="w-full h-[50px]" />

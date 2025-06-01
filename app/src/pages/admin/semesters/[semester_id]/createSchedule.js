@@ -19,6 +19,12 @@ export default function CreateSchedule() {
     const [aiDays, setAiDays] = useState([])
     const [loading, setLoading] = useState(true);
     const [aiGenerated, setAiGenerated] = useState(false);
+    const [crumbs, setCrumbs] = useState([
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Semesters', href: '/admin/semesters' },
+        { name: semester_id ? `Semester ${semester_id}` : 'Semester', href: `/admin/semesters/${semester_id}` },
+        { name: 'Create Schedule', href: `/admin/semesters/${semester_id}/create-schedule` }
+    ]);
 
     useEffect(() => {
         if (!semester_id) {
@@ -27,36 +33,45 @@ export default function CreateSchedule() {
         console.log("Fetching semester details for ID:", semester_id);
 
         Promise.all([
-        getClassesBySemester(semester_id)
-            .then((classes) => {
-                console.log("Classes for semester:", classes);
-                const convertedClasses = classes.map(classItem => ({
-                    ...classItem,
-                    start_time: convertTo24Hour(classItem.start_time),
-                    end_time: convertTo24Hour(classItem.end_time),
-                }));
-                setClasses(convertedClasses);
-            })
-            .catch((error) => {
-                console.error("Error fetching classes for semester:", error);
-            }),
-        axios.get(`${config.backendUrl}/teachers`)
-            .then((response) => {
-                console.log("Teachers:", response.data);
-                setTeachers(response.data['teachers']);
-            })
-            .catch((error) => {
-                console.error("Error fetching teachers:", error);
-            })
+            getClassesBySemester(semester_id)
+                .then((classes) => {
+                    console.log("Classes for semester:", classes);
+                    const convertedClasses = classes.map(classItem => ({
+                        ...classItem,
+                        start_time: convertTo24Hour(classItem.start_time),
+                        end_time: convertTo24Hour(classItem.end_time),
+                    }));
+                    setClasses(convertedClasses);
+                })
+                .catch((error) => {
+                    console.error("Error fetching classes for semester:", error);
+                }),
+            axios.get(`${config.backendUrl}/teachers`)
+                .then((response) => {
+                    console.log("Teachers:", response.data);
+                    setTeachers(response.data['teachers']);
+                })
+                .catch((error) => {
+                    console.error("Error fetching teachers:", error);
+                }),
+            axios.get(`${config.backendUrl}/semester`, { params: { id: semester_id } })
+                .then((response) => {
+                    console.log("Semester details:", response.data);
+                    const semester = response.data['semester'];
+                    setCrumbs(prevCrumbs => {
+                        const updatedCrumbs = [...prevCrumbs];
+                        updatedCrumbs[2] = { name: `${semester.name}`, href: `/admin/semesters/${semester.id}` };
+                        return updatedCrumbs;
+                    });
+                })
         ])
-        .then(() => {
-            setLoading(false);
-        })
-        .catch((error) => {
-            console.error("Error fetching data:", error);
-            setLoading(false);
-        }
-        );
+            .then(() => {
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            });
     }, [semester_id]);
 
     useEffect(() => {
@@ -106,7 +121,7 @@ export default function CreateSchedule() {
                 let allClasses = responseClasses.data['classes'];
 
                 const updatedAllClasses = await Promise.all(allClasses.map(async (classItem) => {
-                    const studentCount = await axios.get(`${config.backendUrl}/student-count`, {params: { class_id: classItem.id } });
+                    const studentCount = await axios.get(`${config.backendUrl}/student-count`, { params: { class_id: classItem.id } });
                     return {
                         ...classItem,
                         student_count: studentCount.data['student_count'],
@@ -155,37 +170,43 @@ export default function CreateSchedule() {
                 setLoading(false);
             }
         }
-        saveSchedule();
+        saveSchedule()
+        .then(() => {
+            setAiGenerated(false);
+            setAiClasses(null);
+            setAiDays([]);
+            router.push(`/admin/semesters/${semester_id}`);
+        });
     }
 
     if (loading) {
         return (
-            <Layout>
-            <div className="container mx-auto flex flex-col items-center flex-1 p-8">
-                <h1 className="text-2xl font-bold mb-4">Create Schedule</h1>
-                <p className="mb-4">Current Schedule: </p>
-                <div className="flex flex-row gap-4">
-                    <Skeleton className="h-[600px] w-[300px]" />
-                    <Skeleton className="h-[600px] w-[300px]" />
-                    <Skeleton className="h-[600px] w-[300px]" />
-                </div>
-                <Button className="mt-4 w-[200px]" disabled>
-                    <LoaderCircle className="mr-2 animate-spin" />
-                </Button>
+            <Layout breadcrumbs={crumbs}>
+                <div className="container mx-auto flex flex-col items-center flex-1 p-8">
+                    <h1 className="text-2xl font-bold mb-4">Create Schedule</h1>
+                    <p className="mb-4">Current Schedule: </p>
+                    <div className="flex flex-row gap-4">
+                        <Skeleton className="h-[600px] w-[300px]" />
+                        <Skeleton className="h-[600px] w-[300px]" />
+                        <Skeleton className="h-[600px] w-[300px]" />
+                    </div>
+                    <Button className="mt-4 w-[200px]" disabled>
+                        <LoaderCircle className="mr-2 animate-spin" />
+                    </Button>
                 </div>
             </Layout>
         );
     }
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container mx-auto flex flex-col items-center flex-1 p-8">
                 <h1 className="text-2xl font-bold mb-4">Create Schedule</h1>
                 <p className="mb-4">Current Schedule: </p>
                 {classes.length === 0 && (
                     <div className="flex items-center text-center justify-center p-8">
                         <span>No classes scheduled..</span>
-                    </div>   
+                    </div>
                 )}
                 <div className="flex flex-row gap-4">
                     {days.map((day) => (
@@ -196,16 +217,16 @@ export default function CreateSchedule() {
                     <p className="mb-4 mt-4">AI Generated Schedule: </p>
                 )}
                 {!aiGenerated ? (
-                <Button className="mt-4" onClick={handleGenerateSchedule}>
-                    <Brain className="mr-2" />
-                    Generate Schedule
-                </Button>
+                    <Button className="mt-4" onClick={handleGenerateSchedule}>
+                        <Brain className="mr-2" />
+                        Generate Schedule
+                    </Button>
                 ) : (
-                <div className="flex flex-row gap-4">
-                    {aiDays.map((day) => (
-                        <DaySchedule key={day} day={day} classes={aiClasses} teachers={teachers} />
-                    ))}
-                </div>
+                    <div className="flex flex-row gap-4">
+                        {aiDays.map((day) => (
+                            <DaySchedule key={day} day={day} classes={aiClasses} teachers={teachers} />
+                        ))}
+                    </div>
                 )}
                 {aiGenerated && (
                     <Button size="sm" variant="default" onClick={handleSaveSchedule} className="mt-4">
@@ -306,19 +327,19 @@ function ClassSection({ title, classes, teachers }) {
         <div className="mb-4 ">
             <h3 className="text-md font-semibold">{title}</h3>
             <div className="flex flex-row p-2 h-[100px] overflow-y-auto space-x-2">
-            {classes.length === 0 ? (
-                <div className="flex flex-1 items-center text-center justify-center p-2">
-                    <span>No classes scheduled..</span>
-                </div>
-            ) : null}
-            {classes.map((classItem) => (
-                <ClassDialog key={classItem.id} classItem={classItem} teachers={teachers}>
-                <div key={classItem.id} className="flex flex-1 items-center text-center justify-between p-2 border rounded-lg hover:bg-gray-100 hover:cursor-pointer">
-                    
-                        <span className="text-xs">{classItem.class_name}</span>
-                </div>
-                </ClassDialog>
-            ))}
+                {classes.length === 0 ? (
+                    <div className="flex flex-1 items-center text-center justify-center p-2">
+                        <span>No classes scheduled..</span>
+                    </div>
+                ) : null}
+                {classes.map((classItem) => (
+                    <ClassDialog key={classItem.id} classItem={classItem} teachers={teachers}>
+                        <div key={classItem.id} className="flex flex-1 items-center text-center justify-between p-2 border rounded-lg hover:bg-gray-100 hover:cursor-pointer">
+
+                            <span className="text-xs">{classItem.class_name}</span>
+                        </div>
+                    </ClassDialog>
+                ))}
             </div>
         </div>
     );
@@ -396,17 +417,17 @@ function convertTo24Hour(time) {
 
 function formatTo12Hour(time24) {
     if (!time24 || typeof time24 !== 'string') {
-      return "Invalid Time";
+        return "Invalid Time";
     }
-  
+
     const [hours, minutes] = time24.split(':').map(Number);
-  
+
     if (isNaN(hours) || isNaN(minutes)) {
-      return "Invalid Time";
+        return "Invalid Time";
     }
-  
+
     const period = hours < 12 ? 'AM' : 'PM';
     const hour12 = hours % 12 === 0 ? 12 : hours % 12; // 0 % 12 = 0, so we need to make it 12
-  
+
     return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
-  }
+}

@@ -12,6 +12,11 @@ export default function AllStudentGrades() {
     const { student_id } = router.query;
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [crumbs, setCrumbs] = useState([
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Students', href: '/admin/users/students' },
+        { name: 'Student Grades', href: `/admin/users/students/${student_id}` }
+    ]);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -22,7 +27,7 @@ export default function AllStudentGrades() {
 
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container max-w-[900px] mx-auto flex-1 flex flex-col gap-4 p-8">
 
             {loading ? (

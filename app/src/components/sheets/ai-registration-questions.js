@@ -53,9 +53,7 @@ export default function AIRegistrationQuestions({ children }) {
 
     return (
         <Sheet>
-            <SheetTrigger asChild>
-                {children}
-            </SheetTrigger>
+            {children}
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>AI Registration Questions</SheetTitle>

@@ -10,6 +10,10 @@ import { getAssignmentsForTeacher } from '@/components/api/api';
 export default function Assignments() {
   const [user, setUser] = useState(null);
   const [assignments, setAssignments] = useState([]);
+  const crumbs = [
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Assignments', href: '/assignments' },
+  ];
 
   // Get user from JWT token
   useEffect(() => {
@@ -43,7 +47,7 @@ export default function Assignments() {
 
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs}>
       <div className="container max-w-[900px] mx-auto p-8 flex flex-col flex-1 space-y-8">
         <h1 className="text-2xl font-bold mb-4">Assignments</h1>
         <DataTable data={assignments} columns={columns} />

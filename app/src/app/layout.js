@@ -5,6 +5,14 @@ import { AppSidebar } from "@/components/sidebars/app-sidebar"
 import React from "react";
 import {Separator} from "@/components/ui/separator";
 import { DashboardSidebar } from "@/components/sidebars/DashboardSidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +41,7 @@ export default function RootLayout({ children }) {
   );
 }
 
-export function Layout({ children, title }) {
+export function Layout({ children, breadcrumbs }) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -45,7 +53,24 @@ export function Layout({ children, title }) {
               orientation="vertical"
               className="mx-2 data-[orientation=vertical]:h-4"
             />
-            <h1 className="text-base font-medium">{title}</h1>
+          {breadcrumbs && (
+              <Breadcrumb className="justify-start">
+                <BreadcrumbList>
+                  {breadcrumbs.map((breadcrumb, index) => (
+                    <React.Fragment key={index}>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href={breadcrumb.href} className={`${index < breadcrumbs.length - 1 ? "text-muted-foreground" : "font-bold text-foreground"}`}>
+                          {breadcrumb.name}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      {index < breadcrumbs.length - 1 && (
+                        <BreadcrumbSeparator />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            )}
           </div>
         </header>
         {children}
@@ -54,7 +79,7 @@ export function Layout({ children, title }) {
   )
 }
 
-export function LayoutWithCalendar({ children, title }) {
+export function LayoutWithCalendar({ children, breadcrumbs }) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -66,7 +91,19 @@ export function LayoutWithCalendar({ children, title }) {
               orientation="vertical"
               className="mx-2 data-[orientation=vertical]:h-4"
             />
-            <h1 className="text-base font-medium">{title}</h1>
+            {breadcrumbs && (
+              <Breadcrumb className="justify-start">
+                <BreadcrumbList>
+                  {breadcrumbs.map((breadcrumb, index) => (
+                    <BreadcrumbItem key={index}>
+                       <BreadcrumbLink href={breadcrumb.href} className={`${index < breadcrumbs.length - 1 ? "text-muted-foreground" : "font-bold text-foreground"}`}>
+                          {breadcrumb.name}
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            )}
           </div>
         </header>
         {children}

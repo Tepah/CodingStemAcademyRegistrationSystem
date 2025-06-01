@@ -9,6 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Grades() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const crumbs = [
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Grades', href: '/grades' },
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -28,7 +32,7 @@ export default function Grades() {
 
   if (loading) {
     return (
-      <Layout title={"Grades"}>
+      <Layout breadcrumbs={crumbs} title={"Grades"}>
         <Card className="w-[900px] mx-auto flex flex-col p-4">
           <Skeleton className="h-8 w-full mb-4" />
           <Skeleton className="h-8 w-full mb-4" />
@@ -43,7 +47,7 @@ export default function Grades() {
 
   if (user && user['role'] !== 'Student') {
     return (
-      <Layout title={"Grades"}>
+      <Layout breadcrumbs={crumbs} title={"Grades"}>
         <Card className="w-[900px] mx-auto flex flex-col p-4">
           <h1 className="text-2xl font-bold">You are not authorized to view this page</h1>
         </Card>
@@ -52,7 +56,7 @@ export default function Grades() {
   }
 
   return (
-    <Layout title={"Grades"}>
+    <Layout breadcrumbs={crumbs} title={"Grades"}>
       <div className="container max-w-[900px] mx-auto flex-1 flex flex-col gap-4 p-8">
         <AllStudentGradesTable student_id={user['id']} personal={true} />
       </div>

@@ -51,7 +51,7 @@ function convertTo24HourFormat(time) {
     return `${hours}:${minutes}`;
 }
 
-export function ClassForm({classData, semesters, teachers}) {
+export function ClassForm({ classData, semesters, teachers }) {
     console.log("Class data:", classData)
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -92,176 +92,183 @@ export function ClassForm({classData, semesters, teachers}) {
         <div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="class_name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Class Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Class Name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Subject</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Subject" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="day"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Day</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={field.value} // Bind the value to formData.day
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a Day" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="Monday">Monday</SelectItem>
-                                            <SelectItem value="Tuesday">Tuesday</SelectItem>
-                                            <SelectItem value="Wednesday">Wednesday</SelectItem>
-                                            <SelectItem value="Thursday">Thursday</SelectItem>
-                                            <SelectItem value="Friday">Friday</SelectItem>
-                                            <SelectItem value="Saturday">Saturday</SelectItem>
-                                            <SelectItem value="Sunday">Sunday</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="start_time"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Start Time</FormLabel>
-                            <FormControl>
-                                <Input className="w-[120px]" type="time" placeholder="Start Time" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="end_time"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>End Time</FormLabel>
-                            <FormControl>
-                                <Input className="w-[120px]" type="time" placeholder="End Time" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="semester_id"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Semester</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={field.value} // Bind the value to formData.semester_id
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger>
-                                        {semesters.length > 0
-                                            ? semesters.find((semester) => semester.id === parseInt(field.value, 10))?.name || "Semester"
-                                            : "N/A"}
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {semesters.map((semester) => (
-                                                <SelectItem key={semester.id} value={semester.id}>
-                                                    {semester.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="teacher_id"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Teacher</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={field.value} // Bind the value to formData.teacher_id
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue>
-                                            {teachers.length > 0
-                                                ? field.value === "" ? "Teacher" : teachers.find((teacher) => teacher.id === parseInt(field.value, 10))?.first_name + " " + teachers.find((teacher) => teacher.id === parseInt(field.value, 10))?.last_name || "Teacher"
+                    <FormField
+                        control={form.control}
+                        name="class_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Class Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Class Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="subject"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Subject</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Subject" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="day"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>Day</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        value={field.value} // Bind the value to formData.day
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a Day" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="Monday">Monday</SelectItem>
+                                                <SelectItem value="Tuesday">Tuesday</SelectItem>
+                                                <SelectItem value="Wednesday">Wednesday</SelectItem>
+                                                <SelectItem value="Thursday">Thursday</SelectItem>
+                                                <SelectItem value="Friday">Friday</SelectItem>
+                                                <SelectItem value="Saturday">Saturday</SelectItem>
+                                                <SelectItem value="Sunday">Sunday</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="start_time"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>Start Time</FormLabel>
+                                <FormControl>
+                                    <Input className="w-[120px]" type="time" placeholder="Start Time" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="end_time"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>End Time</FormLabel>
+                                <FormControl>
+                                    <Input className="w-[120px]" type="time" placeholder="End Time" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="semester_id"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>Semester</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        value={field.value} // Bind the value to formData.semester_id
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger>
+                                            {semesters.length > 0
+                                                ? semesters.find((semester) => semester.id === parseInt(field.value, 10))?.name || "Semester"
                                                 : "N/A"}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {teachers.map((teacher) => (
-                                                <SelectItem key={teacher.id} value={teacher.id}>
-                                                    {teacher.first_name} {teacher.last_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="rate"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-col">
-                                <div className="flex flex-row justify-between">
-                                    <FormLabel>Rate</FormLabel>
-                                    <FormControl>
-                                        <div className="flex flex-row items-center gap-2">
-                                            <Input placeholder="Rate" {...field} />
-                                            <p>$</p>
-                                        </div>
-                                    </FormControl>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {semesters.map((semester) => (
+                                                    <SelectItem key={semester.id} value={semester.id}>
+                                                        {semester.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="teacher_id"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>Teacher</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        value={field.value} // Bind the value to formData.teacher_id
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue>
+                                                {teachers.length > 0
+                                                    ? field.value === "" ? "Teacher" : teachers.find((teacher) => teacher.id === parseInt(field.value, 10))?.first_name + " " + teachers.find((teacher) => teacher.id === parseInt(field.value, 10))?.last_name || "Teacher"
+                                                    : "N/A"}
+                                            </SelectValue>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {teachers.map((teacher) => (
+                                                    <SelectItem key={teacher.id} value={teacher.id}>
+                                                        {teacher.first_name} {teacher.last_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="rate"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-col">
+                                    <div className="flex flex-row justify-between">
+                                        <FormLabel>Rate</FormLabel>
+                                        <FormControl>
+                                            <div className="flex flex-row items-center gap-2">
+                                                <Input type="number" placeholder="Rate" {...field} onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    const parsedValue = value ? parseFloat(value) : "";
+                                                    field.onChange(parsedValue);
+                                                }} />
+                                                <p>$</p>
+                                            </div>
+                                        </FormControl>
+                                    </div>
                                     <FormMessage />
                                 </div>
-                            </div>
-                        </FormItem>
-                    )}
-                />
-                <SheetClose asChild>
+                            </FormItem>
+                        )}
+                    />
+                    <div className="flex flex-row justify-between">
                     <Button type="submit">Save Class</Button>
-                </SheetClose>
+                    <SheetClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </SheetClose>
+                    </div>
                 </form>
             </Form>
         </div>

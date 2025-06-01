@@ -17,6 +17,11 @@ export default function RegisterClasses() {
   const router = useRouter();
   const student_id = router.query.student_id;
   const [step, setStep] = useState(0);
+  const crumbs = [
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Classes', href: '/admin/classes' },
+    { name: 'Register Classes', href: `/admin/users/classes/student/${router.query.student_id}/register-classes` }
+  ];
   
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export default function RegisterClasses() {
   }
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs}>
       <div className="flex flex-col container max-w-[1300px] mx-auto p-8 items-center">
         <h1 className="text-2xl font-bold mb-4">Register Classes for Student</h1>
         {step === 0 && (

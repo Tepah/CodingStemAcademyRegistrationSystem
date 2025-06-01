@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, Blueprint
 import requests
 import os
 import json
+from datetime import date
 
 assignments_bp = Blueprint('assignments', __name__)
 
@@ -220,6 +221,16 @@ def get_events_by_student():
             sql = "SELECT * FROM classes WHERE id = %s"
             cursor.execute(sql, (id, ))
             classInfo = cursor.fetchone()
+
+            # Check if the semester is ongoing
+            semester_id = classInfo.get('semester_id')
+            if semester_id:
+                sql = "SELECT status FROM semesters WHERE id = %s"
+                cursor.execute(sql, (semester_id,))
+                semester_info = cursor.fetchone()
+                if semester_info and semester_info['status'] != 'Ongoing':
+                    continue  # Skip this class if the semester is not ongoing
+
             if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
                 classInfo['start_time'] = format_24h_time(classInfo['start_time'])
             if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
@@ -256,12 +267,33 @@ def get_events_by_teacher():
         classes = []
         for classData in class_ids:
             id = classData['id']
+            # First, retrieve the class information
+            sql = "SELECT * FROM classes WHERE id = %s"
+            cursor.execute(sql, (id,))
+            classInfo = cursor.fetchone()
+
+            # Ensure classInfo is not None before proceeding
+            if classInfo is None:
+                print(f"Warning: Class with id {id} not found.")
+                continue  # Skip to the next classData
+
+            # Check if the semester is ongoing
+            semester_id = classInfo.get('semester_id')
+            if semester_id:
+                sql = "SELECT status FROM semesters WHERE id = %s"
+                cursor.execute(sql, (semester_id,))
+                semester_info = cursor.fetchone()
+                if semester_info is None:
+                    print(f"Warning: Semester with id {semester_id} not found.")
+                    continue  # Skip to the next classData
+                if semester_info['status'] != 'Ongoing':
+                    print(f"Skipping class {id} because semester {semester_id} is not ongoing.")
+                    continue  # Skip to the next classData
+            
             sql = "SELECT * FROM assignments WHERE class_id = %s ORDER BY due_date ASC"
             cursor.execute(sql, (id,))
             assignments_for_class = cursor.fetchall()
-            sql = "SELECT * FROM classes WHERE id = %s"
-            cursor.execute(sql, (id, ))
-            classInfo = cursor.fetchone()
+
             if 'start_time' in classInfo and isinstance(classInfo['start_time'], timedelta):
                 classInfo['start_time'] = format_24h_time(classInfo['start_time'])
             if 'end_time' in classInfo and isinstance(classInfo['end_time'], timedelta):
@@ -282,7 +314,6 @@ def get_events_by_teacher():
         db.close()
     sorted_assignments = sorted(assignments, key=lambda x: x['due_date'])
     return jsonify({"message": "Assignments retrieved", "assignments": sorted_assignments, "classes": classes})
-
 
 # POST functions
 @assignments_bp.route('/assignments', methods=['POST'])
@@ -314,6 +345,7 @@ def add_assignment(class_id, description, due_date, title):
 def generate_assignment():
     data = request.get_json()
     prompt = data.get('prompt')
+    today = date.today()
     class_info = data.get('class_info')
 
     if not prompt or not class_info:
@@ -327,6 +359,7 @@ def generate_assignment():
         - Grade: {class_info.get('grade_level', 'N/A')}
         - Subject: {class_info.get('subject', 'General')}
         - Specific instructions: {prompt}
+        Make sure the due date is in the future past {today} and the assignment is suitable for the specified class and grade level.
 
         Return in this exact JSON format:
         {{

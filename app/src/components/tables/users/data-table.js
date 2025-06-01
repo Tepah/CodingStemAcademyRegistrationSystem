@@ -68,76 +68,7 @@ export function DataTable({ children, columns, data }) {
             }
             className="max-w-sm"
           />
-          <div className="flex items-center space-x-2">
-            <span>Roles:</span>
-            <Button
-              variant={activeRole === "Admin" ? "default" : "outline"}
-              size="sm"
-              value="Admin"
-              onClick={(e) => {
-                if (activeRole === e.currentTarget.value) {
-                  setActiveRole(null);
-                  table.setColumnFilters((old) =>
-                    old.filter((f) => f.id !== "role")
-                  );
-                  return;
-                }
-                const selectedRole = e.currentTarget.value;
-                setActiveRole(selectedRole);
-                table.setColumnFilters((old) => [
-                  ...old,
-                  { id: "role", value: selectedRole },
-                ]);
-              }}
-
-            >
-              Admin
-            </Button>
-            <Button
-              variant={activeRole === "Student" ? "default" : "outline"}
-              value="Student"
-              size="sm"
-              onClick={(e) => {
-                if (activeRole === e.currentTarget.value) {
-                  setActiveRole(null);
-                  table.setColumnFilters((old) =>
-                    old.filter((f) => f.id !== "role")
-                  );
-                  return;
-                }
-                const selectedRole = e.currentTarget.value;
-                setActiveRole(selectedRole);
-                table.setColumnFilters((old) => [
-                  ...old,
-                  { id: "role", value: selectedRole },
-                ]);
-              }}
-            >
-              Student
-            </Button>
-            <Button
-              variant={activeRole === "Teacher" ? "default" : "outline"}
-              value="Teacher"
-              size="sm"
-              onClick={(e) => {
-                if (activeRole === e.currentTarget.value) {
-                  setActiveRole(null);
-                  table.setColumnFilters((old) =>
-                    old.filter((f) => f.id !== "role")
-                  );
-                  return;
-                }
-                const selectedRole = e.currentTarget.value;
-                setActiveRole(selectedRole);
-                table.setColumnFilters((old) => [
-                  ...old,
-                  { id: "role", value: selectedRole },
-                ]);
-              }}
-            >
-              Teacher
-            </Button>
-          </div>
+          
         </div>
       </div>
 

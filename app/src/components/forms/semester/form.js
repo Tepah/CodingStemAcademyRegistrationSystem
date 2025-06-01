@@ -15,8 +15,8 @@ const semesterSchema = z.object({
     start_date: z.string().min(1, "Start date is required"),
     end_date: z.string().min(1, "End date is required"),
     rate: z.number().optional(),
-    status: z.enum(["Ongoing", "Completed", "Upcoming"], {
-        required_error: "Status is required",
+    status: z.enum(["Ongoing", "Complete", "Upcoming"], {
+        message: "Status is required",
     }),
 }).superRefine(({ start_date, end_date }, ctx) => {
     if (start_date >= end_date) {

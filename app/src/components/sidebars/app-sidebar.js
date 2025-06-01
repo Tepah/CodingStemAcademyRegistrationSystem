@@ -4,7 +4,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
+  SidebarGroup, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import {
@@ -21,12 +21,15 @@ import axios from "axios";
 import config from "@/config";
 import NavSecondary from "@/components/sidebars/nav-secondary";
 import Link from "next/link";
+import { getCurrentSemester } from "@/components/api/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export function AppSidebar({ ...props }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
   const [classes, setClasses] = useState([]);
+  const [semester, setSemester] = useState(null);
   const router = useRouter()
 
   useEffect(() => {
@@ -39,13 +42,21 @@ export function AppSidebar({ ...props }) {
       console.log("Token not found in local storage");
       window.location.href = "/";
     }
+    getCurrentSemester().then((sem) => {
+      console.log("Semester fetched:", sem);
+      setSemester(sem);
+    }
+    ).catch((error) => {
+      console.error("Error fetching semester:", error);
+    });
   }, []);
 
   useEffect(() => {
     const fetchClasses = async () => {
-      axios.get(`${config.backendUrl}/all-classes-by-student`, {
+      axios.get(`${config.backendUrl}/student-classes-by-semester`, {
         params: {
-          student_id: user['id']
+          student_id: user['id'],
+          semester_id: semester['id']
         },
       })
         .then((response) => {
@@ -59,9 +70,10 @@ export function AppSidebar({ ...props }) {
 
     const fetchClassesTeacher = async () => {
       console.log("Fetching classes for teacher");
-      axios.get(`${config.backendUrl}/all-classes-by-teacher`, {
+      axios.get(`${config.backendUrl}/teacher-classes-by-semester`, {
         params: {
-          teacher_id: user['id']
+          teacher_id: user['id'],
+          semester_id: semester['id'],
         },
       })
         .then((response) => {
@@ -73,7 +85,7 @@ export function AppSidebar({ ...props }) {
         });
     }
 
-    if (user['id']) {
+    if (user['id'] && semester) {
       if (user['role'] === 'Student') {
         console.log("Fetching classes for student");
         fetchClasses().then(() => console.log("Fetched classes"));
@@ -82,7 +94,7 @@ export function AppSidebar({ ...props }) {
       }
       setLoading(false);
     }
-  }, [user]);
+  }, [user, semester]);
 
   const handleSignOutClick = () => {
     localStorage.removeItem('token');
@@ -109,7 +121,18 @@ export function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {loading ? (<span>Loading...</span>) :
+        {loading ? (
+          <SidebarGroup>
+        <SidebarGroupLabel>
+          <span> Classes</span>
+        </SidebarGroupLabel>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Skeleton className="w-full h-[30px]" />
+            <Skeleton className="w-full h-[30px]" />
+            <Skeleton className="w-full h-[30px]" />
+          </div>
+          </SidebarGroup>
+        ) :
           user["role"] !== 'Admin' ? (
             <NavClasses classes={classes} />
           ) : null}

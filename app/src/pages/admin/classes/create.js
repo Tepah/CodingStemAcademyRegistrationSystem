@@ -9,6 +9,11 @@ import config from '@/config';
 export default function CreateClass() {
     const [semesters, setSemesters] = useState(null);
     const [teachers, setTeachers] = useState(null);
+    const crumbs = [
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Classes', href: '/admin/classes' },
+        { name: 'Create Class', href: '/admin/classes/create' }
+    ];
 
     useEffect(() => {
         const fetchSemesters = async () => {
@@ -40,7 +45,7 @@ export default function CreateClass() {
     }
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container mx-auto flex flex-col flex-1 p-8 max-w-[600px]">
                 <h1 className="text-2xl font-bold mb-4">Create Class</h1>
                 <ClassForm semesters={semesters} teachers={teachers} />
