@@ -26,7 +26,7 @@ import { deleteSemester } from "@/components/api/api";
 import { DialogClose } from "@radix-ui/react-dialog";
 import React from "react";
 
-export const columns = [
+export const Columns = [
     {
         accessorKey: "id",
         header: "ID",

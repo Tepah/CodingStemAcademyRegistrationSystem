@@ -29,7 +29,7 @@ import React from "react"
 
 export const roles = ['Admin', 'Student', 'Teacher'];
 
-export const columns = [
+export const Columns = [
   {
     accessorKey: "last_name",
     header: ({ column }) => {
