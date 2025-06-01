@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import config from "@/config";
 import { DataTable } from "@/components/tables/users/data-table";
-import { Columns } from "@/components/tables/users/columns";
+import { columns } from "@/components/tables/users/columns";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
