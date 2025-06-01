@@ -39,7 +39,13 @@ const ClassCard = ({ classData }) => {
                         <CardTitle className="h-[20px] w-[100px] truncate">{classData.class_name}</CardTitle>
                         <Label className="text-xs">{classData.subject}</Label>
                         <Label className="text-xs">
-                            {classData.teacher.gender === 'Male' ? 'Mr.' : 'Ms.'} {classData.teacher['first_name']}
+                            {classData.teacher ? (
+                                <>
+                                    {classData.teacher.gender === 'Male' ? 'Mr.' : 'Ms.'} {classData.teacher['first_name']}
+                                </>
+                            ) : (
+                                "N/A"
+                            )}
                         </Label>
                     </div>
                     <div className="">
