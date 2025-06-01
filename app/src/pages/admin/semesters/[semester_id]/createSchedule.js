@@ -309,7 +309,7 @@ function DaySchedule({ day, classes, teachers }) {
     };
 
     return (
-        <div className="flex flex-col min-w-[300px] border rounded-xl p-4 mb-4 shadow-md">
+        <div className="flex flex-col flex-1 min-w-[200px] border rounded-xl p-4 mb-4 shadow-md">
             <h2 className="text-lg font-bold">{day}</h2>
 
             <ClassSection title="9:00 AM" classes={morningClasses} teachers={teachers} />
