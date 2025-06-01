@@ -10,6 +10,10 @@ import { getAllClassesForTeacher } from '@/components/api/api';
 export default function Classes() {
     const [user, setUser] = useState(null);
     const [classes, setClasses] = useState([]);
+    const crumbs = [
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Classes', href: '/classes' },
+    ];
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -81,7 +85,7 @@ export default function Classes() {
     }, [user]);
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container flex flex-col flex-1 space-y-8 p-8">
                 <h1 className="text-2xl font-bold mb-4">Classes</h1>
                 {classes.map((semester, index) => (

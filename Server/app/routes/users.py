@@ -1,4 +1,7 @@
 import datetime
+import os
+
+import requests
 from db_connection import get_db_connection
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask import request, jsonify, Blueprint
@@ -77,6 +80,19 @@ def get_teachers():
         db.close()
         cursor.close()
     return jsonify({"message": "Retrieved All Teachers", "teachers": teachers})
+
+@users_bp.route('/admins', methods=['GET'])
+def get_admins():
+    db = get_db_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        sql = "SELECT * FROM users WHERE role = 'Admin'"
+        cursor.execute(sql)
+        admins = cursor.fetchall()
+    finally:
+        db.close()
+        cursor.close()
+    return jsonify({"message": "Retrieved All Admins", "admins": admins})
 
 @users_bp.route('/get-teacher-by-class', methods=['GET'])
 def get_teacher_by_class():
@@ -272,6 +288,9 @@ def update_user():
     health_ins_num = data.get('health_ins_num')
     role = data.get('role')
     grade_level = data.get('grade_level', None)
+    experience = data.get('experience', None)
+    status = data.get('status', None)
+    print(data)
 
     my_db = get_db_connection()
     try:
@@ -284,13 +303,14 @@ def update_user():
             return jsonify({"message": "User not found"})
         sql = "UPDATE users SET first_name = %s, last_name = %s, birth_date" \
         " = %s, gender = %s, email = %s, phone = %s, address = %s, guardian = %s, guardian_phone = %s, health_ins = %s, " \
-        "health_ins_num = %s, role = %s, grade_level = %s WHERE id = %s"
+        "health_ins_num = %s, role = %s, grade_level = %s, experience = %s, status = %s WHERE id = %s"
         vals = (first_name if first_name else user["first_name"], last_name if last_name else user["last_name"],
                 birth_date if birth_date else user["birth_date"], gender if gender else user["gender"], email if email else user["email"],
                 phone if phone else user["phone"], address if address else user["address"], guardian if guardian else user["guardian"],
                 guardian_phone if guardian_phone else user["guardian_phone"], health_ins if health_ins else user["health_ins"],
                 health_ins_num if health_ins_num else user["health_ins_num"], role if role else user["role"],
-                grade_level if grade_level else user["grade_level"], id)
+                grade_level if grade_level else user["grade_level"], experience if experience else user["experience"], 
+                status if status else user["status"], id)
         cursor.execute(sql, vals)
         my_db.commit()
     finally:
@@ -342,6 +362,22 @@ def verify_teacher_invite():
         cursor.close()
     return jsonify({"message": "Invite verified", "status": True, "email": invite['email']})
 
+@users_bp.route('/ai', methods=['POST'])
+def ai_suggestions():
+    data = request.get_json()
+    questions = data.get('questions')
+    answers = data.get('answers')
+
+    prompt = create_prompt(questions, answers)
+    print(f"Prompt for DeepSeek API: {prompt}")
+
+    success, response = call_deepseek_api(prompt)
+    if not success:
+        return jsonify({"message": response}), 500
+
+    return jsonify({"message": "AI suggestions retrieved", "suggestions": response})
+
+
 
 # DELETE functions
 @users_bp.route('/users', methods=['DELETE'])
@@ -358,3 +394,63 @@ def delete_user():
         cursor.close()
         my_db.close()
     return jsonify({"message": "User deleted"})
+
+
+# HELPER functions
+def call_deepseek_api(prompt):
+    """
+    Calls the DeepSeek API to get class suggestions.
+    """
+    deepseek_api_key = os.environ.get('DEEPSEEK_API_KEY')
+    print(f"DeepSeek API Key: {deepseek_api_key}")  # Debugging line
+    if not deepseek_api_key:
+        return False, "API key not found"
+    try:
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "deepseek-chat",  # Or the correct DeepSeek model name
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False  # Set to False for a complete response
+        }
+
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data) 
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        json_response = response.json()
+
+        # Extract the message content
+        if 'choices' in json_response and len(json_response['choices']) > 0:
+            message_content = json_response['choices'][0]['message']['content']
+            return True, message_content
+        else:
+            return False, "No suggestions found in response"
+
+    except requests.exceptions.RequestException as e:
+        return False, f"API request failed: {e}"
+    except Exception as e:
+        return False, f"An unexpected error occurred: {e}"
+    
+
+def create_prompt (questions, answers):
+    """
+    Creates a prompt for the DeepSeek API based on the provided questions and answers.
+    """
+    prompt = "You are a helpful assistant at a Stem Coding Academy in Maple, CA. Answer the last question:\n\n"
+    for i in range(len(questions)):
+        prompt += f"Q: {questions[i]}\n"
+    prompt += "\n Here are the previous answers to the questions to help you answer the last question:\n\n"
+    for i in range(len(answers)):
+        prompt += f"A: {answers[i]}\n"
+    prompt += """\n\nPlease answer only the last question in a concise and informative manner. 
+    Do not answer any questions that are not related to being a Stem Coding Academy in Maple, CA.
+    Do not include any personal information about students or teachers.
+    Explain why it is a good opportunity for students to join the Stem Coding Academy in Maple, CA.
+    Questions related to registering for classes, class schedules, and class content are acceptable.
+    """
+    return prompt

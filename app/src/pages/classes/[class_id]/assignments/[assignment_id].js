@@ -14,6 +14,19 @@ import { SubmissionForm } from '@/components/forms/submission/form';
 import ManualScoreDialog from '@/components/dialogs/manualScoreDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import AssignmentModifySheet from '@/components/sheets/assignment';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 const ClassPage = () => {
   const router = useRouter();
@@ -22,6 +35,13 @@ const ClassPage = () => {
   const [submissions, setSubmissions] = useState([]);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
+  const [crumbs, setCrumbs] = useState([
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Classes', href: '/classes' },
+    { name: 'Class', href: `/classes/${class_id}` },
+    { name: 'Assignments', href: `/classes/${class_id}/assignments` },
+    { name: 'Assignment', href: `/classes/${class_id}/assignments/${assignment_id}` },
+  ]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,6 +60,11 @@ const ClassPage = () => {
           params: { id: assignment_id },
         });
         setAssignmentData(response.data.assignment);
+        setCrumbs(prev => {
+          const updatedCrumbs = [...prev];
+          updatedCrumbs[4] = { name: response.data.assignment.title, href: `/classes/${class_id}/assignments/${assignment_id}` };
+          return updatedCrumbs;
+        });
       } catch (error) {
         console.error("Error fetching assignment data:", error);
       }
@@ -119,12 +144,22 @@ const ClassPage = () => {
         setLoading(false);
       }
     }
-  }, [assignment_id, user.role]);
+    if (class_id) {
+      axios.get(`${config.backendUrl}/class`, { params: { id: class_id } })
+        .then((response) => {
+          setCrumbs(prev => {
+            const updatedCrumbs = [...prev];
+            updatedCrumbs[2] = { name: response.data.class.class_name, href: `/classes/${class_id}` };
+            return updatedCrumbs;
+          });
+        });
+    }
+  }, [assignment_id, class_id, user.role]);
 
 
   if (loading) {
     return (
-      <Layout>
+      <Layout breadcrumbs={crumbs} title="Assignment Details">
         <div className="max-w-[900px] container p-8 flex-1 flex flex-col mx-auto space-y-4">
           <Skeleton className="h-8 w-1/2" />
           <Skeleton className="h-[400px] w-full" />
@@ -134,7 +169,7 @@ const ClassPage = () => {
   }
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs} title="Assignment Details">
       <div className="max-w-[900px] container p-8 flex-1 flex flex-col mx-auto space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold mb-4">Assignment Details</h1>
@@ -149,8 +184,15 @@ const ClassPage = () => {
             </div>
           )}
           {user && (user.role === "Teacher" || user.role === "Admin") && (
-            <div className="flex justify-end">
-              <Button size="sm" type="default">Edit Assignment</Button>
+            <div className="flex flex-row justify-end gap-4">
+              <DeleteDialog assignment={assignmentData}>
+                <AlertDialogTrigger asChild>
+                <Button size="sm" variant="outline">Delete Assignment</Button>
+                </AlertDialogTrigger>
+              </DeleteDialog>
+              <AssignmentModifySheet assignmentData={assignmentData}>
+                <Button size="sm" type="default">Edit Assignment</Button>
+              </AssignmentModifySheet>
             </div>
           )}
         </div>
@@ -274,5 +316,38 @@ const SubmissionInformation = ({ student_id, assignmentData }) => {
     </>
   )
 }
+
+function DeleteDialog({ children, assignment }) {
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${config.backendUrl}/assignment`, { params: { id: assignment.id } });
+      router.push(`/classes/${assignment.class_id}/assignments`);
+    } catch (error) {
+      console.error("Error deleting assignment:", error);
+    }
+  };
+
+  return (
+    <AlertDialog>
+      {children}
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            Assignment and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
 
 export default ClassPage;

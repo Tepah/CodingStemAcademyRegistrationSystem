@@ -47,24 +47,23 @@ const formSchema = z.object({
     .object({
       month: z
         .string()
-        .regex(/^(0[1-9]|1[0-2])$/, { message: "Invalid month" }), // Validates MM
+        .regex(/^(0?[1-9]|1[0-2])$/, { message: "Invalid month" }), // Allows 1-9 and 10-12
       day: z
         .string()
-        .regex(/^(0[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Validates DD
+        .regex(/^(0?[1-9]|[12][0-9]|3[01])$/, { message: "Invalid day" }), // Allows 1-9, 10-29, and 30-31
       year: z
         .string()
         .regex(/^\d{4}$/, { message: "Invalid year" }) // Validates YYYY
-        .refine((year) => parseInt(year) >= 1900 && parseInt(year) <= new Date().getFullYear(), {
-          message: "Year must be between 1900 and the current year",
-        }),
     })
     .refine((date) => {
       const fullDate = `${date.year}-${date.month}-${date.day}`;
       return !isNaN(new Date(fullDate).getTime()); // Ensures the date is valid
-    }, { message: "Invalid date" }),
-  email: z.string().email({
-    message: "Please enter a valid email address",
-  }),
+    }, { message: "Invalid date" })
+    .refine((date) => {
+    const year = parseInt(date.year);
+    const currentYear = new Date().getFullYear();
+    return year >= 1900 && year <= currentYear;
+  }, { message: "Year must be between 1900 and the current year" }),
   password: z.string()
     .min(6, {
       message: "Password must be at least 6 characters long",
@@ -74,6 +73,9 @@ const formSchema = z.object({
     }),
   confirm_password: z.string().min(6, {
     message: "Password must be at least 6 characters long",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address",
   }),
   gender: z.enum(["Male", "Female", "Other"]),
   phone: z.string().min(10, {
@@ -91,12 +93,12 @@ const formSchema = z.object({
   health_ins: z.string().min(1, {
     message: "Health insurance is required",
   }),
-  health_ins_number: z.string().min(1, {
+  health_ins_num: z.string().min(1, {
     message: "Health insurance number is required",
   }),
   role: z.enum(["Student", "Admin", "Teacher"]),
   grade_level: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]),
-})
+});
 
 export function DatePicker({ field }) {
   return (
@@ -148,7 +150,7 @@ export default function Register() {
       guardian: "",
       guardian_phone: "",
       health_ins: "",
-      health_ins_number: "",
+      health_ins_num: "",
       role: "Student", // Default role can be "Student"
       grade_level: "", // Leave empty or set a default grade level
     },
@@ -168,7 +170,7 @@ export default function Register() {
       console.log("Successfully registered: " + response.data['message']);
       if (response.data['access_token']) {
         localStorage.setItem('token', response.data['access_token']);
-        router.push('/register-classes').then(() => console.log("Redirecting to register classes"));
+        router.push('/dashboard').then(() => console.log("Redirecting to register classes"));
       } else {
         throw new Error(response.data['message']);
       }
@@ -179,7 +181,7 @@ export default function Register() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:h-screen">
+    <div className="flex flex-col max-w-[700px] mx-auto items-center justify-center p-8 md:h-screen">
       <h1>Register</h1>
       <Card className="p-8">
         <Form {...form}>
@@ -215,7 +217,8 @@ export default function Register() {
                 control={form.control}
                 name="birth_date"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Date of Birth</FormLabel>
                     <FormControl>
                       <div className="flex space-x-2">
@@ -257,6 +260,7 @@ export default function Register() {
                         />
                       </div>
                     </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -265,7 +269,8 @@ export default function Register() {
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Gender</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
@@ -279,10 +284,11 @@ export default function Register() {
                         </SelectContent>
                       </Select>
                     </FormControl>
+                  </div>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                </FormItem>
+              )}
+            />
               <FormField
                 control={form.control}
                 name="password"
@@ -389,7 +395,7 @@ export default function Register() {
               />
               <FormField
                 control={form.control}
-                name="health_ins_number"
+                name="health_ins_num"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Health Insurance Number</FormLabel>
@@ -404,7 +410,8 @@ export default function Register() {
                 control={form.control}
                 name="grade_level"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between">
                     <FormLabel>Grade Level</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
@@ -420,6 +427,7 @@ export default function Register() {
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

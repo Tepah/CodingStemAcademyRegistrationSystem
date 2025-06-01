@@ -12,6 +12,10 @@ export default function Donations() {
     const router = useRouter()
     const [payments, setPayments] = React.useState([]);
     const [user, setUser] = React.useState({});
+    const crumbs = [
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Donations', href: '/admin/donations' }
+    ];
     
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -83,7 +87,7 @@ export default function Donations() {
     }, [user])
     
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container max-w-[1000px] flex flex-col flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>

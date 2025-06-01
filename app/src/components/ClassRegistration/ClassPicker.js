@@ -10,7 +10,7 @@ import { columns } from '../tables/classes/registration/columns';
 import { useRouter } from 'next/router';
 import { Brain } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-
+import { eachDayOfInterval, format, getDaysInMonth } from 'date-fns';
 
 export default function ClassPicker(props) {
     const [classes, setClasses] = useState([]);
@@ -182,6 +182,19 @@ export default function ClassPicker(props) {
         return totalMinutes;
     };
 
+    function getDaysInMonthByDay(year, month, dayName) {
+        const daysInMonth = getDaysInMonth(new Date(year, month - 1)); // Month is 1-indexed in date-fns
+        const firstDayOfMonth = new Date(year, month - 1, 1);
+        const allDays = eachDayOfInterval({
+          start: firstDayOfMonth,
+          end: new Date(year, month - 1, daysInMonth),
+        });
+      
+        const dayFormatter = (date) => format(date, 'EEEE'); // "Monday", "Tuesday", etc.
+        const filteredDays = allDays.filter(date => dayFormatter(date) === dayName);
+      
+        return filteredDays.length;
+      }
 
 
     const handleRegister = () => {
@@ -190,6 +203,21 @@ export default function ClassPicker(props) {
             setError("Please select at least one class to register");
             return;
         }
+        let total = 0;
+
+        const newClasses = props.pickedClasses.filter((classData) => {
+            return !props.currentClasses.some((currentClass) => currentClass.id === classData.id);
+        });
+        newClasses.forEach((classData) => {
+            const today = new Date();
+            const monthFromToday = today.getMonth() + 1;
+            const yearFromToday = today.getFullYear();
+            const dayCount = getDaysInMonthByDay(yearFromToday, monthFromToday, classData.day);
+            const donation = classData.rate * dayCount;
+            total += donation;
+        });
+        console.log("Total: ", total);
+        props.setDonations(total);
 
         if (!validateSchedule(props.pickedClasses)) {
             return;

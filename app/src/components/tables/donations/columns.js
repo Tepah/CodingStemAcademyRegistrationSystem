@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { PaymentModifySheet } from "@/components/sheets/payment-sheet"
+import { PaymentModifySheet } from "@/components/sheets/donation-sheet"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { deletePayment } from "@/components/api/api"
 

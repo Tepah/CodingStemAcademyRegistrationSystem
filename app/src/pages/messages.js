@@ -19,6 +19,10 @@ export default function Messages() {
   const [currentMessage, setCurrentMessage] = useState(null);
   const [reply, setReply] = useState(false);
   const [loading, setLoading] = useState(true);
+  const crumbs = [
+    { name: "Home", href: "/" },
+    { name: "Messages", href: "/messages" },
+  ]
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -99,7 +103,7 @@ export default function Messages() {
   }
 
   return (
-    <Layout title={"Messages"}>
+    <Layout breadcrumbs={crumbs}>
       <div className="container mx-auto max-w-[1200px] flex flex-1 flex-col gap-4 p-8">
         <h1 className="text-4xl font-bold">Your Messages</h1>
         <div className="flex flex-1 flex-col gap-4 py-4">

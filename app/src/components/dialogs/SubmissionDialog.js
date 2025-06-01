@@ -10,8 +10,8 @@ import { Brain, Loader, LoaderCircle, X } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
-import { set } from 'date-fns';
 import { AISubmissionFeedback } from '../api/ai';
+import { useEffect } from 'react';
 
 
 export function SubmissionDialog({ children, submission }) {
@@ -20,6 +20,19 @@ export function SubmissionDialog({ children, submission }) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [aiMode, setAiMode] = useState(false);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(`${config.backendUrl}/user`);
+                setUser(response.data);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
+        fetchUser();
+    }, [])
 
     const handleConfirm = () => {
         setLoading(true);
@@ -40,23 +53,35 @@ export function SubmissionDialog({ children, submission }) {
             student_id: submission.student_id,
         }
 
-        axios.post(`${config.backendUrl}/score`, data)
-            .then((response) => {
-                console.log("Submission graded successfully", response.data);
-                window.location.reload();
-            }).catch((error) => {
-                console.error("Error grading submission:", error);
-                setError("Error grading submission: " + error.response.data.message);
+        Promise.all([
+            axios.post(`${config.backendUrl}/score`, data)
+                .then((response) => {
+                    console.log("Submission graded successfully", response.data);
+                }).catch((error) => {
+                    console.error("Error grading submission:", error);
+                    setError("Error grading submission: " + error.response.data.message);
+                }),
+            axios.post(`${config.backendUrl}/messages`,
+                {
+                    sender_user_id: user.id,
+                    class_id: submission.class_id,
+                    receiver_user_id: submission.student_id,
+                    message: `Your submission for ${submission.assignment_name} has been graded. \n\nGrade: ${grade} / ${submission.total_points} \nFeedback: ${feedback}`,
+                    title: `Grade for ${submission.assignment_name}`
+                }
+            ).then((response) => {
+                console.log("Message sent successfully", response.data);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+        ]).then(() => {
+            setLoading(false);
+            window.location.reload();
+        })
     }
 
     return (
         <Dialog>
             {children}
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="flex flex-col flex-1">
                 <DialogHeader>
                     <DialogTitle>Grade Submission</DialogTitle>
                     <DialogDescription>
@@ -64,12 +89,14 @@ export function SubmissionDialog({ children, submission }) {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="min-h-[220px] flex flex-col mt-4 space-y-4">
-                    <p className="text-center text-sm text-blue-500 border-2 p-2">
+                    <p
+                        className="text-center text-sm text-blue-500 border-2 p-2 break-words overflow-auto max-h-[150px]"
+                    >
                         {submission.content}
                     </p>
                     {aiMode ? (
                         <div className="flex flex-col space-y-2">
-                            <AIComponent submission={submission} assignment_id={submission.assignment_id} />
+                            <AIComponent submission={submission} assignment_id={submission.assignment_id} setFeedback={setFeedback} setGrade={setGrade} setAiMode={setAiMode} />
                         </div>
                     ) : (
                         <div className="flex flex-col space-y-4">
@@ -104,7 +131,7 @@ export function SubmissionDialog({ children, submission }) {
                             Close
                         </Button>
                     </DialogClose>
-                    <Button variant="default" onClick={handleConfirm}>
+                    <Button variant="default" onClick={handleConfirm} disabled={grade === ""}>
                         {loading ? "Loading..." : "Confirm"}
                     </Button>
                 </DialogFooter>
@@ -113,7 +140,7 @@ export function SubmissionDialog({ children, submission }) {
     )
 }
 
-function AIComponent({submission, assignment_id}) {
+function AIComponent({ submission, assignment_id, setFeedback, setGrade, setAiMode }) {
     const [aiResponse, setAiResponse] = useState(null);
     const [aiLoading, setAiLoading] = useState(false);
     const [aiGenerated, setAiGenerated] = useState(false);
@@ -126,12 +153,22 @@ function AIComponent({submission, assignment_id}) {
         setAiLoading(true);
         try {
             const res = await AISubmissionFeedback(submissionFile, assignmentFile, assignment_id);
-            
-            setAiResponse(res.response);
+
+            setAiResponse(res);
             setAiLoading(false);
         } catch (error) {
             console.error("Error generating AI feedback:", error);
             setAiResponse({ feedback: "Error generating AI feedback", grade: null });
+        }
+    }
+
+    const handleSaveResponse = () => {
+        if (aiResponse) {
+            setGrade(aiResponse.grade);
+            setFeedback(aiResponse.feedback);
+            setAiGenerated(false);
+            setAiResponse(null);
+            setAiMode(false);
         }
     }
 
@@ -142,7 +179,7 @@ function AIComponent({submission, assignment_id}) {
                     <div className="flex flex-row justify-between">
                         <Select onValueChange={(value) => setFileType(value)}>
                             <SelectTrigger size="sm">
-                                <SelectValue placeholder="Select file type" onValueChange={setFileType} />
+                                <SelectValue placeholder="Select file type" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="submission">Submission</SelectItem>
@@ -202,14 +239,16 @@ function AIComponent({submission, assignment_id}) {
                             <Skeleton className="w-4/5 h-4 rounded-md" />
                         </div>
                     ) : (
-                        <>
+                        <div className="flex flex-col space-y-2">
                             <Label htmlFor="ai-feedback">
                                 AI Feedback
                             </Label>
-                            <div className="flex flex-row justify-between items-center space-x-4">
-                                <Label>AI Grade</Label>
-                                <div className="flex flex-row justify-between text-sm text-gray-500 border-2 rounded-md p-2">
-                                    <p>{aiResponse.grade} / {submission.total_points}</p>
+                            <div className="flex flex-col justify-between space-y-4 items-center">
+                                <div className="flex flex-row justify-between space-x-4">
+                                    <Label>AI Grade</Label>
+                                    <div className="flex flex-row max-w-[100px] flex-1 justify-between text-sm text-gray-500 border-2 rounded-md p-2">
+                                        <p>{aiResponse.grade} / {submission.total_points}</p>
+                                    </div>
                                 </div>
 
                                 <Label>AI Feedback</Label>
@@ -218,11 +257,11 @@ function AIComponent({submission, assignment_id}) {
                                     <X className="h-4 w-4 cursor-pointer" onClick={() => setAiResponse(null)} />
                                 </div>
                             </div>
-                            
-                        </>
+
+                        </div>
                     )}
                     <div className="flex flex-row justify-end ">
-                        <Button size="sm" variant="default" className="min-w-[150px]" disabled={!submissionFile} onClick={() => { handleAIGenerate() }}>
+                        <Button size="sm" variant="default" className="min-w-[150px]" disabled={!submissionFile} onClick={() => { handleSaveResponse() }}>
                             {aiLoading && (
                                 <LoaderCircle className="h-4 w-4 animate-spin" />
                             )}

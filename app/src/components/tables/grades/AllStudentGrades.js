@@ -18,8 +18,7 @@ import {
 import { fetchAssignments, getCurrentSemester } from '@/components/api/api';
 import { format } from 'date-fns';
 import { BookCopy, Megaphone, NotepadText } from 'lucide-react';
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 
 
@@ -194,16 +193,37 @@ export default function AllStudentGradesTable({ student_id, personal = false }) 
                                         {getGrade(classData.grade)} ({parseFloat(classData.grade).toFixed(2)}%)
                                     </TableCell>
                                     <TableCell className="flex flex-row text-left justify-center space-x-4">
-                                        <Link href={`/classes/${classData.id}`} className="text-center">
-                                            <BookCopy className="w-[25px] h-[25px]" />
-                                        </Link>
-                                        <Link href={`/classes/${classData.id}/assignments`} className="text-center">
-                                            <NotepadText className="w-[25px] h-[25px]" />
-                                        </Link>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <Link href={`/classes/${classData.id}`} className="text-center">
+                                                    <BookCopy className="w-[25px] h-[25px]" />
+                                                </Link>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>View Class</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <Link href={`/classes/${classData.id}/grades`} className="text-center">
+                                                    <NotepadText className="w-[25px] h-[25px]" />
+                                                </Link>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>View Assignments</p>
+                                            </TooltipContent>
+                                        </Tooltip>
                                         {personal && (
-                                            <Link href={`/classes/${classData.id}/announcements`} className="text-center">
-                                                <Megaphone className="w-[25px] h-[25px]" />
-                                            </Link>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <Link href={`/classes/${classData.id}/announcements`} className="text-center">
+                                                        <Megaphone className="w-[25px] h-[25px]" />
+                                                    </Link>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>View Announcements</p>
+                                                </TooltipContent>
+                                            </Tooltip>
                                         )}
                                     </TableCell>
                                 </TableRow>

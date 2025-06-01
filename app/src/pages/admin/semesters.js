@@ -12,6 +12,10 @@ export default function Semesters() {
   const router = useRouter()
   const [semesters, setSemesters] = React.useState([]);
   const [user, setUser] = React.useState({});
+  const crumbs = [
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Semesters', href: '/admin/semesters' }
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -37,7 +41,7 @@ export default function Semesters() {
   }, [user])
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs}>
       <div className="container mx-auto flex flex-col space-y-4 max-w-[1000px] p-8">
       <Label>
         <h1 className="text-3xl font-bold">Semesters</h1>

@@ -68,7 +68,7 @@ export const columns = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/admin/student/${data.id}`}>
+                            <Link href={`/admin/users/student/${data.id}`}>
                                 View Profile
                             </Link>
                         </DropdownMenuItem>

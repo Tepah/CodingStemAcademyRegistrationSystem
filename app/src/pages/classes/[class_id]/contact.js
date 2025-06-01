@@ -10,6 +10,12 @@ export default function Grades() {
   const { class_id } = router.query;
   const [teacherData, setTeacherData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [crumbs, setCrumbs] = useState([
+    { name: 'Home', href: '/dashboard' },
+    { name: 'Classes', href: '/classes' },
+    { name: 'Class', href: `/classes/${class_id}` },
+    { name: 'Contact', href: `/classes/${class_id}/contact` },
+  ]);
 
   useEffect(() => {
     const fetchClassData = async () => {
@@ -33,6 +39,20 @@ export default function Grades() {
         .catch(error => {
           console.error("Error fetching class data:", error);
         });
+      axios.get(`${config.backendUrl}/class`, {
+        params: { id: class_id }
+      })
+        .then(res => {
+          console.log("Class data retrieved: ", res.data);
+          setCrumbs(prevCrumbs => {
+            const updatedCrumbs = [...prevCrumbs];
+            updatedCrumbs[2] = { name: res.data['class'].class_name, href: `/classes/${class_id}` };
+            return updatedCrumbs;
+        });
+        })
+        .catch(error => {
+          console.error("Error fetching class data:", error);
+        });
     }
   }, [class_id])
 
@@ -44,9 +64,9 @@ export default function Grades() {
   }, [teacherData]);
 
   return (
-    <Layout title={"Teacher Contact Information"}>
+    <Layout breadcrumbs={crumbs} title={`${teacherData ? teacherData.first_name + ' ' + teacherData.last_name : 'Teacher'} Contact`}>
       {loading ? <p>loading</p> : (
-        <div className="container mx-auto max-w-[500px] flex flex-1 flex-col gap-4 p-4">
+        <div className="container mx-auto max-w-[600px] flex flex-1 flex-col gap-4 p-8">
           <Card className={"p-4"}>
             <CardHeader>
               <CardTitle>

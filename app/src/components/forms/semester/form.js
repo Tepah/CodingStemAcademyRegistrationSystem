@@ -12,10 +12,11 @@ import { postSemester } from "@/components/api/api";
 
 const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),
-    start_date: z.string(),
-    end_date: z.string(),
-    status: z.enum(["Ongoing", "Completed", "Upcoming"], {
-        required_error: "Status is required",
+    start_date: z.string().min(1, "Start date is required"),
+    end_date: z.string().min(1, "End date is required"),
+    rate: z.number().optional(),
+    status: z.enum(["Ongoing", "Complete", "Upcoming"], {
+        message: "Status is required",
     }),
 }).superRefine(({ start_date, end_date }, ctx) => {
     if (start_date >= end_date) {
@@ -25,14 +26,6 @@ const semesterSchema = z.object({
         path: ["end_date"], // path to the error
       });
     }
-  }).superRefine(({start_date}, ctx) => {
-    if (new Date(start_date) <= new Date()) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Start date must be in the future",
-          path: ["start_date"], // path to the error
-        });
-      }
   })
 
 export const SemesterForm = () => {
@@ -141,6 +134,27 @@ export const SemesterForm = () => {
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="rate"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>Default Rate($)</FormLabel>
+                                <FormControl>
+                                    <div className="flex flex-row space-x-2">
+                                    <Input className="max-w-[100px]" type="number" placeholder="Rate" {...field} onChange={(e) => {
+                                        const parsedValue = parseFloat(e.target.value);
+                                        field.onChange(isNaN(parsedValue) ? null : parsedValue);
+                                    }} />
+                                    <span className="text-sm text-gray-500">per hour</span>
+                                    </div>
+                                </FormControl>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
 
                 <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Saving..." : "Save"}

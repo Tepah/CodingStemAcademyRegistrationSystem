@@ -7,6 +7,9 @@ import {Layout, LayoutWithCalendar} from "@/app/layout";
 
 export default function Dashboard() {
   const [role, setRole] = useState('');
+  const crumbs = [
+    { name: 'Home', href: '/dashboard' },
+  ];
 
 
   useEffect(() => {
@@ -27,14 +30,14 @@ export default function Dashboard() {
   
   if (role === 'Admin') {
     return (
-      <Layout>
+      <Layout breadcrumbs={crumbs}>
         <AdminDash />
       </Layout>
     );
   }
 
   return (
-    <LayoutWithCalendar>
+    <LayoutWithCalendar breadcrumbs={crumbs}>
       {role === 'Student' && <StudentDash />}
       {role === 'Teacher' && <TeacherDash />}
     </LayoutWithCalendar>

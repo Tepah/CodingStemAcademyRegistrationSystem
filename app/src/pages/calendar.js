@@ -14,6 +14,7 @@ export default function Calendar() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = jwtDecode(token);
@@ -25,6 +26,16 @@ export default function Calendar() {
       axios.get(`${config.backendUrl}/events/student`, { params: { student_id: user['id'] } })
         .then((response) => {
           console.log(response.data);
+          if (!response.data['classes'] || !response.data['assignments']) {
+            setEvents([]);
+            return;
+          }
+          if (!Array.isArray(response.data['classes']) || !Array.isArray(response.data['assignments'])) {
+            console.error("Classes or assignments data is not an array:", response.data);
+            setEvents([]);
+            return;
+          }
+          // Process class events
           const classEvents = response.data['classes'].map((event) => {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"
@@ -91,6 +102,10 @@ export default function Calendar() {
       axios.get(`${config.backendUrl}/events/teacher`, { params: { teacher_id: user['id'] } })
         .then((response) => {
           console.log(response.data);
+          if (!response.data['classes'] || !response.data['assignments']) {
+            setEvents([]);
+            return;
+          }
           const classEvents = response.data['classes'].map((event) => {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"
@@ -124,7 +139,7 @@ export default function Calendar() {
               });
 
               return {
-                id: `${event['id']}-${format(date, 'yyyyMMdd')}`, // Unique ID for each occurrence
+                id: `${event['id']}`, // Unique ID for each occurrence
                 title: event['class_name'],
                 startDate: startDateTime,
                 endDate: endDateTime,
@@ -148,7 +163,12 @@ export default function Calendar() {
           setEvents([...classEvents, ...assignmentEvents]);
         })
     } else if (user && user['role'] === 'Admin') {
-      axios.get(`${config.backendUrl}/classes`).then((response) => {
+      axios.get(`${config.backendUrl}/current-classes`).then((response) => {
+        if (!response.data['classes']) {
+          console.error("No classes found in response:", response.data);
+          setEvents([]);
+          return;
+        }
         const classEvents = response.data['classes'].map((event) => {
           const startTime = event['start_time']; // Time string, e.g., "09:00"
           const endTime = event['end_time'];     // Time string, e.g., "10:00"
@@ -182,7 +202,7 @@ export default function Calendar() {
             });
 
             return {
-              id: `${event['id']}-${format(date, 'yyyyMMdd')}`, // Unique ID for each occurrence
+              id: `${event['id']}`, // Unique ID for each occurrence
               title: event['class_name'],
               startDate: startDateTime,
               endDate: endDateTime,
@@ -236,7 +256,7 @@ export default function Calendar() {
 
 
   return (
-    <Layout title={"Calendar"}>
+    <Layout breadcrumbs={[{ name: "Home", href: "/dashboard" }, { name: "Calendar", href: "/calendar" }]}>
       <div className="w-[1100px] container flex flex-1 flex-col gap-4 p-8">
         <SchedulerProvider initialState={events} weekStartsOn="monday">
           <SchedulerWrapper

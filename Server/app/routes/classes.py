@@ -1,10 +1,19 @@
 from db_connection import get_db_connection
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, json, request, jsonify
 from datetime import timedelta, time
 import requests
 import os
 
 classes_bp = Blueprint('classes', __name__)
+
+def format_time(time_obj):
+    if isinstance(time_obj, timedelta):
+        # Convert timedelta to seconds and then to a time object
+        total_seconds = time_obj.total_seconds()
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        time_obj = time(hours, minutes)
+    return time_obj.strftime("%I:%M %p")
 
 def format_time(time_obj):
     if isinstance(time_obj, timedelta):
@@ -23,6 +32,11 @@ def get_classes():
         cursor = my_db.cursor(dictionary=True)
         cursor.execute("SELECT * FROM classes ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;")
         res = cursor.fetchall()
+        for classData in res:
+            if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
+                classData['start_time'] = format_time(classData['start_time'])
+            if 'end_time' in classData and isinstance(classData['end_time'], timedelta):
+                classData['end_time'] = format_time(classData['end_time'])
         for classData in res:
             if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
                 classData['start_time'] = format_time(classData['start_time'])
@@ -53,6 +67,24 @@ def get_class_by_id():
         cursor.close()
         my_db.close()
     return jsonify({'message': 'Class retrieved', 'class': res})
+
+@classes_bp.route('/current-classes', methods=['GET'])
+def get_current_classes():
+    my_db = get_db_connection()
+    try:
+        cursor = my_db.cursor(dictionary=True)
+        sql = "SELECT * FROM classes WHERE semester_id = (SELECT id FROM semesters WHERE status = 'Ongoing') ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        for classData in res:
+            if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
+                classData['start_time'] = format_time(classData['start_time'])
+            if 'end_time' in classData and isinstance(classData['end_time'], timedelta):
+                classData['end_time'] = format_time(classData['end_time'])
+    finally:
+        cursor.close()
+        my_db.close()
+    return jsonify({'message': 'Current classes retrieved', 'classes': res})
 
 @classes_bp.route('/classes-teacher/count', methods=['GET'])
 def get_classes_count_by_teacher():
@@ -105,7 +137,10 @@ def get_classes_by_semester():
             val = (classData['teacher_id'], )
             cursor.execute(sql, val)
             teacher = cursor.fetchone()
-            classData['teacher_name'] = teacher['first_name'] + " " + teacher['last_name']
+            if not teacher:
+                classData['teacher_name'] = "N/A"
+            else:
+                classData['teacher_name'] = teacher['first_name'] + " " + teacher['last_name']
             sql = "SELECT * FROM semesters WHERE id = %s"
             val = (classData['semester_id'], )
             cursor.execute(sql, val)
@@ -129,6 +164,7 @@ def get_classes_by_semester():
 def get_all_classes_by_student():
     db = get_db_connection()
     try:
+        user_id = request.args.get('student_id')
         user_id = request.args.get('student_id')
         cursor = db.cursor(dictionary=True)
         sql = "SELECT * FROM class_students WHERE user_id = %s"
@@ -154,6 +190,8 @@ def get_all_classes_by_student():
     finally:
         db.close()
         cursor.close()
+    if not classes:
+        return jsonify({'message': 'No classes found for this student', 'classes': []})
     if not classes:
         return jsonify({'message': 'No classes found for this student', 'classes': []})
     return jsonify({'message': 'Classes retrieved', 'classes': classes})
@@ -188,6 +226,12 @@ def get_class(id):
         val = (id, )
         cursor.execute(sql, val)
         res = cursor.fetchone()
+        if res is None:
+            return jsonify({'message': 'Class not found'}), 404
+        if 'start_time' in res and isinstance(res['start_time'], timedelta):
+            res['start_time'] = format_time(res['start_time'])
+        if 'end_time' in res and isinstance(res['end_time'], timedelta):
+            res['end_time'] = format_time(res['end_time'])
         if res is None:
             return jsonify({'message': 'Class not found'}), 404
         if 'start_time' in res and isinstance(res['start_time'], timedelta):
@@ -263,10 +307,11 @@ def add_class():
         day = data.get('day')
         start_time = data.get('start_time')
         end_time = data.get('end_time')
+        rate = data.get('rate')
 
         cursor = my_db.cursor()
-        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time) VALUES(%s, %s, %s, %s, %s, %s, %s)"
-        vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time)
+        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+        vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate)
         cursor.execute(sql, vals)
         my_db.commit()
     
@@ -274,6 +319,34 @@ def add_class():
     except Exception as e:
         my_db.rollback()
         return jsonify({'message': 'Error occurred while adding class', 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        my_db.close()
+
+@classes_bp.route('/save-semester-schedule', methods=['POST'])
+def save_semester_schedule():
+    try:
+        data = request.get_json()
+        semester_id = data.get('semester_id')
+        classes = data.get('classes', [])
+        my_db = get_db_connection()
+        cursor = my_db.cursor()
+        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        for class_data in classes:
+            teacher_id = class_data.get('teacher_id')
+            class_name = class_data.get('class_name')
+            subject = class_data.get('subject')
+            day = class_data.get('day')
+            start_time = class_data.get('start_time')
+            end_time = class_data.get('end_time')
+
+            vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time)
+            cursor.execute(sql, vals)
+        my_db.commit()
+        return jsonify({'message': 'Semester schedule saved successfully'})
+    except Exception as e:
+        my_db.rollback()
+        return jsonify({'message': 'Error occurred while saving semester schedule', 'error': str(e)}), 500
     finally:
         cursor.close()
         my_db.close()
@@ -321,6 +394,8 @@ def update_class(id):
     day = data.get('day')
     start_time = data.get('start_time')
     end_time = data.get('end_time')
+    rate = data.get('rate')
+
     my_db = get_db_connection()
     try:
         cursor = my_db.cursor()
@@ -330,11 +405,12 @@ def update_class(id):
         classes = cursor.fetchone()
         if classes is None:
             return None
-        sql = "UPDATE classes SET teacher_id = %s, class_name = %s, subject = %s, semester_id = %s, day = %s, start_time = %s, end_time = %s WHERE id = %s"
+        sql = "UPDATE classes SET teacher_id = %s, class_name = %s, subject = %s, semester_id = %s, day = %s, start_time = %s, end_time = %s, rate = %s WHERE id = %s"
         vals = (
             teacher_id if teacher_id else classes["teacher_id"], class_name if class_name else classes["class_name"], 
             subject if subject else classes["subject"], semester_id if semester_id else classes["semester_id"],
-            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], id
+            day if day else classes["day"], start_time if start_time else classes["start_time"], end_time if end_time else classes["end_time"], 
+            rate if rate else classes["rate"], id
         )
         cursor.execute(sql, vals)
         my_db.commit()
@@ -383,7 +459,7 @@ def call_deepseek_api(prompt):
             "stream": False  # Set to False for a complete response
         }
 
-        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data)  # Replace with the actual DeepSeek endpoint
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=data) 
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
         json_response = response.json()
@@ -413,19 +489,19 @@ def construct_prompt(student_data, available_classes):
     Suggest a class schedule for student with the following information:
     - Student ID: {student_id}
     - Previously Taken Classes: {previous_classes}
-    - Current Grade Level: {current_grade_level}
+    - Current Grade Level and accelerate them a little bit: {current_grade_level}
 
     Available Classes:
     """
     for class_data in available_classes:
         prompt += f"""
-        - Class Name: {class_data['class_name']}, Subject: {class_data['subject']}, Id: {class_data['id']}
+        - {json.dumps(class_data)}
         """
 
     prompt += """
     Based on this information, suggest a schedule of 3-4 classes that are appropriate for the student.
-    List only the class names, separated by newlines.
-    Consider the student's grade level, previous classes, and conflict-free scheduling
+    List only the class ids, separated by newlines with no additional text.
+    Consider the student's grade level, previous classes, and conflict-free scheduling. Please ensure that the suggested classes do not overlap in time.
     """
     return prompt
 
@@ -433,13 +509,13 @@ def parse_suggestions(suggestions_text, available_classes):
     """
     Parses the suggestions from the language model and returns a list of class data.
     """
-    suggested_class_names = [s.strip() for s in suggestions_text.split("\n") if s.strip()]
+    suggested_ids = [s.strip() for s in suggestions_text.split("\n") if s.strip()]
     suggested_schedule = []
 
-    for class_name in suggested_class_names:
+    for id in suggested_ids:
         # Find the class in the available classes list
         for class_data in available_classes:
-            if class_data['class_name'] == class_name:
+            if class_data['id'] == int(id):
                 suggested_schedule.append(class_data)
                 break  # Stop searching once the class is found
 

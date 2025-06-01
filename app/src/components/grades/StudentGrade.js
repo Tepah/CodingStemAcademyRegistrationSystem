@@ -23,7 +23,7 @@ export default function StudentGrade() {
     }, [router]);
 
     return (
-        <div className="container mx-auto flex flex-col p-4 gap-4">
+        <div className="container max-w-[1000px] mx-auto flex flex-col p-4 gap-4">
             <SingleGradeTable student_id={user.id} class_id={class_id} personal={true} />
         </div>
     );

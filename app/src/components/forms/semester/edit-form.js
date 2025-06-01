@@ -9,42 +9,26 @@ import { Select, SelectTrigger, SelectItem, SelectGroup, SelectContent, SelectVa
 import { Input } from "@/components/ui/input";
 import { updateSemester } from "@/components/api/api";
 import { set } from "date-fns";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-  import { deleteSemester } from "@/components/api/api";
 
 const semesterSchema = z.object({
     name: z.string().min(1, "Semester name is required"),
     start_date: z.string(),
     end_date: z.string(),
-    status: z.enum(["Ongoing", "Completed", "Upcoming"], {
-        required_error: "Status is required",
+    status: z.enum(["Ongoing", "Complete", "Upcoming"], {
+        message: "Status is required",
     }),
+    rate: z.number().optional(),
 }).superRefine(({ start_date, end_date }, ctx) => {
     if (start_date >= end_date) {
-      ctx.addIssue({
-        code: "custom",
-        message: "End date must be after start date",
-        path: ["end_date"], // path to the error
-      });
-    }
-  }).superRefine(({start_date}, ctx) => {
-    if (new Date(start_date) <= new Date()) {
         ctx.addIssue({
-          code: "custom",
-          message: "Start date must be in the future",
-          path: ["start_date"], // path to the error
+            code: "custom",
+            message: "End date must be after start date",
+            path: ["end_date"], // path to the error
         });
-      }
-  })
+    }
+})
 
-export const ModifySemesterForm = ({ semester }) => {
+export const ModifySemesterForm = ({ semester, onCancel }) => {
     console.log("Semester data:", semester);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,6 +39,7 @@ export const ModifySemesterForm = ({ semester }) => {
             start_date: new Date(semester.start_date).toISOString().split("T")[0],
             end_date: new Date(semester.end_date).toISOString().split("T")[0],
             status: semester.status,
+            rate: semester.rate || 0, // Assuming rate is optional and defaults to 0
         },
     });
 
@@ -97,11 +82,13 @@ export const ModifySemesterForm = ({ semester }) => {
                     control={form.control}
                     name="start_date"
                     render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Start Date</FormLabel>
-                            <FormControl>
-                                <Input className="w-[150px]"type="date" {...field} />
-                            </FormControl>
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>Start Date</FormLabel>
+                                <FormControl>
+                                    <Input className="w-[150px]" type="date" {...field} />
+                                </FormControl>
+                            </div>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -111,11 +98,13 @@ export const ModifySemesterForm = ({ semester }) => {
                     control={form.control}
                     name="end_date"
                     render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>End Date</FormLabel>
-                            <FormControl>
-                                <Input className="w-[150px]"type="date" {...field} />
-                            </FormControl>
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>End Date</FormLabel>
+                                <FormControl>
+                                    <Input className="w-[150px]" type="date" {...field} />
+                                </FormControl>
+                            </div>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -146,45 +135,34 @@ export const ModifySemesterForm = ({ semester }) => {
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="rate"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>Rate</FormLabel>
+                                <FormControl>
+                                    <Input className="w-[100px]" type="number" placeholder="Rate" {...field}
+                                    onChange={(e) => {
+                                        const value = parseInt(e.target.value, 10);
+                                        field.onChange(value);
+                                    }} />
+                                </FormControl>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <div className="flex flex-row justify-between">
                     <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "Saving..." : "Save"}
                     </Button>
-                    <DeleteSemesterDialog semester={semester} />
+                    <Button type="button" variant="outline" onClick={() => onCancel()}>
+                        Cancel
+                    </Button>
                 </div>
             </form>
         </Form>
-    );
-}
-
-const DeleteSemesterDialog = ({ semester }) => {
-    const [open, setOpen] = React.useState(false);
-
-    const handleDelete = async () => {
-        try {
-            await deleteSemester(semester.id);
-            window.location.reload();
-        } catch (error) {
-            console.error("Error deleting semester:", error);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button variant="destructive">Delete</Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently delete the semester.
-                    </DialogDescription>
-                </DialogHeader>
-                <Button variant="destructive" onClick={handleDelete}>
-                    Delete
-                </Button>
-            </DialogContent>
-        </Dialog>
     );
 }
