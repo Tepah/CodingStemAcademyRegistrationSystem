@@ -30,6 +30,12 @@ export default function Calendar() {
             setEvents([]);
             return;
           }
+          if (!Array.isArray(response.data['classes']) || !Array.isArray(response.data['assignments'])) {
+            console.error("Classes or assignments data is not an array:", response.data);
+            setEvents([]);
+            return;
+          }
+          // Process class events
           const classEvents = response.data['classes'].map((event) => {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"
@@ -96,6 +102,10 @@ export default function Calendar() {
       axios.get(`${config.backendUrl}/events/teacher`, { params: { teacher_id: user['id'] } })
         .then((response) => {
           console.log(response.data);
+          if (!response.data['classes'] || !response.data['assignments']) {
+            setEvents([]);
+            return;
+          }
           const classEvents = response.data['classes'].map((event) => {
             const startTime = event['start_time']; // Time string, e.g., "09:00"
             const endTime = event['end_time'];     // Time string, e.g., "10:00"
@@ -154,6 +164,11 @@ export default function Calendar() {
         })
     } else if (user && user['role'] === 'Admin') {
       axios.get(`${config.backendUrl}/current-classes`).then((response) => {
+        if (!response.data['classes']) {
+          console.error("No classes found in response:", response.data);
+          setEvents([]);
+          return;
+        }
         const classEvents = response.data['classes'].map((event) => {
           const startTime = event['start_time']; // Time string, e.g., "09:00"
           const endTime = event['end_time'];     // Time string, e.g., "10:00"
