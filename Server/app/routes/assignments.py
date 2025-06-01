@@ -303,9 +303,10 @@ def get_events_by_teacher():
             sql = "SELECT * FROM users WHERE id = %s"
             cursor.execute(sql, (teacher_id, ))
             teacherInfo = cursor.fetchone()
+
             for assignment in assignments_for_class:
-                assignment["teacher_name"] = teacherInfo['first_name']
-                assignment["teacher_gender"] = teacherInfo['gender']
+                assignment["teacher_name"] = teacherInfo['first_name'] if teacherInfo else "N/A"
+                assignment["teacher_gender"] = teacherInfo['gender'] if teacherInfo else "N/A"
                 assignment["class_id"] = id
                 assignment["class_name"] = classInfo['class_name']
                 assignments.append(assignment)
