@@ -13,7 +13,7 @@ export default function EditUserSheet({ children, user, open, onOpenChange }) {
         ...user,
         birth_date: {
             month: String(new Date(user.birth_date).getMonth() + 1),
-            day: String(new Date(user.birth_date).getDate() + 1),
+            day: String(new Date(user.birth_date).getDate()+1),
             year: String(new Date(user.birth_date).getFullYear()),
         }
     });

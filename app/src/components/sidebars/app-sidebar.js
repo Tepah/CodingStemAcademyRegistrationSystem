@@ -121,7 +121,7 @@ export function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {loading ? (
+        {(loading && user["role"] !== 'Admin') ? (
           <SidebarGroup>
         <SidebarGroupLabel>
           <span> Classes</span>
