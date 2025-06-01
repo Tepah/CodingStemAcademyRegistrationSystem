@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import {Label} from "@/components/ui/label";
 import {DataTable} from "@/components/tables/semesters/data-table";
 import { getSemesters } from '@/components/api/api';
-import { Columns } from "@/components/tables/semesters/columns";
+import { columns } from "@/components/tables/semesters/columns";
 
 
 export default function Semesters() {
@@ -48,7 +48,7 @@ export default function Semesters() {
         <p className="text-gray-500">Manage Semesters in the system</p>
       </Label>
       {user['role'] === 'Admin' ? (
-        <DataTable columns={Columns} data={semesters} />
+        <DataTable columns={columns} data={semesters} />
       ) : (
         <div className="text-center">
           <h1 className="text-3xl font-bold">You are not authorized to view this page</h1>

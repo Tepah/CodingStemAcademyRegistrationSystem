@@ -29,7 +29,7 @@ import React from "react"
 
 export const roles = ['Admin', 'Student', 'Teacher'];
 
-export const Columns = [
+export const columns = [
   {
     accessorKey: "last_name",
     header: ({ column }) => {
@@ -90,80 +90,16 @@ export const Columns = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
-      const userRole = user['role'];
-      const [dialogOpen, setDialogOpen] = React.useState(false);
-      const [sheetOpen, setSheetOpen] = React.useState(false);
-      if (userRole === 'Admin') {
-        return (
-          <div></div>
-        )
-      }
-      return (
-        <EditUserSheet user={user} open={sheetOpen} onOpenChange={setSheetOpen}>
-          <DeleteDialog user={user} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {userRole === 'Student' ? (
-                <div>
-                  <DropdownMenuItem asChild>
-                    <Link href={`grades/${user.id}`}>
-                      View Grades
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`student/${user.id}`}>
-                      View Student&apos;s Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild key={user.id}>
-                    <Link href={`classes/student/${user.id}`}>
-                      Manage Student&apos;s Classes
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`donations/${user.id}`}>
-                      Manage Payments
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSheetOpen(true)}>
-                    Modify Student
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setDialogOpen(true)}>
-                    Delete Student
-                  </DropdownMenuItem>
-                </div>
-              ) : userRole === 'Teacher' ? (
-                <div>
-                  <DropdownMenuItem asChild>
-                    <Link href={`teacher/${user.id}`}>
-                      View Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSheetOpen(true)}>
-                    Modify Teacher
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setDialogOpen(true)}>
-                    Delete Teacher
-                  </DropdownMenuItem>
-                </div>
-              ) : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          </DeleteDialog>
-        </EditUserSheet>
-      )
+      return <ActionsCell user={user} />;
     }
   }
 ]
 
-function DeleteDialog({ children, user, dialogOpen, setDialogOpen }) {
+function ActionsCell({ user }) {
+  const userRole = user['role'];
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [sheetOpen, setSheetOpen] = React.useState(false);
+
   const handleDelete = async () => {
     try {
       const response = await axios.delete(`${config.backendUrl}/users`, {
@@ -178,22 +114,78 @@ function DeleteDialog({ children, user, dialogOpen, setDialogOpen }) {
     }
   }
 
-   return (
-    <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      {children}
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+  return (
+    <EditUserSheet user={user} open={sheetOpen} onOpenChange={setSheetOpen}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {userRole === 'Student' ? (
+            <div>
+              <DropdownMenuItem asChild>
+                <Link href={`grades/${user.id}`}>
+                  View Grades
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`student/${user.id}`}>
+                  View Student&apos;s Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild key={user.id}>
+                <Link href={`classes/student/${user.id}`}>
+                  Manage Student&apos;s Classes
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`donations/${user.id}`}>
+                  Manage Payments
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSheetOpen(true)}>
+                Modify Student
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                Delete Student
+              </DropdownMenuItem>
+            </div>
+          ) : userRole === 'Teacher' ? (
+            <div>
+              <DropdownMenuItem asChild>
+                <Link href={`teacher/${user.id}`}>
+                  View Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSheetOpen(true)}>
+                Modify Teacher
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                Delete Teacher
+              </DropdownMenuItem>
+            </div>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this user.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </EditUserSheet>
   )
 }
