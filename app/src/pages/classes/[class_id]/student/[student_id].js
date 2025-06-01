@@ -18,6 +18,12 @@ export default function StudentClassDetails() {
 
     const router = useRouter();
     const { class_id, student_id } = router.query;
+    const [crumbs, setCrumbs] = useState([
+        { name: "Home", href: "/dashboard" },
+        { name: "Classes", href: "/classes" },
+        { name: "Class", href: `/classes/${class_id}` },
+        { name: "Grades", href: `/classes/${class_id}/grades` }
+    ]);
 
 
     useEffect(() => {
@@ -36,14 +42,23 @@ export default function StudentClassDetails() {
             return;
         }
         Promise.all([
-            axios.get(`${config.backendUrl}/classes`, { params: { id: class_id } }),
+            axios.get(`${config.backendUrl}/class`, { params: { id: class_id } }),
             axios.get(`${config.backendUrl}/user`, { params: { id: student_id } })
         ])
             .then(([classRes, studentRes]) => {
                 setClassName(classRes.data.name);
                 setStudent(studentRes.data.user);
-                console.log("Fetched class:", classRes.data);
+                console.log("Fetched class:", classRes.data.class);
                 console.log("Fetched student:", studentRes.data.user);
+                setCrumbs((prevCrumbs) => {
+                    const newCrumbs = [...prevCrumbs];
+                    if (user['role'] === "Admin") {
+                        newCrumbs[1] = { name: "Classes", href: "/admin/classes" };
+                    }
+                    newCrumbs[2] = { name: classRes.data.class.class_name, href: `/classes/${class_id}` };
+                    newCrumbs[3] = { name: `${studentRes.data.user.first_name} ${studentRes.data.user.last_name}'s Grades`, href: `/classes/${class_id}/grades/${student_id}` };
+                    return newCrumbs;
+                });
                 setLoading(false);
             })
             .catch((err) => {
@@ -52,7 +67,7 @@ export default function StudentClassDetails() {
     }, [router, class_id, student_id]);
 
     if (user.role !== "Teacher" || user.role !== "Admin") {
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container mx-auto flex flex-col p-4 gap-4">
                 <h1 className="text-2xl font-bold">Unauthorized</h1>
                 <p>You do not have permission to view this page.</p>
@@ -61,7 +76,7 @@ export default function StudentClassDetails() {
     }
     if (loading) {
         return (
-            <Layout>
+            <Layout breadcrumbs={crumbs}>
                 <div className="container mx-auto flex flex-col p-4 gap-4">
                     <Skeleton className="h-8 w-full mb-4" />
                     <Skeleton className="h-200 w-full mb-4" />
@@ -71,7 +86,7 @@ export default function StudentClassDetails() {
     }
 
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container max-w-[900px] mx-auto flex flex-col p-4 gap-4">
                 <div className="flex flex-row justify-between items-center">
                     <h1 className="text-2xl font-bold">{user.id !== student_id && (`${student.first_name} ${student.last_name}`)} {className} Grades</h1>

@@ -101,6 +101,7 @@ def create_message():
     Create a new message in the database.
     """
     data = request.get_json()
+    print(data)
     sender_user_id = data.get('sender_user_id')
     class_id = data.get('class_id')
     message = data.get('message')

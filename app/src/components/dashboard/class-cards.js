@@ -7,6 +7,7 @@ import { Separator } from '../ui/separator';
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import config from '@/config';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const ClassCard = ({ classData }) => {
     console.log(classData);
@@ -27,7 +28,7 @@ const ClassCard = ({ classData }) => {
         }
         fetchMessages();
     }, [class_id]);
-    
+
     console.log(unread);
 
     return (
@@ -56,18 +57,40 @@ const ClassCard = ({ classData }) => {
             </CardHeader>
             <Separator />
             <CardContent className="w-full py-3 flex flex-row justify-evenly items-center">
-                <Link href={`/classes/${classData.id}`} className="text-center">
-                    <BookCopy className="w-[25px] h-[25px] hover:scale-105" />
-                </Link>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link href={`/classes/${classData.id}`} className="text-center">
+                            <BookCopy className="w-[25px] h-[25px] hover:scale-105" />
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>View Class</p>
+                    </TooltipContent>
+                </Tooltip>
                 <Separator orientation="vertical" className="h-[25px]" />
-                <Link href={`/classes/${classData.id}/assignments`} className="text-center">
-                    <NotepadText className="w-[25px] h-[25px] hover:scale-105" />
-                </Link>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link href={`/classes/${classData.id}/assignments`} className="text-center">
+                            <NotepadText className="w-[25px] h-[25px] hover:scale-105" />
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>View Assignments</p>
+                    </TooltipContent>
+                </Tooltip>
                 <Separator orientation="vertical" className="h-[25px]" />
-                <Link href={`/classes/${classData.id}/announcements`} className="text-center relative">
-                    <Megaphone className="w-[25px] h-[25px] hover:scale-105" />
-                    {unread > 0 && <CircleAlert className="absolute -top-2 -right-3 cursor-pointer w-[15px] text-yellow-500"></CircleAlert>}
-                </Link>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+
+                        <Link href={`/classes/${classData.id}/announcements`} className="text-center relative">
+                            <Megaphone className="w-[25px] h-[25px] hover:scale-105" />
+                            {unread > 0 && <CircleAlert className="absolute -top-2 -right-3 cursor-pointer w-[15px] text-yellow-500"></CircleAlert>}
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>View Announcements</p>
+                    </TooltipContent>
+                </Tooltip>
             </CardContent>
         </Card>
     );

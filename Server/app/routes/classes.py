@@ -68,6 +68,24 @@ def get_class_by_id():
         my_db.close()
     return jsonify({'message': 'Class retrieved', 'class': res})
 
+@classes_bp.route('/current-classes', methods=['GET'])
+def get_current_classes():
+    my_db = get_db_connection()
+    try:
+        cursor = my_db.cursor(dictionary=True)
+        sql = "SELECT * FROM classes WHERE semester_id = (SELECT id FROM semesters WHERE status = 'Ongoing') ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time;"
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        for classData in res:
+            if 'start_time' in classData and isinstance(classData['start_time'], timedelta):
+                classData['start_time'] = format_time(classData['start_time'])
+            if 'end_time' in classData and isinstance(classData['end_time'], timedelta):
+                classData['end_time'] = format_time(classData['end_time'])
+    finally:
+        cursor.close()
+        my_db.close()
+    return jsonify({'message': 'Current classes retrieved', 'classes': res})
+
 @classes_bp.route('/classes-teacher/count', methods=['GET'])
 def get_classes_count_by_teacher():
     my_db = get_db_connection()

@@ -73,7 +73,7 @@ const StudentDash = () => {
   if (!user || !classes) {
     return (
       <div className="p-6 min-h-screen">
-        <h1 className="text-4xl font-bold mb-4">Teacher Dashboard</h1>
+        <h1 className="text-4xl font-bold mb-4">Student Dashboard</h1>
         <div className="grid grid-cols-1 gap-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Skeleton className="w-[300px] h-[200px] rounded-xl" />
@@ -94,7 +94,7 @@ const StudentDash = () => {
 
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="container mx-auto flex flex-col max-w-[1000px] flex-1 p-6 min-h-screen">
       <h1 className="text-4xl font-bold mb-4">Student Dashboard</h1>
       <div className="flex flex-1 flex-col gap-4 p-4">
         <p>Welcome, {user['first_name']} {user['last_name']}</p>
@@ -119,7 +119,7 @@ const StudentDash = () => {
             </CardHeader>
             <CardContent>
               <ul className="grid grid-cols-1 md:grid-cols-2 space-y-2">
-                <Link href="/courses">View Courses</Link>
+                <Link href="/classes">View Classes</Link>
                 <Link href="/assignments">View Assignments</Link>
                 <Link href="/calendar">View Calendar</Link>
                 <Link href="/grades">View Grades</Link>

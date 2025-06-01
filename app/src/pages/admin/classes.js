@@ -13,6 +13,10 @@ export default function Classes() {
     const [classes, setClasses] = React.useState([]);
     const [semester, setSemester] = React.useState([]);
     const [user, setUser] = React.useState({});
+    const breadcrumbs = [
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Classes', href: '/admin/classes' }
+    ]
     
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -133,7 +137,7 @@ export default function Classes() {
     }, [user])
     
     return (
-        <Layout>
+        <Layout breadcrumbs={breadcrumbs}>
             <div className="container max-w-[1000px] flex flex-row flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>

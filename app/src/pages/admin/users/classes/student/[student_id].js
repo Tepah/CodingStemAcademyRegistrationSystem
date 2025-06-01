@@ -16,8 +16,15 @@ export default function StudentClasses() {
     const [user, setUser] = React.useState({});
     const [loading, setLoading] = React.useState(true);
     const studentId = router.query.student_id;
+    const classId = router.query.class_id;
     const [student, setStudent] = React.useState(null);
-    
+    const [crumbs, setCrumbs] = React.useState([
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Classes', href: '/admin/classes' },
+        { name: 'Class Details', href: `/admin/classes/${classId}` },
+        { name: 'Student', href: `/admin/classes/${classId}/student/${studentId}` }
+    ]);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -112,12 +119,21 @@ export default function StudentClasses() {
 
     useEffect(() => {
         if (classes && student){
+            const updatedCrumbs = [
+                { name: 'Home', href: '/dashboard' },
+                { name: 'Users', href: '/admin/users' },
+                { name: 'Students', href: '/admin/users/students' },
+                { name: `${student['first_name']} ${student['last_name']}`, href: `/admin/users/student/${studentId}` },
+                { name: `Classes`, href: `/admin/classes/${classId}/student/${studentId}` }
+            ];
+            setCrumbs(updatedCrumbs);
+            console.log("Updated breadcrumbs:", updatedCrumbs);
             setLoading(false);
         }
     }, [classes, student])
     
     return (
-        <Layout>
+        <Layout breadcrumbs={crumbs}>
             <div className="container mx-auto max-w-[1000px] p-8">
             {loading ? (
                 <div className="flex items-center justify-center h-screen">

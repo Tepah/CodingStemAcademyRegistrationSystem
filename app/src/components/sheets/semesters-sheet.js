@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/sheet"
 import { ModifySemesterForm } from "../forms/semester/edit-form"
 
-export const EditSemesterSheet = ({ children, semesterData }) => {
+export const EditSemesterSheet = ({ children, semesterData, sheetOpen, setSheetOpen }) => {
 
     return (
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             {children}
             <SheetContent>
                 <SheetHeader>
@@ -24,7 +24,7 @@ export const EditSemesterSheet = ({ children, semesterData }) => {
                 </SheetHeader>
                 <SheetContent>
                     <div className="grid gap-4 p-8">
-                        <ModifySemesterForm semester={semesterData} />
+                        <ModifySemesterForm semester={semesterData} onCancel={() => setSheetOpen(false)} />
                     </div>
                 </SheetContent>
             </SheetContent>

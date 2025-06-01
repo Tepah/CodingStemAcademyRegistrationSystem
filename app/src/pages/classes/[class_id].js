@@ -29,6 +29,7 @@ export default function ClassDetails() {
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [totalGrade, setTotalGrade] = useState(null);
+  const [crumbs, setCrumbs] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -122,6 +123,11 @@ export default function ClassDetails() {
                   semester_name: semester ? semester.name : "N/A",
                 });
               });
+              setCrumbs([
+                { name: "Home", href: "/dashboard" },
+                { name: "Classes", href: user.role === "Admin" ? "/admin/classes" : "/classes" },
+                { name: response.data.class ? response.data.class.class_name : "Class Details", href: `/classes/${class_id}` },
+              ])
             });
         } catch (err) {
           console.error("Error fetching class details:", err);
@@ -177,7 +183,7 @@ export default function ClassDetails() {
   }
 
   return (
-    <Layout>
+    <Layout breadcrumbs={crumbs}>
       {loading ? (
         <div className="flex items-center justify-center mx-auto h-screen">loading</div>
       )
