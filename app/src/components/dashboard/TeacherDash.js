@@ -125,7 +125,6 @@ const TeacherDash = () => {
                 <Link href="/classes">View Courses</Link>
                 <Link href="/assignments">View Assignments</Link>
                 <Link href="/calendar">View Calendar</Link>
-                <Link href="/grades">View Grades</Link>
               </ul>
             </CardContent>
           </Card>

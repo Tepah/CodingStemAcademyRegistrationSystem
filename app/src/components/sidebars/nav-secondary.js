@@ -26,7 +26,9 @@ export default function NavSecondary({role = null}) {
         {options.map((option) => (
           <SidebarMenuItem key={option.label}>
             <SidebarMenuButton asChild>
-              {!(role === 'Admin' && option.label === 'Grades' || role === 'Admin' && option.label === 'Assignments') && (
+              {!(role === 'Admin' && option.label === 'Grades' || role === 'Admin' && option.label === 'Assignments' || 
+                role === "Teacher" && option.label === 'Grades'
+              ) && (
               <a href={option.link}>
                 <option.icon />
                 <span>
