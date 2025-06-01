@@ -137,7 +137,10 @@ def get_classes_by_semester():
             val = (classData['teacher_id'], )
             cursor.execute(sql, val)
             teacher = cursor.fetchone()
-            classData['teacher_name'] = teacher['first_name'] + " " + teacher['last_name']
+            if not teacher:
+                classData['teacher_name'] = "N/A"
+            else:
+                classData['teacher_name'] = teacher['first_name'] + " " + teacher['last_name']
             sql = "SELECT * FROM semesters WHERE id = %s"
             val = (classData['semester_id'], )
             cursor.execute(sql, val)
