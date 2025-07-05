@@ -8,11 +8,20 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
 import { ModifyPaymentForm } from "../forms/donation/edit-form"
 
 
 
 export function PaymentModifySheet({ children, paymentData }) {
+  const formRef = React.useRef(null);
+
+  const handleFormSubmit = () => {
+    // Trigger the form's submit function programmatically
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
 
   return (
     <Sheet>
@@ -21,14 +30,17 @@ export function PaymentModifySheet({ children, paymentData }) {
         <SheetHeader>
           <SheetTitle>Edit Payment</SheetTitle>
           <SheetDescription>
-            Make changes to the Payment here. Click save when you&apos;re done.
+            Modify donation details and save changes.
           </SheetDescription>
         </SheetHeader>
-        <SheetContent>
-          <div className="grid gap-4 p-8">
-            <ModifyPaymentForm paymentData={paymentData} />
-          </div>
-        </SheetContent>
+        <div className="flex-grow overflow-y-auto pr-4 my-4 mx-2 border rounded-lg">
+          <ModifyPaymentForm paymentData={paymentData} formRef={formRef} />
+        </div>
+
+        <SheetFooter className="flex flex-row-reverse justify-between mt-auto pt-4">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleFormSubmit}>Save Changes</Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   )

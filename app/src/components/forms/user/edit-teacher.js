@@ -68,8 +68,7 @@ const formSchema = z.object({
     experience: z.string().optional()
 })
 
-
-export default function EditTeacherForm({ teacher, setOpen }) {
+export default function EditTeacherForm({ teacher, setOpen, formRef }) {
     const router = useRouter();
 
     const form = useForm({
@@ -82,6 +81,7 @@ export default function EditTeacherForm({ teacher, setOpen }) {
 
         axios.put(`${config.backendUrl}/users/update`, values).then(response => {
             console.log("Successfully Updated: " + response.data['message']);
+            setOpen(false); // Close the sheet on success
             window.location.reload();
         }).catch(error => {
             console.log(error);
@@ -91,168 +91,164 @@ export default function EditTeacherForm({ teacher, setOpen }) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="first_name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="First Name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="last_name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Last Name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="birth_date"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between">
-                            <FormLabel>Date of Birth</FormLabel>
-                            <FormControl>
-                                <div className="flex space-x-2">
-                                    {/* Month Input */}
-                                    <Input
-                                        type="text"
-                                        placeholder="MM"
-                                        maxLength={2}
-                                        className="w-12 text-center"
-                                        value={String(field.value?.month) || ""}
-                                        onChange={(e) => {
-                                            const month = e.target.value;
-                                            field.onChange({ ...field.value, month });
-                                            if (month.length === 2) {
-                                                dayRef.current.focus();
-                                            }
-                                        }}
-                                    />
-                                    {/* Day Input */}
-                                    <Input
-                                        type="text"
-                                        placeholder="DD"
-                                        maxLength={2}
-                                        className="w-12 text-center"
-                                        value={String(field.value?.day) || ""}
-                                        onChange={(e) => {
-                                            const day = e.target.value;
-                                            field.onChange({ ...field.value, day });
-                                            if (day.length === 2) {
-                                                yearRef.current.focus();
-                                            }
-                                        }}
-                                    />
-                                    {/* Year Input */}
-                                    <Input
-                                        type="text"
-                                        placeholder="YYYY"
-                                        maxLength={4}
-                                        className="w-16 text-center"
-                                        value={String(field.value?.year) || ""}
-                                        onChange={(e) => {
-                                            const year = e.target.value;
-                                            field.onChange({ ...field.value, year });
-                                        }}
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between">
-                            <FormLabel>Gender</FormLabel>
-                            <FormControl>
-                                <Select value={field.value} onValueChange={field.onChange}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select Gender" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Male">Male</SelectItem>
-                                        <SelectItem value="Female">Female</SelectItem>
-                                        <SelectItem value="Other">Other</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Phone</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Phone" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Address</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Address" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="experience"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Experience</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Experience" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className="flex flex-row items-center justify-between mt-4">
-                    <Button type="submit">Submit</Button>
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                        Cancel
-                    </Button>
+            <form ref={formRef} onSubmit={form.handleSubmit(handleUpdate)} className="flex flex-col h-full" >
+                <div className="space-y-8 overflow-y-auto flex-grow px-2 py-4">
+                    <FormField
+                        control={form.control}
+                        name="first_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>First Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="First Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="last_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Last Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Last Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="birth_date"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between">
+                                <FormLabel>Date of Birth</FormLabel>
+                                <FormControl>
+                                    <div className="flex space-x-2">
+                                        {/* Month Input */}
+                                        <Input
+                                            type="text"
+                                            placeholder="MM"
+                                            maxLength={2}
+                                            className="w-12 text-center"
+                                            value={String(field.value?.month) || ""}
+                                            onChange={(e) => {
+                                                const month = e.target.value;
+                                                field.onChange({ ...field.value, month });
+                                                if (month.length === 2) {
+                                                    dayRef.current.focus();
+                                                }
+                                            }}
+                                        />
+                                        {/* Day Input */}
+                                        <Input
+                                            type="text"
+                                            placeholder="DD"
+                                            maxLength={2}
+                                            className="w-12 text-center"
+                                            value={String(field.value?.day) || ""}
+                                            onChange={(e) => {
+                                                const day = e.target.value;
+                                                field.onChange({ ...field.value, day });
+                                                if (day.length === 2) {
+                                                    yearRef.current.focus();
+                                                }
+                                            }}
+                                        />
+                                        {/* Year Input */}
+                                        <Input
+                                            type="text"
+                                            placeholder="YYYY"
+                                            maxLength={4}
+                                            className="w-16 text-center"
+                                            value={String(field.value?.year) || ""}
+                                            onChange={(e) => {
+                                                const year = e.target.value;
+                                                field.onChange({ ...field.value, year });
+                                            }}
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="gender"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between">
+                                <FormLabel>Gender</FormLabel>
+                                <FormControl>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Gender" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Male">Male</SelectItem>
+                                            <SelectItem value="Female">Female</SelectItem>
+                                            <SelectItem value="Other">Other</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Phone</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Phone" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Email" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Address</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Address" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="experience"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Experience</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="Experience" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
             </form>
         </Form>

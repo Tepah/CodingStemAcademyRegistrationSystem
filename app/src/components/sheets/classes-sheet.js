@@ -20,6 +20,7 @@ import { ClassForm } from "@/components/forms/class/edit-form"
 export function ClassModifySheet({ children, classData }) {
   const [semesters, setSemesters] = React.useState([]);
   const [teachers, setTeachers] = React.useState([]);
+  const formRef = React.useRef(null);
 
   const fetchTeachers = async (classesData) => {
     try {
@@ -48,22 +49,30 @@ export function ClassModifySheet({ children, classData }) {
     fetchSemesters();
   }, []);
 
+    const handleFormSubmit = () => {
+        if (formRef.current) {
+            formRef.current.requestSubmit();
+        }
+    };
+
 
   return (
     <Sheet>
       {children}
-      <SheetContent>
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
         <SheetHeader>
-          <SheetTitle>Edit class</SheetTitle>
+          <SheetTitle>Edit Class</SheetTitle>
           <SheetDescription>
-            Make changes to the class here. Click save when you&apos;re done.
+            Modify class details and save changes.
           </SheetDescription>
         </SheetHeader>
-        <SheetContent>
-          <div className="grid gap-4 p-8">
-            <ClassForm classData={classData} semesters={semesters} teachers={teachers} />
-          </div>
-        </SheetContent>
+        <div className="flex-grow overflow-y-auto pr-4 my-4 mx-2 border rounded-lg">
+          <ClassForm classData={classData} semesters={semesters} teachers={teachers} formRef={formRef} />
+        </div>
+        <SheetFooter className="flex flex-row-reverse justify-between mt-auto pt-4">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleFormSubmit}>Save Changes</Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   )
