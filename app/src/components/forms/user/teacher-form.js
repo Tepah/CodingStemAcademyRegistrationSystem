@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useImperativeHandle, forwardRef } from "react"
 import axios from 'axios';
 import config from "@/config";
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -78,11 +78,12 @@ const formSchema = z.object({
 })
 
 
-export default function TeacherRegisterForm({ email }) {
+const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
     const router = useRouter();
     const dayRef = React.useRef(null);
     const monthRef = React.useRef(null);
     const yearRef = React.useRef(null);
+    const [error, setError] = React.useState(null);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -94,7 +95,7 @@ export default function TeacherRegisterForm({ email }) {
                 day: "",
                 year: "",
             },
-            email: email || "",
+            email: "",
             password: "",
             confirm_password: "",
             gender: "",
@@ -110,8 +111,14 @@ export default function TeacherRegisterForm({ email }) {
         },
     })
 
+    useImperativeHandle(ref, () => ({
+        requestSubmit: form.handleSubmit(handleSignUp)
+    }));
+
+
     function handleSignUp(values) {
         // `data` contains the validated form data
+        setLoading(true);
         if (values.password !== values.confirm_password) {
             alert("Passwords do not match");
             return;
@@ -122,13 +129,14 @@ export default function TeacherRegisterForm({ email }) {
         axios.post(`${config.backendUrl}/register`, values).then(response => {
             console.log("Successfully registered: " + response.data['message']);
             if (response.data['access_token']) {
-                localStorage.setItem('token', response.data['access_token']);
-                router.push('/dashboard').then(() => console.log("Redirecting to dashboard..."));
+                router.refresh();
             } else {
+                setLoading(false);
                 throw new Error(response.data['message']);
             }
         }).catch(error => {
             console.log(error);
+            setError(error);
         });
     }
 
@@ -136,7 +144,7 @@ export default function TeacherRegisterForm({ email }) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSignUp)}>
-                <div className="grid space-y-8 grid-cols-1 md:grid-cols-2 gap-x-8">
+                <div className="grid space-y-4 grid-cols-1 lg:grid-cols-2 gap-x-8">
                     <FormField
                         control={form.control}
                         name="first_name"
@@ -327,11 +335,18 @@ export default function TeacherRegisterForm({ email }) {
                             </FormItem>
                         )}
                     />
+
                 </div>
-                <div className="flex flex-col items-center justify-between mt-4">
-                    <Button type="submit">Submit</Button>
-                </div>
+                {error && (
+                    <div className="text-red-500 text-sm mt-2">
+                        {error}
+                    </div>
+                )} 
             </form>
         </Form>
     );
-}
+});
+
+TeacherRegisterForm.displayName = "TeacherRegisterForm";
+
+export default TeacherRegisterForm;

@@ -92,7 +92,7 @@ export function ClassForm({ classData, semesters, teachers, formRef }) {
         <div>
             <Form {...form}>
                 <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full" >
-                    <div className="space-y-8 overflow-y-auto flex-grow px-2 py-4">
+                    <div className="space-y-8 flex-grow px-2 py-4">
                     <FormField
                         control={form.control}
                         name="class_name"
