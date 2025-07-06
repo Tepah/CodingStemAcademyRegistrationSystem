@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import { Button } from "@/components/ui/button"
 import EditStudentForm from "../forms/user/edit-student"
 import EditTeacherForm from "../forms/user/edit-teacher"
+import EditAdminForm from "../forms/user/edit-admin"
 
 export default function EditUserSheet({ children, user, open, onOpenChange }) {
     const [userData, setUserData] = React.useState({});
@@ -53,6 +54,13 @@ export default function EditUserSheet({ children, user, open, onOpenChange }) {
                             student={userData} 
                             setOpen={onOpenChange} 
                             formRef={formRef} 
+                        />
+                    )}
+                    {user.role === 'Admin' && (
+                        <EditAdminForm
+                            admin={userData}
+                            setOpen={onOpenChange}
+                            formRef={formRef}
                         />
                     )}
                 </div>

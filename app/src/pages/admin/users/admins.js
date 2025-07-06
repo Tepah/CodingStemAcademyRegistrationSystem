@@ -7,7 +7,7 @@ import config from "@/config";
 import {DataTable} from "@/components/tables/users/data-table";
 import {columns} from "@/components/tables/users/columns";
 import {Label} from "@/components/ui/label";
-import { TeacherLink } from '@/components/dialogs/NewTeacherDialog';
+import { RegisterAdminDialog } from '@/components/dialogs/NewAdminDialog';
 
 
 export default function Users() {
@@ -64,7 +64,9 @@ export default function Users() {
           <h1 className="text-3xl font-bold">Loading...</h1>
         </div>
       ) : user['role'] === 'Admin' ? (
-        <DataTable columns={columns} data={users} />
+        <DataTable columns={columns} data={users}>
+          <RegisterAdminDialog />
+        </DataTable>
       ) : (
         <div className="text-center">
           <h1 className="text-3xl font-bold">You are not authorized to view this page</h1>
