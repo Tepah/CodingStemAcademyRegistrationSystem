@@ -5,6 +5,8 @@ import SemesterPicker from '@/components/ClassRegistration/semesterPicker';
 import {Layout} from "@/app/layout";
 import ClassPicker from '@/components/ClassRegistration/ClassPicker';
 import Confirmation from '@/components/ClassRegistration/Confirmation';
+import axios from 'axios';
+import config from "@/config";
 
 export default function RegisterClasses() {
   const [currentClasses, setCurrentClasses] = useState([]);
@@ -13,15 +15,19 @@ export default function RegisterClasses() {
   const [semester, setSemester] = useState(null);
   const [loading, setLoading] = useState(true);
   const [donations, setDonations] = useState(0);
+  const [student, setStudent] = useState(null);
 
   const router = useRouter();
   const student_id = router.query.student_id;
+  const [crumbs, setCrumbs] = useState([
+        { name: 'Home', href: '/dashboard' },
+        { name: 'Users', href: '/admin/users' },
+        { name: 'Students', href: '/admin/users/students' },
+        { name: 'Student Details', href: `/admin/students/${student_id}`},
+        { name: `Classes`, href: `/admin/users/classes/student/${student_id}` },
+        { name: 'Register Classes', href: `/admin/students/${student_id}/register-classes` }
+  ]);
   const [step, setStep] = useState(0);
-  const crumbs = [
-    { name: 'Home', href: '/dashboard' },
-    { name: 'Classes', href: '/admin/classes' },
-    { name: 'Register Classes', href: `/admin/users/classes/student/${router.query.student_id}/register-classes` }
-  ];
   
 
   useEffect(() => {
@@ -33,6 +39,39 @@ export default function RegisterClasses() {
     }
     setUser(user);
   }, []);
+
+
+    useEffect(() => {
+        if (!student_id) return;
+        const fetchStudent = async () => {
+            try {
+                const res = await axios.get(`${config.backendUrl}/user`, { params: { id: student_id } });
+                console.log("Fetched student:", res.data);
+                setStudent(res.data["user"]);
+                setCrumbs(prevCrumbs => {
+                    if (user['role'] === 'Teacher') {
+                        const updatedCrumbs = [];
+                        updatedCrumbs.push({ name: 'Home', href: '/dashboard' });
+                        updatedCrumbs.push({ name: 'Classes', href: '/classes' });
+
+                        return updatedCrumbs;
+                    } else {
+                        const updatedCrumbs = [...prevCrumbs];
+                        updatedCrumbs[3] = { name: `${res.data['user'].first_name} ${res.data['user'].last_name}`, href: `/admin/students/${student_id}` };
+
+                        return updatedCrumbs;
+                    }
+                });
+                return res.data["user"];
+            } catch (error) {
+                console.error('Error fetching student:', error);
+            }
+        }
+        if (!user) return;
+        fetchStudent().finally((res) => {
+            setLoading(false);
+        })
+    }, [student_id, user]);
 
   if (user && user.role !== 'Admin') {
     return (

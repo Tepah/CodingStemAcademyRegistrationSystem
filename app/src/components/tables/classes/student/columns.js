@@ -2,6 +2,7 @@
 import { MoreHorizontal, Trash } from "lucide-react" 
 import { Button } from "@/components/ui/button"
 import { deleteStudentFromClass } from "@/components/api/api"
+import { useRouter } from "next/navigation"
 
 
 export const columns = [
@@ -39,9 +40,16 @@ export const columns = [
     id: "actions",
     cell: ({ row }) => {
         const classData = row.original;
+        const router = useRouter();
+
         return (
             <Button 
-                onClick={() => deleteStudentFromClass(classData["id"], classData["student_id"])}
+                onClick={() => 
+                    deleteStudentFromClass(classData["id"], classData["student_id"])
+                    .then(() => {
+                        console.log("Student removed from class successfully");
+                        router.refresh();
+                    })}
                 variant="ghost" 
                 className="h-8 w-8 p-0">
                 <Trash className="h-4 w-4" />
