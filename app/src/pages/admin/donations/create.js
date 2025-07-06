@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import { CreatePaymentForm } from "@/components/forms/donation/form";
 
 export default function CreateDonation() {

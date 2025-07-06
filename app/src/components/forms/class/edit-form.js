@@ -98,7 +98,7 @@ export function ClassForm({ classData, semesters, teachers, formRef }) {
                         name="class_name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Class Name</FormLabel>
+                                <FormLabel>Class Number</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Class Name" {...field} />
                                 </FormControl>

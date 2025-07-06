@@ -72,8 +72,8 @@ export function ClassForm({ semesters, teachers }) {
             console.log("Form data:", data)
             axios.post(`${config.backendUrl}/add-class`, data)
                 .then((response) => {
-                    console.log("Class created:", response.data)
-                    router.push(`/admin/classes/`)
+                    console.log("Class created:", response.data['message'])
+                    router.push('/admin/classes?' + (data.semester_id ? `semester_id=${data.semester_id}` : ''))
                 })
                 .catch((error) => {
                     console.error("Error creating class:", error)
@@ -92,9 +92,9 @@ export function ClassForm({ semesters, teachers }) {
                         name="class_name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Class Name</FormLabel>
+                                <FormLabel>Class Number</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Class Name" {...field} />
+                                    <Input placeholder="Class Number" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

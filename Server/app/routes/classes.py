@@ -313,9 +313,11 @@ def add_class():
         sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
         vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate)
         cursor.execute(sql, vals)
+
+        class_id = cursor.lastrowid
         my_db.commit()
     
-        return jsonify({'message': 'Class has been added successfully'})
+        return jsonify({'message': 'Class has been added successfully', 'id': class_id})
     except Exception as e:
         my_db.rollback()
         return jsonify({'message': 'Error occurred while adding class', 'error': str(e)}), 500

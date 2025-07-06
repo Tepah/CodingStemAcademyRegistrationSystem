@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import config from "@/config";
 import { jwtDecode } from "jwt-decode";
 import {

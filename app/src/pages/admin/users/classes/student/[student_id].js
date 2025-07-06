@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Layout} from "@/app/layout";
+import {Layout} from "@/components/layout/Layout";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";

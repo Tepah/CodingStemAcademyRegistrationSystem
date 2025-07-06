@@ -121,6 +121,7 @@ const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
         setLoading(true);
         if (values.password !== values.confirm_password) {
             alert("Passwords do not match");
+            setLoading(false);
             return;
         }
         values.birth_date = format(new Date(`${values.birth_date.year}-${values.birth_date.month}-${values.birth_date.day}`), 'yyyy-MM-dd');
@@ -136,7 +137,7 @@ const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
             }
         }).catch(error => {
             console.log(error);
-            setError(error);
+            setError("Email already exists or an error occurred during registration.");
         });
     }
 

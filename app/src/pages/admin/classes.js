@@ -1,157 +1,124 @@
-import React, {useEffect} from 'react';
-import {Layout} from "@/app/layout";
-import {jwtDecode} from "jwt-decode";
-import {useRouter} from "next/router";
+import React, { useEffect } from 'react';
+import { Layout } from "@/components/layout/Layout";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/components/tables/classes/data-table";
-import {columns} from "@/components/tables/classes/columns";
-import {Label} from "@/components/ui/label";
+import { DataTable } from "@/components/tables/classes/data-table";
+import { columns } from "@/components/tables/classes/columns";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Classes() {
-    const router = useRouter()
+    const router = useRouter();
     const [classes, setClasses] = React.useState([]);
-    const [semester, setSemester] = React.useState([]);
+    const [semester, setSemester] = React.useState(null);
     const [user, setUser] = React.useState({});
+    const [loading, setLoading] = React.useState(true);
     const breadcrumbs = [
         { name: 'Home', href: '/dashboard' },
         { name: 'Classes', href: '/admin/classes' }
-    ]
-    
+    ];
+
     useEffect(() => {
         const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
         const decodedToken = jwtDecode(token);
         setUser(decodedToken['sub']);
-        console.log("Decoded token:", decodedToken);
-        axios.get(`${config.backendUrl}/current-semester`)
-        .then((response) => {
-            console.log("Current semester:", response.data);
-            setSemester(response.data['semester']);
-        })
-        .catch((error) => {
-            console.error("Error fetching current semester:", error);
-        });
-    }, [router]);
-    
+    }, []);
+
     useEffect(() => {
-        const fetchTeachers = async (classesData) => {
-            const teacherIds = classesData.map((classItem) => classItem['teacher_id']);
-            const uniqueTeacherIds = [...new Set(teacherIds)];
-            const teachers = await Promise.all(uniqueTeacherIds.map(async (teacherId) => {
-                const response = await axios.get(`${config.backendUrl}/user`, {
-                    params: {
-                        id: teacherId
-                    }
+        if (!router.isReady || !user.role) {
+            return;
+        }
+
+        const fetchData = async () => {
+            setLoading(true); 
+            try {
+                const semesterIdFromQuery = router.query.semester_id;
+                let targetSemester;
+
+                if (semesterIdFromQuery) {
+                    const response = await axios.get(`${config.backendUrl}/semester`, { params: { id: semesterIdFromQuery } });
+                    targetSemester = response.data['semester'];
+                } else {
+                    const response = await axios.get(`${config.backendUrl}/current-semester`);
+                    targetSemester = response.data['semester'];
+                }
+                setSemester(targetSemester);
+
+                const classesResponse = await axios.get(`${config.backendUrl}/classes`);
+                let classesData = classesResponse.data['classes'] || [];
+
+                if (classesData.length === 0) {
+                    setClasses([]);
+                    setLoading(false);
+                    return;
+                }
+
+                const teacherIds = [...new Set(classesData.map(c => c.teacher_id).filter(Boolean))];
+                const semesterIds = [...new Set(classesData.map(c => c.semester_id).filter(Boolean))];
+
+                const teacherPromises = teacherIds.map(id => axios.get(`${config.backendUrl}/user`, { params: { id } }));
+                const semesterPromises = semesterIds.map(id => axios.get(`${config.backendUrl}/semester`, { params: { id } }));
+                const studentCountPromises = classesData.map(c => axios.get(`${config.backendUrl}/student-count`, { params: { class_id: c.id } }));
+
+                const [teacherResponses, semesterResponses, studentCountResponses] = await Promise.all([
+                    Promise.all(teacherPromises),
+                    Promise.all(semesterPromises),
+                    Promise.all(studentCountPromises)
+                ]);
+
+                const teachersMap = new Map(teacherResponses.map(res => [res.data.user.id, res.data.user]));
+                const semestersMap = new Map(semesterResponses.map(res => [res.data.semester.id, res.data.semester]));
+                const studentCountsMap = new Map(studentCountResponses.map((res, i) => [classesData[i].id, res.data.student_count]));
+
+                const enrichedClasses = classesData.map(classItem => {
+                    const teacher = teachersMap.get(classItem.teacher_id);
+                    const classSemester = semestersMap.get(classItem.semester_id);
+                    return {
+                        ...classItem,
+                        teacher_name: teacher ? `${teacher.first_name} ${teacher.last_name}` : 'N/A',
+                        student_count: studentCountsMap.get(classItem.id) || 0,
+                        semester: classSemester ? classSemester.name : 'N/A',
+                    };
                 });
-                return response.data['user'];
-            }));
-            console.log("Fetched teachers:", teachers);
-            return teachers;
+
+                setClasses(enrichedClasses);
+
+            } catch (error) {
+                console.error("Failed to fetch class data:", error);
+                setClasses([]); 
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        if (user.role === 'Admin') {
+            fetchData();
         }
 
-        const fetchSemesters = async (classesData) => {
-            const semesterIds = classesData.map((classItem) => classItem['semester_id']);
-            const uniqueSemesterIds = [...new Set(semesterIds)];
-            const semesters = await Promise.all(uniqueSemesterIds.map(async (semesterId) => {
-                const response = await axios.get(`${config.backendUrl}/semester`, {
-                    params: {
-                        id: semesterId
-                    }
-                });
-                return response.data['semester'];
-            }));
-            console.log("Fetched semesters:", semesters);
-            return semesters;
-        }
+    }, [user, router.isReady, router.query]);
 
-        const fetchStudentCount = async (classesData) => {
-            const updatedClasses = await Promise.all(
-                classesData.map(async (classItem) => {
-                    try {
-                        const response = await axios.get(`${config.backendUrl}/student-count`, {
-                            params: {
-                                class_id: classItem['id']
-                            }
-                        });
-                        classItem['student_count'] = response.data['student_count'];
-                    } catch (error) {
-                        console.error("Error fetching student count:", error);
-                        classItem['student_count'] = 0; // Fallback value if the request fails
-                    }
-                    return classItem;
-                })
-            );
-            return updatedClasses;
-        }   
-
-        const fetchClasses = async () => {
-            axios.get(`${config.backendUrl}/classes`)
-                .then((response) => {
-                console.log(response.data);
-                let classData = response.data['classes'];
-                fetchTeachers(classData).then((teachers) => {
-                    const updatedClasses = classData.map((classItem) => {
-                      if (!classItem['teacher_id']) {
-                          return {
-                              ...classItem,
-                              teacher_name: 'N/A'
-                          };
-                      }
-                        const teacher = teachers.find((teacher) => teacher && teacher.id === classItem['teacher_id']);
-                        return {
-                            ...classItem,
-                            teacher_name: teacher ? `${teacher.first_name} ${teacher.last_name}` : 'N/A'
-                        };
-                    });
-
-                    console.log("Updated classes:", updatedClasses);
-
-                    fetchSemesters(updatedClasses).then((semesters) => {
-                        const semUpdatedClasses = updatedClasses.map((classItem) => {
-                            const semester = semesters.find((semester) => semester.id === classItem['semester_id']);
-                            return {
-                                ...classItem,
-                                semester: semester ? semester.name : 'N/A'
-                            };
-                        });
-                        fetchStudentCount(semUpdatedClasses)
-                            .then((data) => {
-                                console.log("Fetched student count:", data);
-                                setClasses(data);
-                            })
-                            .catch((error) => {
-                                console.error("Error fetching student count:", error);
-                            });
-                        }
-                    );
-                })
-                .catch((error) => {
-                console.error("Error fetching classes:", error);
-                });
-            })
-        }
-        if (user['role'] === 'Admin') {
-            console.log("Fetching classes");
-            fetchClasses().then(() => console.log("Fetched classes"));
-        }
-    }, [user])
-    
     return (
         <Layout breadcrumbs={breadcrumbs}>
-            <div className="container max-w-[1000px] flex flex-row flex-1 mx-auto p-12">
-              { user['role'] === 'Admin' ? (
-                <div>
-                    <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">Manage Classes</h1>
-                    </Label>
-                    <DataTable columns={columns} data={classes} semester={semester.name} />
-                </div>
-            ) : (
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold">You are not authorized to view this page</h1>
-                </div>
-            )}
+            <div className="container max-w-[1000px] flex flex-1 mx-auto p-12">
+                {user['role'] === 'Admin' ? (
+                    <div>
+                        <Label className="flex flex-row">
+                            <h1 className="text-3xl font-bold">Manage Classes</h1>
+                        </Label>
+                        <DataTable columns={columns} data={classes} semester={semester?.name} />
+                    </div>
+                ) : (
+                    <div className="text-center">
+                        <h1 className="text-3xl font-bold">You are not authorized to view this page</h1>
+                    </div>
+                )}
             </div>
         </Layout>
-    )
+    );
 }

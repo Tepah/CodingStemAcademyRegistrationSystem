@@ -31,7 +31,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span>Class</span>
+                    <span>Class Number</span>
                 </Button>
             )
         }
