@@ -9,7 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { ModifyPaymentForm } from "../forms/donation/edit-form"
+import { ModifyPaymentForm } from "../forms/payment/edit-form"
 
 
 

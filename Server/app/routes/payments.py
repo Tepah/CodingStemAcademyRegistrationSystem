@@ -38,8 +38,8 @@ def create_payment():
     data = request.get_json()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "INSERT INTO payments (amount, notes, payment_date, payment_type, status, student_id) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (data['amount'], data['notes'], data['payment_date'], data['payment_type'], data['status'], data['student_id']))
+        sql = "INSERT INTO payments (amount, notes, payment_date, payment_type, status, student_id, payment_method) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (data['amount'], data['notes'], data['payment_date'], data['payment_type'], data['status'], data['student_id'], data['payment_method']))
         db.commit()
     finally:
         db.close()
@@ -53,8 +53,8 @@ def update_payment():
     data = request.get_json()
     try:
         cursor = db.cursor(dictionary=True)
-        sql = "UPDATE payments SET amount = %s, notes = %s, payment_date = %s, payment_type = %s, status = %s WHERE id = %s"
-        cursor.execute(sql, (data['amount'], data['notes'], data['payment_date'], data['payment_type'], data['status'], data['id']))
+        sql = "UPDATE payments SET amount = %s, notes = %s, payment_date = %s, payment_type = %s, status = %s, payment_method = %s WHERE id = %s"
+        cursor.execute(sql, (data['amount'], data['notes'], data['payment_date'], data['payment_type'], data['status'], data['payment_method'], data['id']))
         db.commit()
     finally:
         db.close()

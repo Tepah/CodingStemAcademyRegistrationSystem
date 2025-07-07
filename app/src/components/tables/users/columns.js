@@ -144,7 +144,7 @@ function ActionsCell({ user }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`donations/${user.id}`}>
+                <Link href={`payments/${user.id}`}>
                   Manage Payments
                 </Link>
               </DropdownMenuItem>

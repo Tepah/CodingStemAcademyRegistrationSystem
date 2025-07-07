@@ -19,7 +19,8 @@ const paymentSchema = z.object({
     status: z.enum(["Compete", "Refund", "Balance"]),
     notes: z.string().optional(),
     payment_date: z.date(),
-    payment_type: z.enum(["cash", "check", "zelle"]),
+    payment_type: z.enum(["Donation", "Tuition", "Misc"]),
+    payment_method: z.enum(["Cash", "Check", "Online"])
 })
 
 export function ModifyPaymentForm({ children, paymentData, formRef }) {
@@ -32,7 +33,8 @@ export function ModifyPaymentForm({ children, paymentData, formRef }) {
             status: paymentData.status || "",
             notes: paymentData.notes || "",
             payment_date: new Date(paymentData.payment_date).toISOString().split("T")[0] || "",
-            payment_type: paymentData.payment_type || ""
+            payment_type: paymentData.payment_type || "",
+            payment_method: paymentData.payment_method || ""
         }
     })
 
@@ -106,7 +108,7 @@ export function ModifyPaymentForm({ children, paymentData, formRef }) {
                         name="payment_date"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Donation Date</FormLabel>
+                                <FormLabel>Payment Date</FormLabel>
                                 <FormControl>
                                     <Input type="date" {...field} />
                                 </FormControl>
@@ -119,21 +121,47 @@ export function ModifyPaymentForm({ children, paymentData, formRef }) {
                         name="payment_type"
                         render={({ field }) => (
                             <FormItem className="flex flex-row justify-between">
-                                <FormLabel>Donation Type</FormLabel>
+                                <FormLabel>Payment Type</FormLabel>
                                 <FormControl>
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select donation type" />
+                                            <SelectValue placeholder="Select payment type" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="cash">Cash</SelectItem>
-                                                <SelectItem value="check">Check</SelectItem>
-                                                <SelectItem value="zelle">Zelle</SelectItem>
+                                                <SelectItem value="Tuition">Tuition</SelectItem>
+                                                <SelectItem value="Donation">Donation</SelectItem>
+                                                <SelectItem value="Misc">Miscellaneous</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="payment_method"
+                        render={({ field }) => (
+                            <FormItem>
+                            <div className="flex flex-row justify-between">
+                                <FormLabel>Payment Method</FormLabel>
+                                <FormControl>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select payment method" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="Cash">Cash</SelectItem>
+                                                <SelectItem value="Check">Check</SelectItem>
+                                                <SelectItem value="Online">Online</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
