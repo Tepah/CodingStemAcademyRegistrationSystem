@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import { jwtDecode } from "jwt-decode";
 import SingleGradeTable from "@/components/tables/grades/singleGradeTable";
 import axios from "axios";

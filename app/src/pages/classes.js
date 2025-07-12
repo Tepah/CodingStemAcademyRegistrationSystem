@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import { jwtDecode } from "jwt-decode";
 import { Separator } from '@/components/ui/separator';
 import { getAllClassesForStudent, getSemester, getUser } from '@/components/api/api';

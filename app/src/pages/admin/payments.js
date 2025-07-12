@@ -1,20 +1,20 @@
 import React, {useEffect} from 'react';
-import {Layout} from "@/app/layout";
+import {Layout} from "@/components/layout/Layout";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
-import {DataTable} from "@/components/tables/donations/data-table-all";
-import {columns} from "@/components/tables/donations/columns";
+import {DataTable} from "@/components/tables/payments/data-table-all";
+import {columns} from "@/components/tables/payments/columns";
 import {Label} from "@/components/ui/label";
 
-export default function Donations() {
+export default function Payments() {
     const router = useRouter()
     const [payments, setPayments] = React.useState([]);
     const [user, setUser] = React.useState({});
     const crumbs = [
         { name: 'Home', href: '/dashboard' },
-        { name: 'Donations', href: '/admin/donations' }
+        { name: 'Payments', href: '/admin/payments' }
     ];
     
     useEffect(() => {
@@ -88,11 +88,11 @@ export default function Donations() {
     
     return (
         <Layout breadcrumbs={crumbs}>
-            <div className="container max-w-[1000px] flex flex-col flex-1 mx-auto p-12">
+            <div className="container max-w-[1200px] flex flex-col flex-1 mx-auto p-12">
               { user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">Manage Donations</h1>
+                        <h1 className="text-3xl font-bold">Manage Payments</h1>
                     </Label>
                     { payments && (
                         <DataTable columns={columns} data={payments} />

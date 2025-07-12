@@ -51,15 +51,6 @@ export default function Confirmation(props) {
             }))
         });
 
-        promises.push(axios.post(`${config.backendUrl}/payment`, {
-            student_id: student_id,
-            amount: props.donations,
-            notes: "Class registration",
-            payment_date: new Date().toISOString(),
-            payment_type: "Cash",
-            payment_status: "Balance",
-        }))
-
         Promise.all(promises).then(() => {
             console.log("All class registrations completed successfully.");
             props.setLoading(false);
@@ -124,7 +115,7 @@ export default function Confirmation(props) {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button onClick={() => {router.push(`/admin/classes/student/${props.student_id}`)}}>Okay</Button>
+                        <Button onClick={() => {router.push(`/admin/users/classes/student/${props.student_id}`)}}>Okay</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

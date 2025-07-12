@@ -51,7 +51,7 @@ function convertTo24HourFormat(time) {
     return `${hours}:${minutes}`;
 }
 
-export function ClassForm({ classData, semesters, teachers }) {
+export function ClassForm({ classData, semesters, teachers, formRef }) {
     console.log("Class data:", classData)
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -91,13 +91,14 @@ export function ClassForm({ classData, semesters, teachers }) {
     return (
         <div>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full" >
+                    <div className="space-y-8 flex-grow px-2 py-4">
                     <FormField
                         control={form.control}
                         name="class_name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Class Name</FormLabel>
+                                <FormLabel>Class Number</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Class Name" {...field} />
                                 </FormControl>
@@ -263,11 +264,6 @@ export function ClassForm({ classData, semesters, teachers }) {
                             </FormItem>
                         )}
                     />
-                    <div className="flex flex-row justify-between">
-                    <Button type="submit">Save Class</Button>
-                    <SheetClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </SheetClose>
                     </div>
                 </form>
             </Form>

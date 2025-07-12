@@ -69,7 +69,7 @@ const studentSchema = z.object({
   grade_level: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]),
 });
 
-export default function EditStudentForm({ student, setOpen }) {
+export default function EditStudentForm({ student, setOpen, formRef }) {
   const gradeLevels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
   const form = useForm({
@@ -84,15 +84,15 @@ export default function EditStudentForm({ student, setOpen }) {
     axios.put(`${config.backendUrl}/users/update`, data)
       .then((response) => {
         console.log("Form submitted successfully:", data);
+        setOpen(false);
         window.location.reload();
       });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <ScrollArea className="h-[500px] w-full py-4 px-2 border rounded">
-          <div className="space-y-8">
+      <form ref={formRef} onSubmit={form.handleSubmit(handleSubmit)}>
+          <div className="flex-grow w-full py-4 px-2 space-y-8">
             <FormField
               control={form.control}
               name="first_name"
@@ -335,17 +335,6 @@ export default function EditStudentForm({ student, setOpen }) {
               )}
             />
           </div>
-        </ScrollArea>
-
-
-        <SheetFooter>
-          <div className="flex flex-row items-center justify-between">
-            <Button type="submit">Save Changes</Button>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-          </div>
-        </SheetFooter>
       </form>
     </Form>
   );

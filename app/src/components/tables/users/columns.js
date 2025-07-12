@@ -144,7 +144,7 @@ function ActionsCell({ user }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`donations/${user.id}`}>
+                <Link href={`payments/${user.id}`}>
                   Manage Payments
                 </Link>
               </DropdownMenuItem>
@@ -169,7 +169,16 @@ function ActionsCell({ user }) {
                 Delete Teacher
               </DropdownMenuItem>
             </div>
-          ) : null}
+          ) : (
+            <div>
+              <DropdownMenuItem onClick={() => setSheetOpen(true)}>
+                Modify Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                Delete Admin
+              </DropdownMenuItem>
+            </div>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

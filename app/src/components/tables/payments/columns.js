@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { PaymentModifySheet } from "@/components/sheets/donation-sheet"
+import { PaymentModifySheet } from "@/components/sheets/payment-sheet"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { deletePayment } from "@/components/api/api"
 
@@ -20,7 +20,7 @@ export const columns = [
         accessorKey: "last_name",
         header: ({ column }) => {
             return (
-                <Button className="w-[80px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     <span>Last Name</span>
                 </Button>
             )
@@ -35,7 +35,7 @@ export const columns = [
         accessorKey: "first_name",
         header: ({ column }) => {
             return (
-                <Button className="w-[80px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     <span>First Name</span>
                 </Button>
             )
@@ -49,7 +49,7 @@ export const columns = [
         accessorKey: "amount",
         header: ({ column }) => {
             return (
-                <Button className="w-[80px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     <span>Amount</span>
                 </Button>
             )
@@ -64,31 +64,50 @@ export const columns = [
         }
     },
     {
+        accessorKey: "payment_method",
+        header: ({ column }) => {
+            return (
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    <span className="text-center">Payment Method</span>
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            return <div className="text-center">{row.original.payment_method || "N/A"}</div>;
+        }
+    },
+    {
         accessorKey: "status",
         header: ({ column }) => {
             return (
-                <Button className="w-[60px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     <span>Status</span>
                 </Button>
             )
+        },
+        cell: ({ row }) => {
+            return <div className="text-center">{row.original.status || "N/A"}</div>;
         }
     },
     {
         accessorKey: "notes",
         header: ({ column }) => {
             return (
-                <Button className="w-[100px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
                     <span>Notes</span>
                 </Button>
             )
+        },
+        cell: ({ row }) => {
+            return <div className="text-center">{row.original.notes || "N/A"}</div>;
         }
     },
     {
         accessorKey: "payment_date",
         header: ({ column }) => {
             return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span>Donation Date</span>
+                <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    <span>Payment Date</span>
                 </Button>
             )
         },
@@ -111,7 +130,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button className="w-[80px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span>Donation Type</span>
+                    <span>Payment Type</span>
                 </Button>
             )
         },
@@ -137,7 +156,7 @@ export const columns = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <SheetTrigger>Modify Donation</SheetTrigger>
+                            <SheetTrigger>Modify Payment</SheetTrigger>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => 
                             deletePayment(paymentData.id)
@@ -149,7 +168,7 @@ export const columns = [
                                 console.error("Error deleting payment:", error);
                             } )
                         }>
-                            Delete Donation
+                            Delete Payment
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
