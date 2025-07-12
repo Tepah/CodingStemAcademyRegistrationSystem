@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import StudentGrade from '@/components/grades/StudentGrade';
 import TeacherGrade from "@/components/grades/TeacherGrade";
 import { useRouter } from 'next/router';

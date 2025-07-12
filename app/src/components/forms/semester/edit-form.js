@@ -28,7 +28,7 @@ const semesterSchema = z.object({
     }
 })
 
-export const ModifySemesterForm = ({ semester, onCancel }) => {
+export const ModifySemesterForm = ({ semester, onCancel, formRef }) => {
     console.log("Semester data:", semester);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,104 +63,98 @@ export const ModifySemesterForm = ({ semester, onCancel }) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Semester Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Semester Name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+            <form ref={formRef} onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full" >
+                <div className="space-y-8 overflow-y-auto flex-grow px-2 py-4">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Semester Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Semester Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <FormField
-                    control={form.control}
-                    name="start_date"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-row justify-between">
-                                <FormLabel>Start Date</FormLabel>
-                                <FormControl>
-                                    <Input className="w-[150px]" type="date" {...field} />
-                                </FormControl>
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    <FormField
+                        control={form.control}
+                        name="start_date"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-row justify-between">
+                                    <FormLabel>Start Date</FormLabel>
+                                    <FormControl>
+                                        <Input className="w-[150px]" type="date" {...field} />
+                                    </FormControl>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <FormField
-                    control={form.control}
-                    name="end_date"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-row justify-between">
-                                <FormLabel>End Date</FormLabel>
+                    <FormField
+                        control={form.control}
+                        name="end_date"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-row justify-between">
+                                    <FormLabel>End Date</FormLabel>
+                                    <FormControl>
+                                        <Input className="w-[150px]" type="date" {...field} />
+                                    </FormControl>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row justify-between">
+                                <FormLabel>Status</FormLabel>
                                 <FormControl>
-                                    <Input className="w-[150px]" type="date" {...field} />
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select status">
+                                                {field.value || "Status"}
+                                            </SelectValue>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="Upcoming">Upcoming</SelectItem>
+                                                <SelectItem value="Ongoing">Ongoing</SelectItem>
+                                                <SelectItem value="Complete">Complete</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </FormControl>
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row justify-between">
-                            <FormLabel>Status</FormLabel>
-                            <FormControl>
-                                <Select value={field.value} onValueChange={field.onChange}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select status">
-                                            {field.value || "Status"}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="Upcoming">Upcoming</SelectItem>
-                                            <SelectItem value="Ongoing">Ongoing</SelectItem>
-                                            <SelectItem value="Complete">Complete</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="rate"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-row justify-between">
-                                <FormLabel>Rate</FormLabel>
-                                <FormControl>
-                                    <Input className="w-[100px]" type="number" placeholder="Rate" {...field}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value, 10);
-                                        field.onChange(value);
-                                    }} />
-                                </FormControl>
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className="flex flex-row justify-between">
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Saving..." : "Save"}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => onCancel()}>
-                        Cancel
-                    </Button>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="rate"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-row justify-between">
+                                    <FormLabel>Rate</FormLabel>
+                                    <FormControl>
+                                        <Input className="w-[100px]" type="number" placeholder="Rate" {...field}
+                                            onChange={(e) => {
+                                                const value = parseInt(e.target.value, 10);
+                                                field.onChange(value);
+                                            }} />
+                                    </FormControl>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
             </form>
         </Form>

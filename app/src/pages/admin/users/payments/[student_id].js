@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { DataTable } from "@/components/tables/donations/data-table";
-import { columns } from "@/components/tables/donations/columns-ex";
-import { Layout } from "@/app/layout";
+import { DataTable } from "@/components/tables/payments/data-table";
+import { columns } from "@/components/tables/payments/columns-ex";
+import { Layout } from "@/components/layout/Layout";
 import { getUser, getPaymentsForStudent } from "@/components/api/api";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

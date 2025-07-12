@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Layout} from "@/app/layout";
+import {Layout} from "@/components/layout/Layout";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
@@ -16,13 +16,13 @@ export default function StudentClasses() {
     const [user, setUser] = React.useState({});
     const [loading, setLoading] = React.useState(true);
     const studentId = router.query.student_id;
-    const classId = router.query.class_id;
     const [student, setStudent] = React.useState(null);
     const [crumbs, setCrumbs] = React.useState([
-        { name: 'Home', href: '/dashboard' },
-        { name: 'Classes', href: '/admin/classes' },
-        { name: 'Class Details', href: `/admin/classes/${classId}` },
-        { name: 'Student', href: `/admin/classes/${classId}/student/${studentId}` }
+                { name: 'Home', href: '/dashboard' },
+                { name: 'Users', href: '/admin/users' },
+                { name: 'Students', href: '/admin/users/students' },
+                { name: `Student Details`, href: `/admin/users/student/${studentId}` },
+                { name: `Classes`, href: `/admin/users/classes/student/${studentId}` }
     ]);
 
     useEffect(() => {
@@ -124,7 +124,7 @@ export default function StudentClasses() {
                 { name: 'Users', href: '/admin/users' },
                 { name: 'Students', href: '/admin/users/students' },
                 { name: `${student['first_name']} ${student['last_name']}`, href: `/admin/users/student/${studentId}` },
-                { name: `Classes`, href: `/admin/classes/${classId}/student/${studentId}` }
+                { name: `Classes`, href: `/admin/users/classes/student/${studentId}` }
             ];
             setCrumbs(updatedCrumbs);
             console.log("Updated breadcrumbs:", updatedCrumbs);

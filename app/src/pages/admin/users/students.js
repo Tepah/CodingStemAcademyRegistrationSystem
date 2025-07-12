@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Layout} from "@/app/layout";
+import {Layout} from "@/components/layout/Layout";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 import axios from "axios";
@@ -7,7 +7,7 @@ import config from "@/config";
 import {DataTable} from "@/components/tables/users/data-table";
 import {columns} from "@/components/tables/users/columns";
 import {Label} from "@/components/ui/label";
-import { TeacherLink } from '@/components/dialogs/TeacherLink';
+import { TeacherLink } from '@/components/dialogs/NewTeacherDialog';
 
 
 export default function Users() {

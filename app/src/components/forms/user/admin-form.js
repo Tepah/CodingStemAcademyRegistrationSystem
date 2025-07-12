@@ -22,7 +22,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -74,11 +73,10 @@ const formSchema = z.object({
         message: "Address is required",
     }),
     role: z.enum(["Student", "Admin", "Teacher"]),
-    experience: z.string().optional()
 })
 
 
-const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
+const AdminRegisterForm = forwardRef(({ setLoading }, ref) => {
     const router = useRouter();
     const dayRef = React.useRef(null);
     const monthRef = React.useRef(null);
@@ -105,7 +103,7 @@ const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
             guardian_phone: null,
             health_ins: null,
             health_ins_number: null,
-            role: "Teacher",
+            role: "Admin",
             grade_level: null,
             experience: "",
         },
@@ -323,20 +321,6 @@ const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
                         )}
                     />
 
-                    <FormField
-                        control={form.control}
-                        name="experience"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Experience</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Experience" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
                 </div>
                 {error && (
                     <div className="text-red-500 text-sm mt-2">
@@ -348,6 +332,6 @@ const TeacherRegisterForm = forwardRef(({ setLoading }, ref) => {
     );
 });
 
-TeacherRegisterForm.displayName = "TeacherRegisterForm";
+AdminRegisterForm.displayName = "AdminRegisterForm";
 
-export default TeacherRegisterForm;
+export default AdminRegisterForm;

@@ -118,7 +118,7 @@ export function DataTable({ children, columns, data }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 py-4">
         <Button 
           variant="default"
           size="sm"
@@ -141,7 +141,7 @@ export function DataTable({ children, columns, data }) {
         </Button>
 
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row items-center  gap-2">
           {children}
           <span className="text-sm">
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}

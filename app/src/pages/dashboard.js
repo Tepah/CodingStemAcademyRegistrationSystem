@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode'
 import StudentDash from "@/components/dashboard/StudentDash";
 import TeacherDash from "@/components/dashboard/TeacherDash";
 import AdminDash from "@/components/dashboard/AdminDash";
-import {Layout, LayoutWithCalendar} from "@/app/layout";
+import {Layout, LayoutWithCalendar} from "@/components/layout/Layout";
 
 export default function Dashboard() {
   const [role, setRole] = useState('');

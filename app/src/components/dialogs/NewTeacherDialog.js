@@ -1,51 +1,62 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogDescription, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import React, { useEffect, useState, useRef } from "react";
+import { Dialog, DialogClose, DialogDescription, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
+import RegisterTeacherForm from "@/components/forms/user/teacher-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { postTeacherInvite } from "../api/api";
 import QRCodeGenerator from "../ui/QRCodeGenerator";
 
-export const TeacherLink = ({ children, teacherData }) => {
-    const [email, setEmail] = useState("");
+export const RegisterTeacherDialog = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [link, setLink] = useState(null);
+    const formRef = useRef(null);
 
-    const handleCreateLink = async () => {
-        setLoading(true);
-        postTeacherInvite(email).then((response) => {
-            console.log(response);
-            const baseUrl = window.location.origin;
-            setLink(`${baseUrl}/register-teacher?token=${response['invite_id']}`);
-            setLoading(false);
-        }).catch((error) => {
-            console.error("Error creating teacher invite:", error);
-            setLoading(false);
-        });
+    const handleSubmit = () => {
+        if (formRef.current) {
+            formRef.current.requestSubmit();
+        }
     }
     
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="default" size="sm" className="">
-                    Create Teacher link
+                    Create Teacher
                 </Button>
             </DialogTrigger>
-            {loading ? (
+            <DialogContent className="md:max-w-[90vh] lg:max-w-[80vh] h-screen md:h-[90vh] lg:h-[50vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>Register Teacher</DialogTitle>
+                </DialogHeader>
+                <div className="flex-grow overflow-y-auto min-h-0 px-2">
+                    <RegisterTeacherForm ref={formRef} setLoading={setLoading} />
+                </div>
+                <DialogFooter>
+                    <div className="flex flex-row-reverse gap-4 mt-auto">
+                        <Button size="sm" variant="outline" onClick={() => setLink(null)}>
+                            <DialogClose>Cancel</DialogClose>
+                        </Button>
+                        <Button size="sm" onClick={handleSubmit} disabled={loading}>
+                            {loading ? "Creating..." : "Register"}
+                        </Button>
+                    </div>
+                </DialogFooter>
+            </DialogContent>
+            {/*{loading ? (
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Creating Teacher Link</DialogTitle>
+                        <DialogTitle>Creating Teacher</DialogTitle>
                     </DialogHeader>
                     <div>
                         <p className="text-center text-sm p-2">
-                            Creating a link for the teacher to sign up. Please wait...
+
                         </p>
                     </div>
                 </DialogContent>
             ) : link ? (
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Teacher Link</DialogTitle>
+                        <DialogTitle></DialogTitle>
                         <DialogDescription>
                             Copy and Paste the link below to send to the teacher to sign up.
                         </DialogDescription>
@@ -79,7 +90,7 @@ export const TeacherLink = ({ children, teacherData }) => {
                     <Button onClick={handleCreateLink}>Create Link</Button>
                 </DialogFooter>
             </DialogContent>
-            )}
+            )} */}
         </Dialog>
     )
 }

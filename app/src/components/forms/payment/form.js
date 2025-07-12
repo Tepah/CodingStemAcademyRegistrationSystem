@@ -27,7 +27,8 @@ const paymentSchema = z.object({
     status: z.enum(["Complete", "Refund", "Balance"]),
     notes: z.string().optional(),
     payment_date: z.string(),
-    payment_type: z.enum(["cash", "check", "zelle"]),
+    payment_type: z.enum(["Donation", "Tuition", "Misc"]),
+    payment_method: z.enum(["Cash", "Check", "Online"])
 })
 
 export function CreatePaymentForm({ children, student_id = null }) {
@@ -43,7 +44,8 @@ export function CreatePaymentForm({ children, student_id = null }) {
             status: "",
             notes: "",
             payment_date: "",
-            payment_type: ""
+            payment_type: "",
+            payment_method: ""
         }
     })
 
@@ -60,9 +62,9 @@ export function CreatePaymentForm({ children, student_id = null }) {
             const response = await axios.post(`${config.backendUrl}/payment`, data)
             console.log(response.data)
             if (!student_id) {
-                router.push("/admin/donations");
+                router.push("/admin/payments");
             } else {
-                router.push(`/admin/users/donations/${student_id}`);
+                router.push(`/admin/users/payments/${student_id}`);
             }
         } catch (error) {
             console.error(error)
@@ -170,7 +172,7 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                                <FormLabel>Donation Date</FormLabel>
+                                <FormLabel>Payment Date</FormLabel>
                                 <FormControl>
                                     <Input type="date" className="w-1/3" {...field} />
                                 </FormControl>
@@ -185,21 +187,48 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                                <FormLabel>Donation Type</FormLabel>
+                                <FormLabel>Payment Type</FormLabel>
                                 <FormControl>
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select donation type" />
+                                            <SelectValue placeholder="Select payment type" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="cash">Cash</SelectItem>
-                                                <SelectItem value="check">Check</SelectItem>
-                                                <SelectItem value="zelle">Zelle</SelectItem>
+                                                <SelectItem value="Tuition">Tuition</SelectItem>
+                                                <SelectItem value="Donation">Donation</SelectItem>
+                                                <SelectItem value="Misc">Miscellaneous</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="payment_method"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-row justify-between">
+                            <FormLabel>Payment Method</FormLabel>
+                            <FormControl>
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select payment method" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value="Cash">Cash</SelectItem>
+                                            <SelectItem value="Check">Check</SelectItem>
+                                            <SelectItem value="Online">Online</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
                             </div>
                             <FormMessage />
                         </FormItem>

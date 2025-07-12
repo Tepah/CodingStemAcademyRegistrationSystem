@@ -1,4 +1,4 @@
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -277,4 +277,4 @@ function ReplyBox({ message }) {
       <Button className="max-w-[100px]" onClick={handleReply}>Send Reply</Button>
     </div>
   )
-} 
+}

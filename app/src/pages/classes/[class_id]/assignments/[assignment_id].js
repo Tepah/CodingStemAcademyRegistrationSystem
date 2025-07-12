@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";

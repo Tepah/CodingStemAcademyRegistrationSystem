@@ -7,7 +7,7 @@ from .routes.assignments import assignments_bp
 from .routes.class_students import class_students_bp
 from .routes.scores import scores_bp
 from .routes.semesters import semesters_bp
-from .routes.donations import payments_bp
+from .routes.payments import payments_bp
 from .routes.messages import messages_bp
 
 

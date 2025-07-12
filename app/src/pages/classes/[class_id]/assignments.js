@@ -1,4 +1,4 @@
-import { Layout } from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

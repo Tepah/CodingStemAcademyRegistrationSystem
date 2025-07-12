@@ -7,7 +7,7 @@ import config from "@/config";
 import {DataTable} from "@/components/tables/users/data-table";
 import {columns} from "@/components/tables/users/columns";
 import {Label} from "@/components/ui/label";
-import { TeacherLink } from '@/components/dialogs/TeacherLink';
+import { RegisterTeacherDialog } from '@/components/dialogs/NewTeacherDialog';
 
 
 export default function Users() {
@@ -65,7 +65,7 @@ export default function Users() {
         </div>
       ) : user['role'] === 'Admin' ? (
         <DataTable columns={columns} data={users}>
-          <TeacherLink />
+          <RegisterTeacherDialog />
         </DataTable>
       ) : (
         <div className="text-center">
