@@ -54,7 +54,7 @@ export default function Assignments() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Assignments</h1>
           {user && user.role === "Teacher" && (
-            <Link href={`/assignments/choose_class`}>
+            <Link href={`/assignments/create`}>
               <Button variant="default">Make Assignment</Button>
             </Link>
           )}
