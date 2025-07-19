@@ -188,10 +188,11 @@ export default function ClassDetails() {
         <div className="flex items-center justify-center mx-auto h-screen">loading</div>
       )
         : (
-          <div className="max-w-[900px] container flex flex-1 flex-col mx-auto space-y-8 p-8">
+          <div className={`max-w-[900px] container flex flex-1 flex-col mx-auto space-y-8 p-8`}>
             <h1 className="text-3xl font-bold mb-6">Class Details</h1>
-            <Card className="">
-              <CardHeader className="w-[400px]">
+            <div className="flex flex-row gap-4">
+            <Card className="max-w-[600px] flex-3">
+              <CardHeader className="max-w-[400px]">
                 <CardTitle className="@[250px]/card:text-4xl text-2xl font-semibold tabular-nums">{classDetails.class_name}</CardTitle>
                 <Separator />
               </CardHeader>
@@ -216,6 +217,26 @@ export default function ClassDetails() {
                 </div>
               </CardContent>
             </Card>
+            <div className="flex-1 hidden md:block">
+              <div className="flex flex-col h-full gap-4">
+                <Card className="p-4 flex flex-col flex-1 justify-center h-full hover:scale-105 transition-transform">
+                <Link href={`/classes/${class_id}/assignments`} className="flex-1 flex flex-col justify-center text-center">
+                  Assignments
+                </Link>
+                </Card>
+                <Card className="p-4 flex flex-col flex-1 justify-center h-full hover:scale-105 transition-transform">
+                <Link href={`/classes/${class_id}/grades`} className="flex-1 flex flex-col justify-center text-center">
+                  Grades
+                </Link>
+                </Card>
+                <Card className="p-4 flex flex-col flex-1 justify-center h-full hover:scale-105 transition-transform">
+                <Link href={`/classes/${class_id}/contact`} className="flex-1 flex flex-col justify-center text-center">
+                  Contact
+                </Link>
+                </Card>
+              </div>
+              </div>
+            </div>
             {(user.role === "Teacher" || user.role === 'Admin') && (
               <Card className="">
                 <CardHeader>
