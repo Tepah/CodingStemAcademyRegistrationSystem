@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import axios from "axios";
 import config from "@/config";
 import {DataTable} from "@/components/tables/classes/student/data-table";
-import {columns} from "@/components/tables/classes/student/columns";
+import {createColumns} from "@/components/tables/classes/student/columns";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
@@ -24,6 +24,7 @@ export default function StudentClasses() {
                 { name: `Student Details`, href: `/admin/users/student/${studentId}` },
                 { name: `Classes`, href: `/admin/users/classes/student/${studentId}` }
     ]);
+    const columns = createColumns(() => router.refresh());
 
     useEffect(() => {
         const token = localStorage.getItem('token');
