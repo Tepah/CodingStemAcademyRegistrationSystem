@@ -61,7 +61,7 @@ export default function AIRegistrationQuestions({ children }) {
                         Ask any question related to registration and get instant answers.
                     </SheetDescription>
                 </SheetHeader>
-                <div className="flex flex-col gap-4 p-2">
+                <div className="flex flex-col gap-4 p-2 overflow-y-auto max-h-[80vh]">
                     {order.map((item, index) => (
                         <div key={index} className={`flex ${item === "Q" ? "justify-end ml-8" : "justify-start mr-8"} items-center`}>
                             <div className={`p-2 rounded-lg ${item === "Q" ? "bg-blue-100" : "bg-green-100"} max-w-md`}>
