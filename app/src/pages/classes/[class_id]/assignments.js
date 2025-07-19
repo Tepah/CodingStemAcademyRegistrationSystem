@@ -101,6 +101,7 @@ export default function Assignments() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Assignments</h1>
           {user && user.role === "Teacher" && (
+            // <Link href={{pathname: `/assignments/create`, query: {cid: class_id, cname: crumbs[2]['name']} }}>
             <Link href={`/classes/${class_id}/assignments/create`}>
               <Button variant="default">Make Assignment</Button>
             </Link>

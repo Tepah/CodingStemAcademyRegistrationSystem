@@ -1,0 +1,72 @@
+How to run the server app (python):
+
+In one terminal…
+cd Server
+python -m venv venv		| create the virtual environment (makes a new folder)
+
+For Apple users:
+source venv/bin/activate	| starts the virtual environment
+For Windows users:
+./venv/Scripts/activate
+(Use exit to stop running venv when you’re done.)
+
+Make sure python libraries are installed
+pip install -r requirements.txt
+
+(Need to have Python 3.12)
+Running it:
+python run.py
+
+If there’s an error about running scripts, open Powershell in Administrator and run.
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+If there’s any libraries missing, use pip install <insert library name here>
+
+
+--------------------------------------------------
+How to run the client app (node):
+
+In another terminal…
+Fresh install:
+cd app
+npm init
+# mash enter through all of the stuff
+npm install --legacy-peer-deps
+
+Running it:
+npm run dev
+
+
+Tailwind error?
+Delete node_modules folder and package-lock.json
+Run npm install --legacy-peer-deps again
+
+--------------------------------------------------
+
+MySQL Server 
+https://dev.mysql.com/downloads/
+Get MySQL Installer 8.0.42
+Get MySQL Server 8.0.42 and MySQL Workbench 8.0.42
+Install both of these.
+Type and Networking: Development Computer
+
+In MySQL Workbench, open the instance that was created by MySQL Server.
+File -> Open Scripts -> backup.sql
+Run the script.
+The default schema is “sys”. That’s the Database name. Double click it in the Schemas tab to set it as default.
+In db_connection.py, make sure all of the information is set up correctly.
+
+If the MySQL server doesn’t start up, go to Task Manager->Services and start MySQL80.
+
+Now run the server and client app.
+
+--------------------------------------------------
+
+Test accounts (password is password):
+Admin@test.com
+Teacher@test.com
+Student@test.com
+
+
+https://github.com/pmndrs/jotai/discussions/2579
+Error: Specified module format (CommonJs) is not matching the module format of the source code (EcmaScript Modules)
+Solution: Removing `"type": "commonjs"`, from `package.json` from app folder.

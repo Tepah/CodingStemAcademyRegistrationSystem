@@ -5,6 +5,8 @@ import { DataTable } from '@/components/tables/assignments/student/data-table';
 import { columns } from '@/components/tables/assignments/student/columns';
 import { getAssignmentsForStudent } from '@/components/api/api';
 import { getAssignmentsForTeacher } from '@/components/api/api';
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 
 export default function Assignments() {
@@ -49,7 +51,14 @@ export default function Assignments() {
   return (
     <Layout breadcrumbs={crumbs}>
       <div className="container max-w-[900px] mx-auto p-8 flex flex-col flex-1 space-y-8">
-        <h1 className="text-2xl font-bold mb-4">Assignments</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Assignments</h1>
+          {user && user.role === "Teacher" && (
+            <Link href={`/assignments/create`}>
+              <Button variant="default">Make Assignment</Button>
+            </Link>
+          )}
+        </div>
         <DataTable data={assignments} columns={columns} />
       </div>
     </Layout>
