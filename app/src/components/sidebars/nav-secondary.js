@@ -7,6 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 import {BookOpenCheck, CalendarFold, Mail, NotebookPen} from "lucide-react";
 
 const options = [
@@ -14,6 +15,7 @@ const options = [
   { label: 'Grades', link: '/grades', icon:  BookOpenCheck},
   { label: 'Messages', link: '/messages', icon: Mail},
   { label: 'Calendar', link: '/calendar', icon: CalendarFold },
+  { label: 'Classes', link: '/admin/classes', icon: CalendarFold },
 ]
 
 export default function NavSecondary({role = null}) {
@@ -27,14 +29,15 @@ export default function NavSecondary({role = null}) {
           <SidebarMenuItem key={option.label}>
             <SidebarMenuButton asChild>
               {!(role === 'Admin' && option.label === 'Grades' || role === 'Admin' && option.label === 'Assignments' || 
-                role === "Teacher" && option.label === 'Grades'
+                role === "Teacher" && option.label === 'Grades' || role === 'Admin' && option.label === 'Calendar' || 
+                role !== 'Admin' && option.label === 'Classes'
               ) && (
-              <a href={option.link}>
+              <Link href={option.link}>
                 <option.icon />
                 <span>
                   {option.label}
                 </span>
-              </a>
+              </Link>
               )}
             </SidebarMenuButton>
           </SidebarMenuItem>
