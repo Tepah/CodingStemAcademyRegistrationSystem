@@ -28,7 +28,7 @@ export function PaymentModifySheet({ children, paymentData }) {
       {children}
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Edit Payment</SheetTitle>
+          <SheetTitle>Edit Donation</SheetTitle>
           <SheetDescription>
             Modify donation details and save changes.
           </SheetDescription>

@@ -50,7 +50,7 @@ const AdminDash = () => {
                 <ul className="grid grid-cols-1 md:grid-cols-2 space-y-2">
                   <Link href="/admin/classes">Manage Classes</Link>
                   <Link href="/admin/semesters">Manage Semesters</Link>
-                  <Link href="/admin/payments">Manage Payments</Link>
+                  <Link href="/admin/donations">Manage Donations</Link>
                   <Link href="/admin/users/students">Manage Students</Link>
                   <Link href="/admin/users/teachers">Manage Teachers</Link>
                   <Link href="/admin/users/admins">Manage Admins</Link>

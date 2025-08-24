@@ -110,7 +110,7 @@ export function DataTable({ children, columns, data }) {
         ) : (
           <div className="flex items-center space-x-2">
             <Button size="sm" asChild>
-              <Link href="/admin/payments/create">Create Payment</Link>
+              <Link href="/admin/donations/create">Create Donation</Link>
             </Button>
           </div>
         )}
