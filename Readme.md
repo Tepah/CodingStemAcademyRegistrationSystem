@@ -60,7 +60,7 @@ ___
 
 ## AI-Powered Score Submissions System Project
 ___
-### Teacher: Mr. Joshua, Mr. Brian
+### Teacher: Mr. Brian
 ### Team:
 - **Kenny**
 - Arick Hong
