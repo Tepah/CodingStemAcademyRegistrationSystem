@@ -224,36 +224,76 @@ ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "jpg", "png"}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def extract_text_from_file(file_storage):
+    """
+    Extracts text from a file of type jpg, png, txt, pdf, or docx.
+    """
+    filename = file_storage.filename
+    extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+
+    # Ensure the stream is at the beginning before reading
+    file_storage.stream.seek(0)
+
+    if extension in ['jpg', 'jpeg', 'png']:
+        try:
+            img = Image.open(file_storage.stream)
+            return pytesseract.image_to_string(img)
+        except Exception as e:
+            raise ValueError(f"Failed to process image file with OCR: {e}")
+    
+    elif extension == 'txt':
+        try:
+            return file_storage.stream.read().decode('utf-8')
+        except Exception as e:
+            raise ValueError(f"Failed to read text file: {e}")
+
+    elif extension == 'pdf':
+        try:
+            # PyMuPDF needs bytes, so we read the stream
+            doc = fitz.open(stream=file_storage.stream.read(), filetype="pdf")
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            return text
+        except Exception as e:
+            raise ValueError(f"Failed to extract text from PDF: {e}")
+
+    elif extension == 'docx':
+        try:
+            doc = docx.Document(file_storage.stream)
+            return "\n".join([para.text for para in doc.paragraphs])
+        except Exception as e:
+            raise ValueError(f"Failed to extract text from DOCX: {e}")
+            
+    else:
+        raise ValueError(f"Unsupported file type: {extension}")
+
+
 @scores_bp.route('/ai/score-suggestion', methods=['POST'])
 def get_ai_score_suggestion():
     submission_file = request.files.get('submission_file')
     assignment_file = request.files.get('assignment_file')
 
-    if not submission_file:
-        return jsonify({'message': 'No SubmissionFile'}), 400
-
-    if submission_file.filename == '':
-        return jsonify({'message': 'No selected submission file'}), 400
+    if not submission_file or submission_file.filename == '':
+        return jsonify({'message': 'No submission file provided'}), 400
 
     if not allowed_file(submission_file.filename):
         return jsonify({'message': 'Invalid submission file type'}), 400
 
-    assignment_text = None  # Initialize assignment_text
     try:
         # Process submission file
-        img = Image.open(submission_file.stream)
-        submission_text = pytesseract.image_to_string(img)
-        submission_filename = submission_file.filename + ".txt"
+        submission_text = extract_text_from_file(submission_file)
 
         # Process assignment file (if provided)
+        assignment_text = None
         if assignment_file and assignment_file.filename != '':
             if not allowed_file(assignment_file.filename):
                 return jsonify({'message': 'Invalid assignment file type'}), 400
-            img = Image.open(assignment_file.stream)
-            assignment_text = pytesseract.image_to_string(img)
-            assignment_filename = assignment_file.filename + ".txt"
-        assignment = request.form.get('assignment')
-        prompt = generate_submission_suggestion_prompt(assignment_text, submission_text, assignment)
+            assignment_text = extract_text_from_file(assignment_file)
+        
+        assignment_data_str = request.form.get('assignment')
+        assignment_data = json.loads(assignment_data_str) if assignment_data_str else {}
+
+        prompt = generate_submission_suggestion_prompt(assignment_text, submission_text, assignment_data)
 
         ai_response = get_deepseek_completion_with_files(prompt)
         if ai_response:
@@ -268,7 +308,8 @@ def get_ai_score_suggestion():
             return jsonify({'message': 'Error retrieving AI score suggestion'}), 500
 
     except Exception as e:
-        return jsonify({'message': f'Error processing image: {str(e)}'}), 500
+        return jsonify({'message': f'Error processing file: {str(e)}'}), 500
+
 
 # PUT functions
 @scores_bp.route('/score', methods=['PUT'])
