@@ -14,7 +14,7 @@ export default function Payments() {
     const [user, setUser] = React.useState({});
     const crumbs = [
         { name: 'Home', href: '/dashboard' },
-        { name: 'Payments', href: '/admin/payments' }
+        { name: 'Donations', href: '/admin/donations' }
     ];
     
     useEffect(() => {
@@ -92,7 +92,7 @@ export default function Payments() {
               { user['role'] === 'Admin' ? (
                 <div>
                     <Label className="flex flex-row">
-                        <h1 className="text-3xl font-bold">Manage Payments</h1>
+                        <h1 className="text-3xl font-bold">Manage Donations</h1>
                     </Label>
                     { payments && (
                         <DataTable columns={columns} data={payments} />

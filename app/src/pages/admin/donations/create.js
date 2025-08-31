@@ -6,8 +6,8 @@ import { CreatePaymentForm } from "@/components/forms/payment/form";
 export default function CreatePayment() {
     const crumbs = [
         { name: 'Home', href: '/dashboard' },
-        { name: 'Payments', href: '/admin/payments' },
-        { name: 'Create Payment', href: '/admin/payments/create' }
+        { name: 'Donations', href: '/admin/donations' },
+        { name: 'Create Donation', href: '/admin/donations/create' }
     ];
      
 

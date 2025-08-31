@@ -68,12 +68,18 @@ export function ClassForm({ semesters, teachers }) {
 
             data.teacher_id = parseInt(data.teacher_id, 10)
             data.semester_id = parseInt(data.semester_id, 10)
-            data.rate = data.rate === undefined ? (semester.rate !== undefined ? semester.rate : undefined) : data.rate;
+            if (data.rate === undefined) {
+                if (semester && semester.rate !== undefined && semester.rate !== null) {
+                    data.rate = semester.rate;
+                } else {
+                    delete data.rate; 
+                }
+            }
             console.log("Form data:", data)
             axios.post(`${config.backendUrl}/add-class`, data)
                 .then((response) => {
                     console.log("Class created:", response.data['message'])
-                    router.push('/admin/classes?' + (data.semester_id ? `semester_id=${data.semester_id}` : ''))
+                    router.push('/admin/classes')
                 })
                 .catch((error) => {
                     console.error("Error creating class:", error)

@@ -25,7 +25,7 @@ import { set } from "date-fns"
 
  
 
-export function  DataTable({columns, data, semester}) {
+export function  DataTable({columns, data, semester, semestersData}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [activeSemester, setActiveSemester] = useState(null);
@@ -35,7 +35,7 @@ export function  DataTable({columns, data, semester}) {
     if (activeSemester === "All") {
       filtered = data;
     } else if (activeSemester) {
-      filtered = filtered.filter((row) => row.semester === activeSemester);
+      filtered = filtered.filter((row) => row.semester_id === activeSemester);
     }
     return filtered;
   }, [data, activeSemester]);
@@ -70,14 +70,14 @@ export function  DataTable({columns, data, semester}) {
             >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select semester">
-                {activeSemester || "Select semester"}
+                {semestersData.find(sem => sem.id === activeSemester)?.name || activeSemester === "All" && "All" || "Select semester"}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All</SelectItem>
-              {[...new Set(data.map((row) => (row.semester)))].map((semesterName) =>(
-                <SelectItem key={semesterName} value={semesterName}>
-                  {semesterName}
+              {semestersData.map((res) =>(
+                <SelectItem key={res.id} value={res.id}>
+                  {res.name}
                 </SelectItem>
               ))}
             </SelectContent>

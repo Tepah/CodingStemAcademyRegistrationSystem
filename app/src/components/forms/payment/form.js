@@ -172,7 +172,7 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                                <FormLabel>Payment Date</FormLabel>
+                                <FormLabel>Donation Date</FormLabel>
                                 <FormControl>
                                     <Input type="date" className="w-1/3" {...field} />
                                 </FormControl>
@@ -187,11 +187,11 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                                <FormLabel>Payment Type</FormLabel>
+                                <FormLabel>Donation Type</FormLabel>
                                 <FormControl>
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select payment type" />
+                                            <SelectValue placeholder="Select Donation type" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -214,11 +214,11 @@ export function CreatePaymentForm({ children, student_id = null }) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex flex-row justify-between">
-                            <FormLabel>Payment Method</FormLabel>
+                            <FormLabel>Donation Method</FormLabel>
                             <FormControl>
                                 <Select value={field.value} onValueChange={field.onChange}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select payment method" />
+                                        <SelectValue placeholder="Select donation method" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>

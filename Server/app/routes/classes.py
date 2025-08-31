@@ -300,18 +300,27 @@ def add_class():
     my_db = get_db_connection()
     data = request.get_json()
     try: 
-        teacher_id = data.get('teacher_id')
-        class_name = data.get('class_name')
-        subject = data.get('subject')
-        semester_id = data.get('semester_id')
-        day = data.get('day')
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        rate = data.get('rate')
+        columns = ['teacher_id', 'class_name', 'subject', 'semester_id', 'day', 'start_time', 'end_time']
+        values = [
+            data.get('teacher_id'),
+            data.get('class_name'),
+            data.get('subject'),
+            data.get('semester_id'),
+            data.get('day'),
+            data.get('start_time'),
+            data.get('end_time')
+        ]
+
+        # Conditionally add the 'rate' column if it exists and is not null
+        if 'rate' in data and data['rate'] is not None:
+            columns.append('rate')
+            values.append(data['rate'])
+
+        # Dynamically construct the SQL query
+        sql = f"INSERT INTO classes ({', '.join(columns)}) VALUES ({', '.join(['%s'] * len(values))})"
+        vals = tuple(values)
 
         cursor = my_db.cursor()
-        sql = "INSERT INTO classes (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
-        vals = (teacher_id, class_name, subject, semester_id, day, start_time, end_time, rate)
         cursor.execute(sql, vals)
 
         class_id = cursor.lastrowid

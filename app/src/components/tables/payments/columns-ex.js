@@ -52,7 +52,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span className="text-center">Payment Method</span>
+                    <span className="text-center">Donation Method</span>
                 </Button>
             )
         },
@@ -78,7 +78,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button className="flex-grow" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span>Payment Date</span>
+                    <span>Donation Date</span>
                 </Button>
             )
         },
@@ -101,7 +101,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button className="w-[80px]" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    <span>Payment Type</span>
+                    <span>Donation Type</span>
                 </Button>
             )
         },
@@ -127,7 +127,7 @@ export const columns = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <SheetTrigger>Modify Payment</SheetTrigger>
+                            <SheetTrigger>Modify Donation</SheetTrigger>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => 
                             deletePayment(paymentData.id)
@@ -139,7 +139,7 @@ export const columns = [
                                 console.error("Error deleting payment:", error);
                             } )
                         }>
-                            Delete Payment
+                            Delete Donation
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

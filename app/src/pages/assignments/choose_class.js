@@ -36,7 +36,7 @@ export default function SelectClassFromList () {
 			<div className="container max-w-[900px] mx-auto p-8 flex flex-col flex-1 space-y-4">
 				<h1><b>Choose a class to add an assignment to.</b></h1>
 				{classList.map((classData) =>
-					<Link href={`/classes/${classData.id}/assignments/create`}>
+					<Link key={classData.id} href={`/classes/${classData.id}/assignments/create`}>
 						<Card className="flex-col gap-2 w-full max-w-sm">
 						<CardContent>
 							{classData.class_name}

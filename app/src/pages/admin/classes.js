@@ -13,6 +13,7 @@ export default function Classes() {
     const router = useRouter();
     const [classes, setClasses] = React.useState([]);
     const [semester, setSemester] = React.useState(null);
+    const [semestersData, setSemestersData] = React.useState([]);
     const [user, setUser] = React.useState({});
     const [loading, setLoading] = React.useState(true);
     const breadcrumbs = [
@@ -38,16 +39,10 @@ export default function Classes() {
         const fetchData = async () => {
             setLoading(true); 
             try {
-                const semesterIdFromQuery = router.query.semester_id;
                 let targetSemester;
-
-                if (semesterIdFromQuery) {
-                    const response = await axios.get(`${config.backendUrl}/semester`, { params: { id: semesterIdFromQuery } });
-                    targetSemester = response.data['semester'];
-                } else {
-                    const response = await axios.get(`${config.backendUrl}/current-semester`);
-                    targetSemester = response.data['semester'];
-                }
+                const response = await axios.get(`${config.backendUrl}/current-semester`);
+                targetSemester = response.data['semester'];
+                
                 setSemester(targetSemester);
 
                 const classesResponse = await axios.get(`${config.backendUrl}/classes`);
@@ -71,6 +66,10 @@ export default function Classes() {
                     Promise.all(semesterPromises),
                     Promise.all(studentCountPromises)
                 ]);
+
+                const allSemesterRes = await axios.get(`${config.backendUrl}/semesters`);
+
+                setSemestersData(allSemesterRes.data.semesters);
 
                 const teachersMap = new Map(teacherResponses.map(res => [res.data.user.id, res.data.user]));
                 const semestersMap = new Map(semesterResponses.map(res => [res.data.semester.id, res.data.semester]));
@@ -111,7 +110,7 @@ export default function Classes() {
                         <Label className="flex flex-row">
                             <h1 className="text-3xl font-bold">Manage Classes</h1>
                         </Label>
-                        <DataTable columns={columns} data={classes} semester={semester?.name} />
+                        <DataTable columns={columns} data={classes} semester={semester?.id} semestersData={semestersData} />
                     </div>
                 ) : (
                     <div className="text-center">

@@ -145,7 +145,7 @@ function ActionsCell({ user }) {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`payments/${user.id}`}>
-                  Manage Payments
+                  Manage Donations
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSheetOpen(true)}>
